@@ -15,10 +15,13 @@ UserRound,
 X,
 VenusAndMars,
 Trash2,
+ChevronDown,
 Image as ImageIcon
 } from "lucide-react";
 
 import {useRouter} from "next/navigation";
+import CustomerSidebar from "@/components/CustomerSidebar";
+import CustomerNavbar from "@/components/CustomerNavbar";
 
 
 export default function CustomerProfilePage(){
@@ -27,8 +30,11 @@ const router=useRouter();
 
 
 const [mounted,setMounted]=useState(false);
+const [darkMode, setDarkMode] = useState(false);
+const [sidebarOpen, setSidebarOpen] = useState(false);
 const [isEditing,setIsEditing]=useState(false);
 const [showPhotoMenu,setShowPhotoMenu]=useState(false);
+const [showGenderDropdown, setShowGenderDropdown] = useState(false);
 
 const [selectedFile,setSelectedFile]=useState<File|null>(null);
 
@@ -362,46 +368,46 @@ alert(
 
 
 };
-return(
+  const userName = profile?.fullName || "Customer";
+  const firstLetter = userName.charAt(0).toUpperCase();
 
-<div className="min-h-screen bg-[#F5FBF7]">
+  return (
+    <div
+      className={`h-screen flex font-sans overflow-hidden ${
+        darkMode ? "bg-[#071A12] text-white" : "bg-[#F3FBF6] text-gray-900"
+      }`}
+    >
+      <CustomerSidebar
+        darkMode={darkMode}
+        open={sidebarOpen}
+        setOpen={setSidebarOpen}
+      />
 
-<div className="max-w-6xl mx-auto p-5 lg:p-8">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 relative">
+        {/* Premium Blur Blobs */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-400/5 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
+        <CustomerNavbar
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          setSidebarOpen={setSidebarOpen}
+          userName={userName}
+          firstLetter={firstLetter}
+        />
 
-<div className="flex items-center gap-3 mb-6">
-
-
-<button
-onClick={()=>router.back()}
-className="w-11 h-11 bg-white rounded-xl shadow flex items-center justify-center"
->
-
-<ArrowLeft
-size={20}
-className="text-emerald-600"
-/>
-
-</button>
-
-
-
-<div>
-
-<h1 className="text-3xl font-bold text-gray-800">
-My Profile
-</h1>
-
-
-<p className="text-sm text-gray-500">
-Manage your personal information
-</p>
-
-
-</div>
-
-
-</div>
+        <main className="flex-1 overflow-y-auto p-5 lg:p-8 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h1 className="text-4xl font-extrabold text-emerald-900 tracking-tight">
+                  My Profile
+                </h1>
+                <p className="text-sm text-gray-500 mt-1">
+                  Manage your personal information
+                </p>
+              </div>
+            </div>
 
 
 
@@ -413,7 +419,7 @@ Manage your personal information
 
 
 
-<div className="bg-white rounded-3xl border shadow-sm p-6">
+<div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border-0 p-6">
 
 
 <div className="text-center">
@@ -650,10 +656,10 @@ profile.gender || "Select Gender"
 
 
 
-<div className="lg:col-span-2 bg-white rounded-3xl border shadow-sm p-6">
+<div className="lg:col-span-2 bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border-0 p-6">
 
 
-<div className="flex justify-between items-center mb-6">
+<div className="flex flex-wrap justify-between items-center gap-4 mb-6">
 
 
 <h2 className="text-xl font-bold text-gray-800">
@@ -744,235 +750,113 @@ Cancel
 
 
 </div>
-<div className="grid md:grid-cols-2 gap-4">
-
-
+<div className="grid md:grid-cols-2 gap-5">
 
 <div>
-
-<label className="text-sm text-gray-500">
+<label htmlFor="fullName" className="text-sm font-medium text-gray-600 block mb-2 cursor-pointer">
 Full Name
 </label>
-
-
+<label htmlFor="fullName" className={`flex items-center gap-3 border rounded-2xl px-4 py-3 transition-all duration-200 ${isEditing ? 'bg-white border-gray-200 focus-within:ring-2 focus-within:ring-emerald-100 focus-within:border-emerald-300 cursor-text' : 'bg-gray-50/70 border-gray-100 opacity-80 cursor-default'}`}>
+<UserRound size={18} className="text-emerald-500 shrink-0" />
 <input
-
+id="fullName"
 disabled={!isEditing}
-
-value={temp.fullName}
-
-onChange={
-e=>setTemp({
-...temp,
-fullName:e.target.value
-})
-}
-
-className="mt-2 w-full p-3 rounded-xl border outline-none"
-
+value={temp.fullName || ""}
+onChange={e=>setTemp({...temp, fullName:e.target.value})}
+style={{boxShadow: 'none', border: 'none', outline: 'none'}}
+className="w-full border-0 focus:ring-0 focus:outline-none p-0 bg-transparent text-sm text-gray-800 disabled:text-gray-500"
 />
-
+</label>
 </div>
 
-
-
-
-
 <div>
-
-<label className="text-sm text-gray-500">
+<label htmlFor="email" className="text-sm font-medium text-gray-600 block mb-2 cursor-pointer">
 Email
 </label>
-
-
-
-<div className="mt-2 flex items-center gap-2 border rounded-xl p-3">
-
-
-<Mail
-size={18}
-className="text-emerald-600"
-/>
-
-
-
+<label htmlFor="email" className={`flex items-center gap-3 border rounded-2xl px-4 py-3 transition-all duration-200 ${isEditing ? 'bg-white border-gray-200 focus-within:ring-2 focus-within:ring-emerald-100 focus-within:border-emerald-300 cursor-text' : 'bg-gray-50/70 border-gray-100 opacity-80 cursor-default'}`}>
+<Mail size={18} className="text-emerald-500 shrink-0" />
 <input
-
-disabled
-
-value={temp.email}
-
-className="w-full outline-none"
-
+id="email"
+disabled={!isEditing}
+value={temp.email || ""}
+onChange={e=>setTemp({...temp, email:e.target.value})}
+style={{boxShadow: 'none', border: 'none', outline: 'none'}}
+className="w-full border-0 focus:ring-0 focus:outline-none p-0 bg-transparent text-sm text-gray-800 disabled:text-gray-500"
 />
-
-
+</label>
 </div>
-
-
-</div>
-
-
-
-
-
-
 
 <div>
-
-<label className="text-sm text-gray-500">
+<label htmlFor="mobileNumber" className="text-sm font-medium text-gray-600 block mb-2 cursor-pointer">
 Mobile Number
 </label>
-
-
-
-<div className="mt-2 flex items-center gap-2 border rounded-xl p-3">
-
-
-<Phone
-size={18}
-className="text-emerald-600"
-/>
-
-
-
+<label htmlFor="mobileNumber" className={`flex items-center gap-3 border rounded-2xl px-4 py-3 transition-all duration-200 ${isEditing ? 'bg-white border-gray-200 focus-within:ring-2 focus-within:ring-emerald-100 focus-within:border-emerald-300 cursor-text' : 'bg-gray-50/70 border-gray-100 opacity-80 cursor-default'}`}>
+<Phone size={18} className="text-emerald-500 shrink-0" />
 <input
-
+id="mobileNumber"
 disabled={!isEditing}
-
-value={temp.mobileNumber}
-
-onChange={
-e=>setTemp({
-...temp,
-mobileNumber:e.target.value
-})
-}
-
-className="w-full outline-none"
-
+value={temp.mobileNumber || ""}
+onChange={e=>setTemp({...temp, mobileNumber:e.target.value})}
+style={{boxShadow: 'none', border: 'none', outline: 'none'}}
+className="w-full border-0 focus:ring-0 focus:outline-none p-0 bg-transparent text-sm text-gray-800 disabled:text-gray-500"
 />
-
-
+</label>
 </div>
-
-
-</div>
-
-
-
-
-
-
-
 
 <div>
-
-<label className="text-sm text-gray-500">
+<label htmlFor="gender" className="text-sm font-medium text-gray-600 block mb-2 cursor-pointer">
 Gender
 </label>
-
-
-
-<select
-
-disabled={!isEditing}
-
-value={temp.gender || ""}
-
-onChange={
-e=>setTemp({
-...temp,
-gender:e.target.value
-})
-}
-
-className="mt-2 w-full p-3 rounded-xl border outline-none"
-
+<div className="relative">
+<div 
+  onClick={() => isEditing && setShowGenderDropdown(!showGenderDropdown)}
+  className={`flex items-center gap-3 border rounded-2xl px-4 py-3 transition-all duration-200 ${isEditing ? 'bg-white border-gray-200 hover:border-emerald-300 cursor-pointer' : 'bg-gray-50/70 border-gray-100 opacity-80 cursor-default'}`}
 >
-
-
-<option value="">
-Select Gender
-</option>
-
-
-<option value="Male">
-Male
-</option>
-
-
-<option value="Female">
-Female
-</option>
-
-
-<option value="Other">
-Other
-</option>
-
-
-</select>
-
-
+  <VenusAndMars size={18} className="text-emerald-500 shrink-0" />
+  <span className={`flex-1 text-sm ${temp.gender ? 'text-gray-800' : 'text-gray-500'}`}>
+    {temp.gender || "Select Gender"}
+  </span>
+  <ChevronDown size={18} className={`shrink-0 pointer-events-none transition-transform duration-200 ${showGenderDropdown ? 'rotate-180 text-emerald-500' : isEditing ? 'text-gray-400' : 'text-gray-300 opacity-60'}`} />
 </div>
 
-
-
-
-
-
+{showGenderDropdown && isEditing && (
+  <>
+    <div className="fixed inset-0 z-10" onClick={() => setShowGenderDropdown(false)}></div>
+    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 shadow-xl shadow-emerald-900/5 rounded-2xl overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-200">
+      {["Male", "Female", "Other"].map((option) => (
+        <div
+          key={option}
+          onClick={() => {
+            setTemp({...temp, gender: option});
+            setShowGenderDropdown(false);
+          }}
+          className={`px-4 py-3 text-sm cursor-pointer transition-colors hover:bg-emerald-50 ${temp.gender === option ? 'text-emerald-700 bg-emerald-50/50 font-medium' : 'text-gray-700'}`}
+        >
+          {option}
+        </div>
+      ))}
+    </div>
+  </>
+)}
+</div>
+</div>
 
 <div className="md:col-span-2">
-
-
-<label className="text-sm text-gray-500">
+<label htmlFor="address" className="text-sm font-medium text-gray-600 block mb-2 cursor-pointer">
 Address
 </label>
-
-
-
-
-<div className="mt-2 flex items-center gap-2 border rounded-xl p-3">
-
-
-<MapPin
-
-size={18}
-
-className="text-emerald-600"
-
-/>
-
-
-
-
+<label htmlFor="address" className={`flex items-center gap-3 border rounded-2xl px-4 py-3 transition-all duration-200 ${isEditing ? 'bg-white border-gray-200 focus-within:ring-2 focus-within:ring-emerald-100 focus-within:border-emerald-300 cursor-text' : 'bg-gray-50/70 border-gray-100 opacity-80 cursor-default'}`}>
+<MapPin size={18} className="text-emerald-500 shrink-0" />
 <input
-
+id="address"
 disabled={!isEditing}
-
-value={temp.address}
-
-onChange={
-e=>setTemp({
-...temp,
-address:e.target.value
-})
-}
-
-className="w-full outline-none"
-
+value={temp.address || ""}
+onChange={e=>setTemp({...temp, address:e.target.value})}
+style={{boxShadow: 'none', border: 'none', outline: 'none'}}
+className="w-full border-0 focus:ring-0 focus:outline-none p-0 bg-transparent text-sm text-gray-800 disabled:text-gray-500"
 />
-
-
-
+</label>
 </div>
-
-
-
-</div>
-
-
 
 </div>
 
@@ -984,17 +868,9 @@ className="w-full outline-none"
 
 
 </div>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-);
-
+          </div>
+        </main>
+      </div>
+    </div>
+  );
 }

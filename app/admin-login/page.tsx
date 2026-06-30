@@ -2,105 +2,56 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 
 export default function AdminLoginPage() {
-
   const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleAdminLogin = () => {
-
-    // Dummy Admin Credentials
-    if (
-      email === "admin@servicesphere.com" &&
-      password === "admin123"
-    ) {
-
+    if (email === "admin@servicesphere.com" && password === "admin123") {
       router.push("/admin/dashboard");
-
-    }
-
-    else {
-
+    } else {
       alert("Invalid Admin Credentials");
-
     }
-
   };
 
   return (
+    <div className="min-h-screen bg-cover bg-center flex justify-center items-center relative px-4 py-10" style={{ backgroundImage: "url('/background-img.png')" }}>
+      <div className="absolute inset-0 bg-slate-950/70" />
 
-    <div
-      className="min-h-screen bg-cover bg-center flex justify-center items-center relative"
-      style={{
-        backgroundImage: "url('/background-img.png')",
-      }}
-    >
-
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/70"></div>
-
-      {/* Login Card */}
-      <div className="relative z-10 w-full max-w-xl bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 shadow-2xl">
-
-        {/* Heading */}
-        <div className="text-center mb-10">
-
-          <h1 className="text-5xl font-bold text-white">
-
-            Admin Login
-
-          </h1>
-
-          <p className="text-gray-300 mt-3 text-lg">
-
-            Secure access to ServiceSphere Admin Panel
-
-          </p>
-
+      <div className="relative z-10 w-full max-w-md glass-panel rounded-3xl p-6 sm:p-8 text-slate-900">
+        <div className="text-center mb-8">
+          <div className="mx-auto h-14 w-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-900/20 mb-4">
+            <ShieldCheck size={26} />
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold">Admin Login</h1>
+          <p className="text-gray-600 mt-2 text-sm">Secure access to the ServiceSphere admin panel</p>
         </div>
 
-        {/* Form */}
-        <div className="space-y-6">
+        <div className="space-y-4">
+          <label className="block">
+            <span className="text-sm font-medium text-gray-700">Admin Email</span>
+            <div className="mt-2 flex items-center gap-3 rounded-2xl bg-white border border-gray-200 px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100">
+              <Mail size={18} className="text-emerald-600" />
+              <input type="email" placeholder="admin@servicesphere.com" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-transparent outline-none text-sm" required />
+            </div>
+          </label>
 
-          {/* Email */}
-          <input
-            type="email"
-            placeholder="Admin Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full bg-white/20 border border-white/10 text-white placeholder-gray-300 p-4 rounded-2xl outline-none focus:border-blue-500"
-          />
+          <label className="block">
+            <span className="text-sm font-medium text-gray-700">Password</span>
+            <div className="mt-2 flex items-center gap-3 rounded-2xl bg-white border border-gray-200 px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100">
+              <LockKeyhole size={18} className="text-emerald-600" />
+              <input type="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-transparent outline-none text-sm" required />
+            </div>
+          </label>
 
-          {/* Password */}
-          <input
-            type="password"
-            placeholder="Admin Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full bg-white/20 border border-white/10 text-white placeholder-gray-300 p-4 rounded-2xl outline-none focus:border-blue-500"
-          />
-
-          {/* Button */}
-          <button
-            onClick={handleAdminLogin}
-            className="w-full bg-blue-600 hover:bg-blue-700 transition p-4 rounded-2xl text-white text-lg font-semibold shadow-lg"
-          >
-
+          <button onClick={handleAdminLogin} className="w-full bg-emerald-500 hover:bg-emerald-600 py-3 rounded-2xl text-white font-semibold shadow-lg shadow-emerald-900/20">
             Login as Admin
-
           </button>
-
         </div>
-
       </div>
-
     </div>
-
   );
-
 }

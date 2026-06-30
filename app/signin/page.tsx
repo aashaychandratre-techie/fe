@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Navbar from "@/components/Navbar";
+import { LockKeyhole, Mail, UserRound, Wrench } from "lucide-react";
 
 export default function SignInPage() {
   const router = useRouter();
-
   const [selectedRole, setSelectedRole] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,27 +21,17 @@ export default function SignInPage() {
       setLoading(true);
 
       if (selectedRole === "customer") {
-        const res = await axios.post("http://localhost:8080/api/auth/signin", {
-          email,
-          password,
-        });
-
+        const res = await axios.post("http://localhost:8080/api/auth/signin", { email, password });
         localStorage.setItem("user", JSON.stringify(res.data));
         router.push("/customer/dashboard");
       } else {
-        const res = await axios.post("http://localhost:8080/auth/vendor/login", {
-          email,
-          password,
-        });
+        const res = await axios.post("http://localhost:8080/auth/vendor/login", { email, password });
 
         if (res.data === "Login Successful") {
-          const vendorRes = await axios.get(
-            `http://localhost:8080/auth/vendor/email/${email}`
-          );
-
+          const vendorRes = await axios.get(`http://localhost:8080/auth/vendor/email/${email}`);
           localStorage.setItem("vendorId", vendorRes.data.id);
           localStorage.setItem("vendor", JSON.stringify(vendorRes.data));
-
+          localStorage.setItem("vendorName", vendorRes.data.name || vendorRes.data.email || "Vendor");
           router.push("/vendor/dashboard");
         } else {
           alert(res.data);
@@ -55,98 +45,61 @@ export default function SignInPage() {
   };
 
   return (
-    <div
-      className="min-h-screen relative flex items-center justify-center px-4 bg-cover bg-center"
-      style={{
-        backgroundImage: "url('/background.png')",
-      }}
-    >
+    <div className="min-h-screen relative flex items-center justify-center px-4 py-24 bg-cover bg-center" style={{ backgroundImage: "url('/background.png')" }}>
       <Navbar />
-      {/* LIGHT OVERLAY */}
-      <div className="absolute inset-0 bg-white/25" />
+      <div className="absolute inset-0 bg-white/55 backdrop-blur-[2px]" />
 
-      {/* CARD (WHITE) */}
-      <div className="relative z-10 w-full max-w-md bg-white backdrop-blur-xl border border-gray-200 rounded-2xl p-6 shadow-2xl">
-
-        {/* TITLE */}
+      <div className="relative z-10 w-full max-w-md glass-panel rounded-3xl p-6 sm:p-7">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-black">
-            Sign In
-          </h1>
-          <p className="text-gray-600 text-sm mt-1">
-            Welcome back to ServiceSphere
-          </p>
+          <div className="mx-auto h-12 w-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-100 mb-4">
+            <LockKeyhole size={22} />
+          </div>
+          <h1 className="text-3xl font-bold text-black">Sign In</h1>
+          <p className="text-gray-600 text-sm mt-1">Welcome back to ServiceSphere</p>
         </div>
 
-        {/* ROLE */}
-        <div className="flex gap-3 mb-5">
-
-          <button
-            onClick={() => setSelectedRole("customer")}
-            className={`flex-1 py-2 rounded-xl border transition
-            ${
-              selectedRole === "customer"
-                ? "bg-emerald-500 text-white border-emerald-500"
-                : "bg-gray-100 text-black"
-            }`}
-          >
-            Customer
-          </button>
-
-          <button
-            onClick={() => setSelectedRole("provider")}
-            className={`flex-1 py-2 rounded-xl border transition
-            ${
-              selectedRole === "provider"
-                ? "bg-emerald-500 text-white border-emerald-500"
-                : "bg-gray-100 text-black"
-            }`}
-          >
-            Provider
-          </button>
-
+        <div className="grid grid-cols-2 gap-3 mb-5">
+          {[
+            ["customer", UserRound, "Customer"],
+            ["provider", Wrench, "Provider"],
+          ].map(([role, Icon, label]: any) => (
+            <button
+              key={role}
+              onClick={() => setSelectedRole(role)}
+              className={`flex items-center justify-center gap-2 py-3 rounded-2xl border font-medium ${
+                selectedRole === role ? "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-100" : "bg-white text-gray-700 border-gray-200 hover:bg-emerald-50"
+              }`}
+            >
+              <Icon size={17} /> {label}
+            </button>
+          ))}
         </div>
 
-        {/* INPUTS */}
         <div className="space-y-4">
+          <label className="block">
+            <span className="text-sm font-medium text-gray-700">Email</span>
+            <div className="mt-2 flex items-center gap-3 rounded-2xl bg-white border border-gray-200 px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100">
+              <Mail size={18} className="text-emerald-600" />
+              <input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-transparent outline-none text-sm" />
+            </div>
+          </label>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 text-black placeholder-gray-500 border border-gray-200 outline-none"
-          />
+          <label className="block">
+            <span className="text-sm font-medium text-gray-700">Password</span>
+            <div className="mt-2 flex items-center gap-3 rounded-2xl bg-white border border-gray-200 px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100">
+              <LockKeyhole size={18} className="text-emerald-600" />
+              <input type="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-transparent outline-none text-sm" />
+            </div>
+          </label>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 text-black placeholder-gray-500 border border-gray-200 outline-none"
-          />
-
-          <button
-            onClick={handleLogin}
-            disabled={loading}
-            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl transition"
-          >
+          <button onClick={handleLogin} disabled={loading} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 rounded-2xl shadow-lg shadow-emerald-100 disabled:opacity-60">
             {loading ? "Signing in..." : "Sign In"}
           </button>
-
         </div>
 
-        {/* FOOTER */}
         <p className="text-center text-sm text-gray-600 mt-5">
-          Don&apos;t have an account?{" "}
-          <span
-            onClick={() => router.push("/signup")}
-            className="text-emerald-600 cursor-pointer font-medium"
-          >
-            Sign Up
-          </span>
+          Don&apos;t have an account? <button onClick={() => router.push("/signup")} className="text-emerald-600 font-semibold">Sign Up</button>
         </p>
-
       </div>
     </div>
   );

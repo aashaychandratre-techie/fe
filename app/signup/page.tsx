@@ -4,38 +4,27 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Navbar from "@/components/Navbar";
+import { Home, LockKeyhole, Mail, MapPin, Phone, UserRound, Wrench } from "lucide-react";
 
 export default function SignUpPage() {
   const router = useRouter();
-
   const [selectedRole, setSelectedRole] = useState<"customer" | "provider" | "">("");
-
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [address, setAddress] = useState("");
-
   const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!selectedRole) return alert("Select role");
 
     try {
       setLoading(true);
-
       const isCustomer = selectedRole === "customer";
-
-      const endpoint = isCustomer
-        ? "http://localhost:8080/api/auth/signup"
-        : "http://localhost:8080/auth/vendor/register";
-
-      const payload = isCustomer
-        ? { fullName, email, password, mobileNumber, address }
-        : { name: fullName, email, password, phone: mobileNumber, address };
-
+      const endpoint = isCustomer ? "http://localhost:8080/api/auth/signup" : "http://localhost:8080/auth/vendor/register";
+      const payload = isCustomer ? { fullName, email, password, mobileNumber, address } : { name: fullName, email, password, phone: mobileNumber, address };
       const res = await axios.post(endpoint, payload);
 
       if (isCustomer) {
@@ -51,120 +40,72 @@ export default function SignUpPage() {
     }
   };
 
+  const fields = [
+    ["Full Name", fullName, setFullName, UserRound, "text"],
+    ["Email", email, setEmail, Mail, "email"],
+    ["Mobile Number", mobileNumber, setMobileNumber, Phone, "tel"],
+    ["Password", password, setPassword, LockKeyhole, "password"],
+  ] as const;
+
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-4 bg-cover bg-center relative"
-      style={{ backgroundImage: "url('/background.png')" }}
-    >
+    <div className="min-h-screen flex items-center justify-center px-4 py-24 bg-cover bg-center relative" style={{ backgroundImage: "url('/background.png')" }}>
       <Navbar />
-      {/* LIGHT OVERLAY (same as signin) */}
-      <div className="absolute inset-0 bg-white/25" />
+      <div className="absolute inset-0 bg-white/55 backdrop-blur-[2px]" />
 
-      {/* WHITE CARD (same style as signin) */}
-      <div className="relative z-10 w-full max-w-md bg-white border border-gray-200 rounded-2xl p-6 shadow-2xl">
-
-        {/* TITLE */}
+      <div className="relative z-10 w-full max-w-md glass-panel rounded-3xl p-6 sm:p-7">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-black">
-            Sign Up
-          </h1>
-          <p className="text-gray-600 text-sm mt-1">
-            Create your account
-          </p>
+          <div className="mx-auto h-12 w-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-100 mb-4">
+            <Home size={22} />
+          </div>
+          <h1 className="text-3xl font-bold text-black">Create Account</h1>
+          <p className="text-gray-600 text-sm mt-1">Join ServiceSphere in a few details</p>
         </div>
 
-        {/* ROLE */}
-        <div className="flex gap-3 mb-5">
-
-          <button
-            type="button"
-            onClick={() => setSelectedRole("customer")}
-            className={`flex-1 py-2 rounded-xl border transition
-            ${
-              selectedRole === "customer"
-                ? "bg-emerald-500 text-white border-emerald-500"
-                : "bg-gray-100 text-black"
-            }`}
-          >
-            Customer
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setSelectedRole("provider")}
-            className={`flex-1 py-2 rounded-xl border transition
-            ${
-              selectedRole === "provider"
-                ? "bg-emerald-500 text-white border-emerald-500"
-                : "bg-gray-100 text-black"
-            }`}
-          >
-            Provider
-          </button>
-
+        <div className="grid grid-cols-2 gap-3 mb-5">
+          {[
+            ["customer", UserRound, "Customer"],
+            ["provider", Wrench, "Provider"],
+          ].map(([role, Icon, label]: any) => (
+            <button
+              type="button"
+              key={role}
+              onClick={() => setSelectedRole(role)}
+              className={`flex items-center justify-center gap-2 py-3 rounded-2xl border font-medium ${
+                selectedRole === role ? "bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-100" : "bg-white text-gray-700 border-gray-200 hover:bg-emerald-50"
+              }`}
+            >
+              <Icon size={17} /> {label}
+            </button>
+          ))}
         </div>
 
-        {/* FORM */}
         <form onSubmit={handleSignup} className="space-y-4">
+          {fields.map(([placeholder, value, setter, Icon, type]) => (
+            <label key={placeholder} className="block">
+              <span className="text-sm font-medium text-gray-700">{placeholder}</span>
+              <div className="mt-2 flex items-center gap-3 rounded-2xl bg-white border border-gray-200 px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100">
+                <Icon size={18} className="text-emerald-600" />
+                <input type={type} placeholder={placeholder} value={value} onChange={(e) => setter(e.target.value)} className="w-full bg-transparent outline-none text-sm" />
+              </div>
+            </label>
+          ))}
 
-          <input
-            placeholder="Full Name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 text-black placeholder-gray-500 border border-gray-200 outline-none focus:ring-2 focus:ring-emerald-500"
-          />
+          <label className="block">
+            <span className="text-sm font-medium text-gray-700">Address</span>
+            <div className="mt-2 flex items-start gap-3 rounded-2xl bg-white border border-gray-200 px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100">
+              <MapPin size={18} className="text-emerald-600 mt-0.5" />
+              <textarea placeholder="Service address" value={address} onChange={(e) => setAddress(e.target.value)} rows={3} className="w-full bg-transparent outline-none resize-none text-sm" />
+            </div>
+          </label>
 
-          <input
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 text-black placeholder-gray-500 border border-gray-200 outline-none focus:ring-2 focus:ring-emerald-500"
-          />
-
-          <input
-            placeholder="Mobile Number"
-            value={mobileNumber}
-            onChange={(e) => setMobileNumber(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 text-black placeholder-gray-500 border border-gray-200 outline-none focus:ring-2 focus:ring-emerald-500"
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 text-black placeholder-gray-500 border border-gray-200 outline-none focus:ring-2 focus:ring-emerald-500"
-          />
-
-          <textarea
-            placeholder="Address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            rows={3}
-            className="w-full px-4 py-3 rounded-xl bg-gray-50 text-black placeholder-gray-500 border border-gray-200 outline-none resize-none focus:ring-2 focus:ring-emerald-500"
-          />
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-emerald-500 hover:bg-emerald-600 py-3 rounded-xl text-white font-semibold transition"
-          >
+          <button type="submit" disabled={loading} className="w-full bg-emerald-500 hover:bg-emerald-600 py-3 rounded-2xl text-white font-semibold shadow-lg shadow-emerald-100 disabled:opacity-60">
             {loading ? "Creating..." : "Create Account"}
           </button>
-
         </form>
 
-        {/* FOOTER */}
         <p className="text-center text-sm text-gray-600 mt-5">
-          Already have an account?{" "}
-          <span
-            onClick={() => router.push("/signin")}
-            className="text-emerald-600 cursor-pointer font-medium"
-          >
-            Sign In
-          </span>
+          Already have an account? <button onClick={() => router.push("/signin")} className="text-emerald-600 font-semibold">Sign In</button>
         </p>
-
       </div>
     </div>
   );

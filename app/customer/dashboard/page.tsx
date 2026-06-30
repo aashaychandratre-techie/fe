@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { CalendarDays, CheckCircle2, Clock, IndianRupee, Plus } from "lucide-react";
 
 import API from "@/services/api";
 import CustomerSidebar from "@/components/CustomerSidebar";
@@ -93,7 +94,7 @@ useEffect(()=>{
 
   return (
     <div
-      className={`min-h-screen flex ${
+      className={`h-screen flex overflow-hidden ${
         darkMode ? "bg-[#071A12] text-white" : "bg-[#F3FBF6] text-gray-900"
       }`}
     >
@@ -103,7 +104,7 @@ useEffect(()=>{
         setOpen={setSidebarOpen}
       />
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 relative">
 
         <CustomerNavbar
           darkMode={darkMode}
@@ -113,146 +114,188 @@ useEffect(()=>{
           firstLetter={firstLetter}
         />
 
-        <main className="p-6 lg:p-10 space-y-8">
+        <main className="flex-1 overflow-y-auto p-6 lg:p-10 space-y-8 relative z-10">
 
-          {/* HEADER (Hello removed as requested) */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-
-
-            {/* BUTTON WITH LIGHT GREEN HOVER */}
+          {/* HEADER */}
+          <div className="flex justify-end mb-4">
+            {/* BUTTON WITH ENHANCED HOVER & SHADOW */}
             <button
               onClick={() => router.push("/customer/services")}
               className="
+                group
+                flex items-center gap-2
                 bg-emerald-600
-                hover:bg-emerald-400
+                hover:bg-emerald-500
                 text-white
-                px-5 py-2
-                rounded-xl
-                shadow-md
-                transition
+                px-6 py-3
+                rounded-full
+                shadow-[0_4px_14px_0_rgba(16,185,129,0.39)]
+                hover:shadow-[0_6px_20px_rgba(16,185,129,0.23)]
+                transition-all duration-300
+                font-medium
               "
             >
-              + New Booking
+              <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+              New Booking
             </button>
-
           </div>
 
           {/* STATS */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-            <div className="p-4 rounded-2xl bg-white border shadow-sm">
-              <p className="text-sm text-gray-500">Total</p>
-              <h2 className="text-2xl font-bold text-emerald-700">
-                {totalBookings}
-              </h2>
+            <div className="relative p-6 rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 mb-1">Total Bookings</p>
+                  <h2 className="text-3xl font-bold text-gray-900">
+                    {totalBookings}
+                  </h2>
+                </div>
+                <div className="p-3 bg-emerald-100 rounded-2xl text-emerald-600">
+                  <CalendarDays className="w-6 h-6" />
+                </div>
+              </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white border shadow-sm">
-              <p className="text-sm text-gray-500">Completed</p>
-              <h2 className="text-2xl font-bold text-gray-900">
-                {completedBookings}
-              </h2>
+            <div className="relative p-6 rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 mb-1">Completed</p>
+                  <h2 className="text-3xl font-bold text-gray-900">
+                    {completedBookings}
+                  </h2>
+                </div>
+                <div className="p-3 bg-green-100 rounded-2xl text-green-600">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+              </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white border shadow-sm">
-              <p className="text-sm text-gray-500">Pending</p>
-              <h2 className="text-2xl font-bold text-gray-900">
-                {pendingBookings}
-              </h2>
+            <div className="relative p-6 rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 mb-1">Pending</p>
+                  <h2 className="text-3xl font-bold text-gray-900">
+                    {pendingBookings}
+                  </h2>
+                </div>
+                <div className="p-3 bg-orange-100 rounded-2xl text-orange-600">
+                  <Clock className="w-6 h-6" />
+                </div>
+              </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white border shadow-sm">
-              <p className="text-sm text-gray-500">Payments</p>
-              <h2 className="text-2xl font-bold text-gray-900">
-                ₹{totalPayments}
-              </h2>
+            <div className="relative p-6 rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 mb-1">Total Spent</p>
+                  <h2 className="text-3xl font-bold text-emerald-600">
+                    ₹{totalPayments}
+                  </h2>
+                </div>
+                <div className="p-3 bg-emerald-100 rounded-2xl text-emerald-600">
+                  <IndianRupee className="w-6 h-6" />
+                </div>
+              </div>
             </div>
 
           </div>
 
           {/* RECENT BOOKINGS */}
-<div className="bg-white border rounded-2xl p-5 shadow-sm">
+          <div className="bg-white rounded-3xl p-6 lg:p-8 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900">
+                Recent Activity
+              </h2>
+              <button 
+                onClick={() => router.push("/customer/bookings")} 
+                className="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition"
+              >
+                View all
+              </button>
+            </div>
 
-  <h2 className="font-semibold text-emerald-700 mb-4">
-    Recent Bookings
-  </h2>
-
-  {bookings.length === 0 ? (
-    <p className="text-center text-gray-500 py-6">
-      No bookings found
-    </p>
-  ) : (
-    <div className="space-y-3">
-
-      {bookings.slice(0, 5).map((b: any) => (
-        <div
-          key={b.id}
-          className="
-            p-4
-            rounded-xl
-            border
-            hover:bg-green-50
-            transition
-            flex
-            justify-between
-            items-center
-          "
-        >
-
-          <div className="space-y-1">
-
-            <p className="font-semibold text-gray-900">
-              {b.serviceName || "Service"}
-            </p>
-
-            <p className="text-xs text-gray-400">
-              Booking ID: {b.id}
-            </p>
-
-            <p className="text-sm text-gray-600">
-              Provider: {b.providerName || "Not Assigned"}
-            </p>
-
-            <p className="text-sm text-gray-500">
-              Date: {b.bookingDate || "N/A"}
-            </p>
-
-            <p className="text-sm font-medium text-emerald-600">
-              Amount: ₹{b.amount || 0}
-            </p>
-
+            {bookings.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
+                  <CalendarDays className="w-10 h-10 text-emerald-200" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900">No bookings yet</h3>
+                <p className="text-gray-500 mt-1 max-w-sm">When you book a service, it will show up here.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {bookings.slice(0, 5).map((b: any) => (
+                  <div
+                    key={b.id}
+                    className="
+                      p-5
+                      rounded-2xl
+                      bg-gray-50/50
+                      border border-gray-100
+                      hover:shadow-md
+                      hover:-translate-y-1
+                      hover:bg-white
+                      transition-all duration-300
+                      flex flex-col sm:flex-row sm:items-center justify-between gap-4
+                      group
+                    "
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-lg group-hover:scale-110 transition-transform">
+                        {b.serviceName ? b.serviceName.charAt(0).toUpperCase() : "S"}
+                      </div>
+                      <div className="space-y-1">
+                        <p className="font-bold text-gray-900">
+                          {b.serviceName || "Service"}
+                        </p>
+                        <div className="flex items-center gap-3 text-sm text-gray-500 font-medium">
+                          <span className="flex items-center gap-1">
+                            <CalendarDays className="w-4 h-4" />
+                            {b.bookingDate || "N/A"}
+                          </span>
+                          <span>•</span>
+                          <span>{b.providerName || "Pending Assign"}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between sm:flex-col sm:items-end gap-2">
+                      <p className="font-bold text-emerald-600 text-lg">
+                        ₹{b.amount || 0}
+                      </p>
+                      <span
+                        className={`
+                          text-xs
+                          px-3
+                          py-1
+                          rounded-full
+                          font-bold tracking-wide uppercase
+                          ${
+                            b.status === "COMPLETED"
+                              ? "bg-green-100 text-green-700"
+                              : b.status === "PENDING"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : b.status === "ASSIGNED"
+                              ? "bg-blue-100 text-blue-700"
+                              : b.status === "REJECTED"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-gray-100 text-gray-700"
+                          }
+                        `}
+                      >
+                        {b.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-
-          <span
-            className={`
-              text-xs
-              px-3
-              py-1
-              rounded-full
-              font-medium
-              ${
-                b.status === "COMPLETED"
-                  ? "bg-green-100 text-green-700"
-                  : b.status === "PENDING"
-                  ? "bg-yellow-100 text-yellow-700"
-                  : b.status === "ASSIGNED"
-                  ? "bg-blue-100 text-blue-700"
-                  : b.status === "REJECTED"
-                  ? "bg-red-100 text-red-700"
-                  : "bg-gray-100 text-gray-700"
-              }
-            `}
-          >
-            {b.status}
-          </span>
-
-        </div>
-      ))}
-
-    </div>
-  )}
-
-</div>
         </main>
       </div>
 
@@ -260,7 +303,7 @@ useEffect(()=>{
       {showRatingPopup && completedBookingId && (
         <div className="fixed bottom-6 right-6 z-50">
 
-          <div className="bg-white border rounded-2xl shadow-xl p-5 w-[320px]">
+          <div className="bg-white rounded-2xl shadow-xl p-5 w-[calc(100vw-3rem)] sm:w-[320px]">
 
             <h3 className="font-semibold text-emerald-700">
               Rate your service

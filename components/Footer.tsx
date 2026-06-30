@@ -1,40 +1,38 @@
 export default function Footer() {
   return (
-    <footer className="bg-black text-white">
-
-      <div className="max-w-6xl mx-auto px-6 md:px-10 py-12 grid grid-cols-1 md:grid-cols-3 gap-10">
-
-        {/* BRAND */}
+    <footer className="bg-slate-950 text-white">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
-          <h2 className="text-2xl font-bold text-blue-500">
-            ServiceSphere
+          <h2 className="text-2xl font-bold tracking-tight">
+            <span className="text-white">Service</span>
+            <span className="text-emerald-400">Sphere</span>
           </h2>
-          <p className="text-gray-400 mt-3">
-            Trusted platform for home services, repairs and cleaning.
+          <p className="text-slate-400 mt-3 max-w-sm leading-relaxed">
+            Trusted professionals for home services, repairs, cleaning, and everyday support.
           </p>
         </div>
 
-        {/* CONTACT */}
         <div>
-          <h3 className="text-lg font-semibold mb-3">Contact Us</h3>
-          <p className="text-gray-400">Email: support@servicesphere.com</p>
-          <p className="text-gray-400">Phone: +91 9876543210</p>
-          <p className="text-gray-400">Aurangabad, India</p>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-emerald-300 mb-3">Contact</h3>
+          <div className="space-y-2 text-slate-400">
+            <p>Email: support@servicesphere.com</p>
+            <p>Phone: +91 9876543210</p>
+            <p>Aurangabad, India</p>
+          </div>
         </div>
 
-        {/* INFO */}
         <div>
-          <h3 className="text-lg font-semibold mb-3">Info</h3>
-          <p className="text-gray-400">Privacy Policy</p>
-          <p className="text-gray-400">Terms & Conditions</p>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-emerald-300 mb-3">Info</h3>
+          <div className="space-y-2 text-slate-400">
+            <p>Privacy Policy</p>
+            <p>Terms & Conditions</p>
+          </div>
         </div>
-
       </div>
 
-      <div className="border-t border-gray-800 text-center py-4 text-gray-500 text-sm">
-        © 2026 ServiceSphere. All rights reserved.
+      <div className="border-t border-white/10 text-center py-4 text-slate-500 text-sm">
+        (c) 2026 ServiceSphere. All rights reserved.
       </div>
-
     </footer>
   );
 }

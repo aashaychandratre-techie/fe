@@ -11,6 +11,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import API from "@/services/api";
+import CustomerSidebar from "@/components/CustomerSidebar";
+import CustomerNavbar from "@/components/CustomerNavbar";
 
 type Booking = {
   id: number;
@@ -25,6 +27,10 @@ type Booking = {
 export default function CustomerBookingsPage() {
   const router = useRouter();
 
+  const [darkMode, setDarkMode] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [user, setUser] = useState<any>({});
+
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -33,8 +39,13 @@ export default function CustomerBookingsPage() {
   const itemsPerPage = 8;
 
   useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
     fetchBookings();
   }, []);
+
+  const userName = user.fullName || "Customer";
+  const firstLetter = userName.charAt(0).toUpperCase();
 
   const fetchBookings = async () => {
     try {
@@ -73,40 +84,51 @@ export default function CustomerBookingsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F5FBF7] p-5 lg:p-8">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.back()}
-            className="w-11 h-11 bg-white rounded-xl shadow flex items-center justify-center hover:bg-emerald-50"
-          >
-            <ArrowLeft
-              size={20}
-              className="text-emerald-600"
-            />
-          </button>
+    <div
+      className={`h-screen flex font-sans overflow-hidden ${
+        darkMode ? "bg-[#071A12] text-white" : "bg-[#F3FBF6] text-gray-900"
+      }`}
+    >
+      <CustomerSidebar
+        darkMode={darkMode}
+        open={sidebarOpen}
+        setOpen={setSidebarOpen}
+      />
 
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">
-              My Bookings
-            </h1>
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 relative">
+        {/* Premium Blur Blobs */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-400/5 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
-            <p className="text-sm text-gray-500">
-              Manage your service requests
-            </p>
-          </div>
-        </div>
+        <CustomerNavbar
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          setSidebarOpen={setSidebarOpen}
+          userName={userName}
+          firstLetter={firstLetter}
+        />
+
+        <main className="flex-1 overflow-y-auto p-5 lg:p-8 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-emerald-900 tracking-tight">
+                My Bookings
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">
+                Manage your service requests
+              </p>
+            </div>
 
         <button
           onClick={fetchBookings}
-          className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl hover:bg-emerald-500"
+          className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-500 shadow-sm w-fit"
         >
           <RefreshCw size={16} />
           Refresh
         </button>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-sm border overflow-hidden">
+      <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border-0 overflow-hidden">
         {loading && (
           <div className="p-10 text-center text-gray-500">
             Loading bookings...
@@ -121,7 +143,7 @@ export default function CustomerBookingsPage() {
 
         {!loading && !error && (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full whitespace-nowrap">
               <thead className="bg-emerald-50">
                 <tr className="text-left text-sm text-gray-700">
                   <th className="p-4">Service</th>
@@ -253,6 +275,8 @@ export default function CustomerBookingsPage() {
               </button>
             </div>
           )}
+      </div>
+        </main>
       </div>
     </div>
   );

@@ -67,146 +67,137 @@ export default function VendorRatingsPage() {
     : 0;
 
   return (
-    <div className="flex h-screen bg-[#F9FAFB]">
-
+    <div className="flex h-screen bg-slate-50/50 dark:bg-[#0B1120] font-sans overflow-hidden">
       {/* SIDEBAR */}
       <VendorSidebar open={open} setOpen={setOpen} />
 
       {/* MAIN */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col relative min-h-0 min-w-0 overflow-hidden">
+        {/* Background blobs for premium feel */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-slate-300/10 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
         {/* NAVBAR */}
         <VendorNavbar setOpen={setOpen} />
 
         {/* CONTENT */}
-        <div className="flex-1 overflow-y-auto p-6">
-
-          {/* HEADER */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">
-               Ratings
-            </h1>
-            <p className="text-gray-500">
-              Monitor customer feedback and improve service quality
-            </p>
-          </div>
-
-          {/* KPI CARDS (SMALL) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-
-            <div className="bg-white p-4 rounded-xl shadow-sm border hover:shadow-md transition">
-              <p className="text-xs text-gray-500">Average Rating</p>
-              <h2 className="text-2xl font-bold mt-1 text-gray-900">
-                {avg}
-              </h2>
-              <p className="text-emerald-500 mt-1 text-xs font-medium">
-                ⭐ Rating Score
+        <main className="flex-1 overflow-y-auto relative z-10">
+          <div className="max-w-7xl mx-auto p-4 md:p-8 lg:p-10 space-y-8">
+            {/* HEADER */}
+            <div>
+              <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500 mb-1.5">
+                Customer Ratings
+              </h1>
+              <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400/60">
+                Monitor feedback and improve your service quality.
               </p>
             </div>
 
-            <div className="bg-white p-4 rounded-xl shadow-sm border hover:shadow-md transition">
-              <p className="text-xs text-gray-500">Total Reviews</p>
-              <h2 className="text-2xl font-bold mt-1 text-gray-900">
-                {ratings.length}
-              </h2>
-            </div>
-
-            <div className="bg-white p-4 rounded-xl shadow-sm border hover:shadow-md transition">
-              <p className="text-xs text-gray-500">Satisfaction Rate</p>
-              <h2 className="text-2xl font-bold mt-1 text-emerald-600">
-                {satisfaction}%
-              </h2>
-            </div>
-
-          </div>
-
-          {/* TABLE */}
-          <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-
-            {/* HEADER */}
-            <div className="p-5 border-b">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Customer Reviews
-              </h2>
-            </div>
-
-            {/* LOADING */}
-            {loading ? (
-              <div className="p-6 text-gray-500">Loading...</div>
-            ) : ratings.length === 0 ? (
-              <div className="p-6 text-gray-500 text-center">
-                No ratings yet
+            {/* KPI CARDS */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
+                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-2xl">
+                    ⭐
+                  </div>
+                  <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Average Rating</span>
+                </div>
+                <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white">{avg}</h2>
+                <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400 mt-2">Overall Score</p>
               </div>
-            ) : (
-              <div className="overflow-x-auto">
 
-                <table className="w-full text-sm">
+              <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
+                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-xl">
+                    📝
+                  </div>
+                  <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Reviews</span>
+                </div>
+                <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white">{ratings.length}</h2>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2">Feedback Received</p>
+              </div>
 
-                  <thead className="bg-gray-50 text-left">
-                    <tr>
-                      <th className="p-4">Booking</th>
-                      <th className="p-4">Rating</th>
-                      <th className="p-4">Review</th>
-                      <th className="p-4">Status</th>
-                      <th className="p-4">Action</th>
-                    </tr>
-                  </thead>
+              <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all duration-300 group relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-100 opacity-20 rounded-full blur-xl -mt-6 -mr-6 group-hover:scale-150 transition-transform duration-700"></div>
+                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap relative z-10">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-xl">
+                    💚
+                  </div>
+                  <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Satisfaction Rate</span>
+                </div>
+                <h2 className="text-4xl font-extrabold text-emerald-600 dark:text-emerald-400 relative z-10">{satisfaction}%</h2>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2 relative z-10">4+ Star Reviews</p>
+              </div>
+            </div>
 
-                  <tbody>
-                    {ratings.map((r) => (
-                      <tr key={r.id} className="border-t hover:bg-gray-50 transition">
+            {/* TABLE */}
+            <div className="bg-white dark:bg-[#111827] rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+              <div className="p-6 md:p-8 border-b border-gray-50/50 dark:border-gray-800/50">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Customer Reviews</h2>
+              </div>
 
-                        <td className="p-4 font-medium text-gray-700">
-                          #{r.bookingId}
-                        </td>
-
-                        <td className="p-4 text-gray-700">
-                          ⭐ {r.rating}/5
-                        </td>
-
-                        <td className="p-4 text-gray-600 max-w-[300px] truncate">
-                          {r.review || "No review"}
-                        </td>
-
-                        <td className="p-4">
-                          {r.reported ? (
-                            <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-600">
-                              Reported
-                            </span>
-                          ) : (
-                            <span className="px-2 py-1 text-xs rounded-full bg-emerald-100 text-emerald-600">
-                              Active
-                            </span>
-                          )}
-                        </td>
-
-                        <td className="p-4">
-                          {r.reported ? (
-                            <span className="text-red-600 text-sm font-medium">
-                              Flagged
-                            </span>
-                          ) : (
-                            <button
-                              onClick={() => handleReport(r.id)}
-                              className="px-3 py-1 text-sm bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
-                            >
-                              Report
-                            </button>
-                          )}
-                        </td>
-
+              {loading ? (
+                <div className="p-16 text-center text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">Loading ratings...</div>
+              ) : ratings.length === 0 ? (
+                <div className="p-16 text-center bg-gray-50/50">
+                  <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium text-lg">No ratings yet.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left whitespace-nowrap">
+                    <thead className="bg-gray-50/80 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider font-bold text-xs border-b border-gray-100 dark:border-gray-800">
+                      <tr>
+                        <th className="px-6 py-4">Booking</th>
+                        <th className="px-6 py-4">Rating</th>
+                        <th className="px-6 py-4">Review</th>
+                        <th className="px-6 py-4">Status</th>
+                        <th className="px-6 py-4 text-center">Action</th>
                       </tr>
-                    ))}
-                  </tbody>
-
-                </table>
-
-              </div>
-            )}
-
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                      {ratings.map((r) => (
+                        <tr key={r.id} className="hover:bg-emerald-50/30 transition-colors">
+                          <td className="px-6 py-4 font-bold text-gray-900 dark:text-white whitespace-nowrap">
+                            #{r.bookingId}
+                          </td>
+                          <td className="px-6 py-4 font-extrabold text-amber-500 text-lg">
+                            ⭐ {r.rating}
+                          </td>
+                          <td className="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 max-w-sm">
+                            <span className="line-clamp-2">{r.review || "No review"}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            {r.reported ? (
+                              <span className="px-3 py-1 text-xs rounded-full font-extrabold tracking-wide uppercase bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100">
+                                Reported
+                              </span>
+                            ) : (
+                              <span className="px-3 py-1 text-xs rounded-full font-extrabold tracking-wide uppercase bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30">
+                                Active
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            {r.reported ? (
+                              <span className="text-red-400 text-sm font-bold">Flagged</span>
+                            ) : (
+                              <button
+                                onClick={() => handleReport(r.id)}
+                                className="px-4 py-2 text-xs font-bold bg-gray-50 dark:bg-[#1f2937] hover:bg-red-50 dark:bg-red-900/20 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:text-red-400 rounded-2xl transition-all shadow-sm border border-gray-100 dark:border-gray-800 hover:border-red-100"
+                              >
+                                Report
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
-
-        </div>
+        </main>
       </div>
     </div>
   );

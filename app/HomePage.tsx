@@ -3,188 +3,142 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
+import { BadgeCheck, Brush, Car, Droplets, Plug, ShieldCheck, Sparkles, Star, Wrench, Zap, type LucideIcon } from "lucide-react";
+
+const services = [
+  { title: "Plumbing", desc: "Leak fixing and pipe repairs", icon: Droplets, img: "/plumbing.jpg" },
+  { title: "Electrical Work", desc: "Wiring, repairs and fittings", icon: Plug, img: "/electric.jpg" },
+  { title: "Car Wash", desc: "Doorstep car cleaning service", icon: Car, img: "/carwash.jpg" },
+  { title: "Appliance Repair", desc: "AC, fridge and washing machine repair", icon: Wrench, img: "/repair.jpg" },
+  { title: "Painting", desc: "Home and wall painting services", icon: Brush, img: "/painting1.jpg" },
+];
 
 export default function HomePage() {
   const router = useRouter();
 
-  const services = [
-    { title: "Plumbing", desc: "Leak fixing & pipe repairs", icon: "🚰", img: "/plumbing.jpg" },
-    { title: "Electrical Work", desc: "Wiring, repairs & fittings", icon: "💡", img: "/electric.jpg" },
-    { title: "Car Wash", desc: "Doorstep car cleaning service", icon: "🚗", img: "/carwash.jpg" },
-    { title: "Appliance Repair", desc: "AC, fridge & washing machine repair", icon: "🛠️", img: "/repair.jpg" },
-    { title: "Painting", desc: "Home & wall painting services", icon: "🎨", img: "/painting1.jpg" },
-  ];
-
   return (
-    <div className="min-h-screen bg-[#F9FAFB] text-[#111827]">
-
+    <div className="min-h-screen bg-[#F9FAFB] text-[#111827] overflow-x-hidden">
       <Navbar />
 
-      {/* HERO */}
-      <section className="relative pt-28 pb-16 overflow-hidden">
-
+      <section className="relative pt-28 sm:pt-32 pb-12 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-white" />
 
-        <div className="relative max-w-6xl mx-auto px-6 text-center">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 grid lg:grid-cols-[1.08fr_0.92fr] gap-10 items-center">
+          <div className="text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white border border-emerald-100 px-4 py-2 text-sm text-emerald-700 shadow-sm mb-6">
+              <Sparkles size={16} />
+              Trusted doorstep services
+            </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight max-w-2xl mx-auto">
-            Book Trusted Services <br />
-            <span className="text-emerald-600">Anytime, Anywhere</span>
-          </h1>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight max-w-3xl mx-auto lg:mx-0">
+              Book reliable home services without the back-and-forth.
+            </h1>
 
-          <p className="mt-6 text-gray-600 max-w-2xl mx-auto">
-            Verified professionals for plumbing, electrical work, repairs, painting and more — all in one platform.
-          </p>
+            <p className="mt-6 text-gray-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+              Verified professionals for plumbing, electrical work, repairs, painting and more, all organized in one simple platform.
+            </p>
 
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+              <button onClick={() => router.push("/signup")} className="px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold shadow-lg shadow-emerald-100">
+                Book a Service
+              </button>
+              <button onClick={() => router.push("/signup")} className="px-6 py-3 rounded-2xl border border-emerald-200 text-emerald-700 hover:bg-emerald-50 font-semibold bg-white">
+                Become Provider
+              </button>
+            </div>
 
-            <button
-              onClick={() => router.push("/signup")}
-              className="px-7 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold transition"
-            >
-              Become User
-            </button>
-
-            <button
-              onClick={() => router.push("/signup")}
-              className="px-7 py-3 rounded-xl border border-emerald-200 text-emerald-600 hover:bg-emerald-50 transition"
-            >
-              Become Provider
-            </button>
-
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-lg mx-auto lg:mx-0">
+              {[
+                ["10K+", "Customers"],
+                ["4.8/5", "Rating"],
+                ["15K+", "Jobs done"],
+              ].map(([value, label]) => (
+                <div key={label} className="soft-card rounded-2xl p-4 text-center">
+                  <p className="text-xl font-bold text-emerald-600">{value}</p>
+                  <p className="text-xs text-gray-500 mt-1">{label}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-        </div>
-      </section>
-
-      {/* SERVICES (FIXED CENTER ALIGNMENT) */}
-      <section className="py-20">
-        <div className="max-w-6xl mx-auto px-6">
-
-          <h2 className="text-3xl font-bold text-center mb-10">
-            Popular Services
-          </h2>
-
-          {/* 🔥 FIXED GRID */}
-          <div className="flex flex-wrap justify-center gap-6">
-
-            {services.map((service, i) => (
-              <div
-                key={i}
-                onClick={() =>
-                  router.push(
-                    `/services/${service.title.toLowerCase().replace(/\s+/g, "-")}`
-                  )
-                }
-                className="relative h-52 w-full sm:w-[47%] md:w-[30%] rounded-2xl overflow-hidden cursor-pointer group shadow-md hover:shadow-xl transition"
-              >
-
-                <img
-                  src={service.img}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition"
-                />
-
-                <div className="absolute inset-0 bg-black/40" />
-
-                <div className="relative h-full flex flex-col justify-end p-5 text-white">
-
-                  <div className="text-2xl">{service.icon}</div>
-
-                  <h3 className="text-lg font-semibold">
-                    {service.title}
-                  </h3>
-
-                  <p className="text-sm text-gray-200">
-                    {service.desc}
-                  </p>
-
+          <div className="relative min-h-[360px]">
+            <div className="absolute inset-0 rounded-[2rem] bg-emerald-100 rotate-2" />
+            <div className="relative rounded-[2rem] overflow-hidden border border-white shadow-2xl bg-white h-[360px] sm:h-[430px]">
+              <img src="/background.png" alt="Service professional" className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-transparent" />
+              <div className="absolute bottom-5 left-5 right-5 glass-panel rounded-2xl p-4">
+                <div className="flex items-center gap-3 text-left">
+                  <div className="h-11 w-11 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                    <BadgeCheck size={22} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-slate-900 truncate">Verified providers</p>
+                    <p className="text-sm text-slate-500 leading-snug">Fast booking, clear pricing, quality support.</p>
+                  </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-14">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight">Popular Services</h2>
+              <p className="text-gray-500 mt-2">Quick access to the services customers book most.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {services.map((service) => {
+              const Icon = service.icon;
+              return (
+                <button
+                  key={service.title}
+                  onClick={() => router.push(`/services/${service.title.toLowerCase().replace(/\s+/g, "-")}`)}
+                  className="relative h-56 rounded-3xl overflow-hidden text-left group shadow-md hover:shadow-xl transition hover-lift"
+                >
+                  <img src={service.img} alt={service.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/25 to-transparent" />
+                  <div className="relative h-full flex flex-col justify-end p-5 text-white">
+                    <div className="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center mb-3">
+                      <Icon size={22} />
+                    </div>
+                    <h3 className="text-lg font-semibold">{service.title}</h3>
+                    <p className="text-sm text-gray-200">{service.desc}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-14 bg-white border-y border-emerald-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {(
+              [
+                [ShieldCheck, "Trusted and Verified", "Professionals are checked before they serve customers."],
+                [Zap, "Fast Service", "Book quickly and keep track of your request in one place."],
+                [Star, "Quality First", "Ratings and support help keep every service accountable."],
+              ] as [LucideIcon, string, string][]
+            ).map(([Icon, title, desc]) => (
+              <div key={title} className="soft-card hover-lift rounded-3xl p-6">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
+                  <Icon size={22} />
+                </div>
+                <h3 className="font-semibold text-slate-900">{title}</h3>
+                <p className="text-gray-600 mt-2 text-sm leading-relaxed">{desc}</p>
+              </div>
             ))}
-
           </div>
-
         </div>
-      </section>
-
-      {/* WHY CHOOSE US */}
-      <section className="py-16 bg-white">
-
-        <div className="max-w-6xl mx-auto px-6 text-center">
-
-          <h2 className="text-3xl font-bold mb-10">
-            Why Choose Us
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-
-            <div className="p-6 rounded-2xl border hover:shadow-md transition">
-              <div className="text-3xl">🔒</div>
-              <h3 className="mt-3 font-semibold text-emerald-600">
-                Trusted & Verified
-              </h3>
-              <p className="text-gray-600 mt-2 text-sm">
-                All professionals are background verified.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl border hover:shadow-md transition">
-              <div className="text-3xl">⚡</div>
-              <h3 className="mt-3 font-semibold text-emerald-600">
-                Fast Service
-              </h3>
-              <p className="text-gray-600 mt-2 text-sm">
-                Instant booking & quick doorstep service.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl border hover:shadow-md transition">
-              <div className="text-3xl">💰</div>
-              <h3 className="mt-3 font-semibold text-emerald-600">
-                Affordable Pricing
-              </h3>
-              <p className="text-gray-600 mt-2 text-sm">
-                No hidden charges, transparent pricing.
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* STATS */}
-      <section className="py-16">
-
-        <div className="max-w-6xl mx-auto px-6 text-center mb-10">
-          <h2 className="text-3xl font-bold">
-            Built on Trust & Performance
-          </h2>
-        </div>
-
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-
-          <div className="p-6 rounded-2xl bg-white border shadow-sm">
-            <h3 className="text-3xl font-bold text-emerald-500">10K+</h3>
-            <p className="text-gray-600">Happy Customers</p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white border shadow-sm">
-            <h3 className="text-3xl font-bold text-yellow-500">4.8/5</h3>
-            <p className="text-gray-600">Average Rating</p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white border shadow-sm">
-            <h3 className="text-3xl font-bold text-purple-500">15K+</h3>
-            <p className="text-gray-600">Services Completed</p>
-          </div>
-
-        </div>
-
       </section>
 
       <Footer />
-
     </div>
   );
 }
