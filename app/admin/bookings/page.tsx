@@ -265,14 +265,11 @@ export default function AdminBookingsPage() {
                                   <UserPlus size={12} /> Assign
                                 </button>
                               </div>
-                            ) : b.vendorId ? (
-                              <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-xs">
-                                  #{b.vendorId}
-                                </div>
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Assigned</span>
-                              </div>
-                            ) : (
+                           ) : b.vendorId ? (
+  <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+    {vendors.find((v) => v.id === b.vendorId)?.name || "Vendor Assigned"}
+  </span>
+) : (
                               <span className="text-sm text-gray-400 italic">Not Assigned</span>
                             )}
                           </td>

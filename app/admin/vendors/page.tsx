@@ -15,6 +15,7 @@ export default function AdminVendorsPage() {
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 7;
@@ -158,16 +159,7 @@ export default function AdminVendorsPage() {
                   
                   {/* Custom Dropdown Trigger */}
                   <button
-                    onClick={() => {
-                      const el = document.getElementById("vendor-filter-dropdown-menu");
-                      if (el) el.classList.toggle("hidden");
-                    }}
-                    onBlur={(e) => {
-                      setTimeout(() => {
-                        const el = document.getElementById("vendor-filter-dropdown-menu");
-                        if (el) el.classList.add("hidden");
-                      }, 150);
-                    }}
+                    onClick={() => setFilterOpen(!filterOpen)}
                     className="flex items-center justify-between w-full sm:w-[160px] pl-10 pr-4 py-2.5 text-sm rounded-full border border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-[#111827]/80 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-gray-700 dark:text-gray-200 transition-all shadow-sm cursor-pointer"
                   >
                     <span className="font-medium text-left truncate">
@@ -181,7 +173,10 @@ export default function AdminVendorsPage() {
                   </button>
 
                   {/* Custom Dropdown Menu */}
-                  <div id="vendor-filter-dropdown-menu" className="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                 {filterOpen && (
+  <div
+    className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+  >
                     <div className="p-1">
                       {[
                         { val: "ALL", label: "All Status" },
@@ -193,11 +188,10 @@ export default function AdminVendorsPage() {
                         <div
                           key={opt.val}
                           onClick={() => {
-                            setStatusFilter(opt.val);
-                            setCurrentPage(1);
-                            const el = document.getElementById("vendor-filter-dropdown-menu");
-                            if (el) el.classList.add("hidden");
-                          }}
+  setStatusFilter(opt.val);
+  setCurrentPage(1);
+  setFilterOpen(false);
+}}
                           className={`px-3 py-2 text-sm rounded-xl cursor-pointer transition-colors ${
                             statusFilter === opt.val 
                               ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 font-semibold" 
@@ -209,6 +203,7 @@ export default function AdminVendorsPage() {
                       ))}
                     </div>
                   </div>
+                  )}
                 </div>
               </div>
             </div>
