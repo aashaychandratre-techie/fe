@@ -60,12 +60,7 @@ export default function AdminNavbar({ setSidebarOpen = () => {} }: AdminNavbarPr
           </div>
         </div>
 
-        <div className="hidden lg:flex items-center flex-1 max-w-md mx-6">
-          <div className="flex items-center gap-2 bg-white/50 dark:bg-[#111827]/50 border border-emerald-100/50 dark:border-gray-800 px-4 py-2.5 rounded-full w-full focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-400 transition-all shadow-sm">
-            <Search size={18} className="text-gray-400 dark:text-gray-500" />
-            <input placeholder="Search platform activity..." className="bg-transparent outline-none text-sm w-full font-medium text-gray-800 dark:text-gray-200" />
-          </div>
-        </div>
+        
 
         <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           <button

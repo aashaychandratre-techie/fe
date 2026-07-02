@@ -13,6 +13,7 @@ export default function CustomersPage() {
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("ALL");
+  const [filterOpen, setFilterOpen] = useState(false);
 
   // Popup State
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
@@ -69,8 +70,12 @@ export default function CustomersPage() {
       });
     } else if (filter === "INACTIVE") {
       data = data.filter((c) => (c.bookingCount || 0) === 0);
-    }
-
+    }else if (filter === "NORMAL") {
+  data = data.filter((c) => {
+    const bookings = c.bookingCount || 0;
+    return bookings > 0 && bookings < 3;
+  });
+}
     return data;
   }, [customers, search, filter]);
 
@@ -120,17 +125,7 @@ export default function CustomersPage() {
                   
                   {/* Custom Dropdown Trigger */}
                   <button
-                    onClick={() => {
-                      const el = document.getElementById("filter-dropdown-menu");
-                      if (el) el.classList.toggle("hidden");
-                    }}
-                    onBlur={(e) => {
-                      // Small delay to allow click on option
-                      setTimeout(() => {
-                        const el = document.getElementById("filter-dropdown-menu");
-                        if (el) el.classList.add("hidden");
-                      }, 150);
-                    }}
+  onClick={() => setFilterOpen(!filterOpen)}
                     className="flex items-center justify-between w-full sm:w-[180px] pl-10 pr-4 py-2.5 text-sm rounded-full border border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-[#111827]/80 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-gray-700 dark:text-gray-200 transition-all shadow-sm cursor-pointer"
                   >
                     <span className="font-medium text-left truncate">
@@ -144,7 +139,11 @@ export default function CustomersPage() {
                   </button>
 
                   {/* Custom Dropdown Menu */}
-                  <div id="filter-dropdown-menu" className="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                 {/* Custom Dropdown Menu */}
+{filterOpen && (
+  <div
+    className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+  >
                     <div className="p-1">
                       {[
                         { val: "ALL", label: "All Customers" },
@@ -156,10 +155,9 @@ export default function CustomersPage() {
                         <div
                           key={opt.val}
                           onClick={() => {
-                            setFilter(opt.val);
-                            const el = document.getElementById("filter-dropdown-menu");
-                            if (el) el.classList.add("hidden");
-                          }}
+  setFilter(opt.val);
+  setFilterOpen(false);
+}}
                           className={`px-3 py-2 text-sm rounded-xl cursor-pointer transition-colors ${
                             filter === opt.val 
                               ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 font-semibold" 
@@ -171,6 +169,7 @@ export default function CustomersPage() {
                       ))}
                     </div>
                   </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -222,9 +221,6 @@ export default function CustomersPage() {
                               <div>
                                 <p className="font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                                   {c.name || c.fullName || c.customerName || "Unknown User"}
-                                </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                  ID: {c.id ?? "N/A"}
                                 </p>
                               </div>
                             </div>
