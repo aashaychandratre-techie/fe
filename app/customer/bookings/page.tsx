@@ -9,6 +9,7 @@ import {
   MapPin,
   IndianRupee,
   ShieldCheck,
+  Search,
 } from "lucide-react";
 import API from "@/services/api";
 import CustomerSidebar from "@/components/CustomerSidebar";
@@ -36,6 +37,9 @@ export default function CustomerBookingsPage() {
   const [error, setError] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const [showAddressModal, setShowAddressModal] = useState(false); 
   const itemsPerPage = 8;
 
   useEffect(() => {
@@ -71,17 +75,33 @@ export default function CustomerBookingsPage() {
     }
   };
 
-  const totalPages = Math.ceil(
-    bookings.length / itemsPerPage
-  );
 
-  const startIndex =
-    (currentPage - 1) * itemsPerPage;
+const filteredBookings = bookings.filter((booking) => {
+  const search = searchTerm.toLowerCase().trim();
 
-  const currentBookings = bookings.slice(
-    startIndex,
-    startIndex + itemsPerPage
+  const bookingDate = new Date(booking.bookingDate)
+    .toLocaleDateString("en-GB") // dd/mm/yyyy
+    .toLowerCase();
+
+  return (
+    booking.serviceName?.toLowerCase().includes(search) ||
+    booking.status?.toLowerCase().includes(search) ||
+    booking.address?.toLowerCase().includes(search) ||
+    bookingDate.includes(search)
   );
+});
+  
+const totalPages = Math.ceil(
+  filteredBookings.length / itemsPerPage
+);
+
+const startIndex =
+  (currentPage - 1) * itemsPerPage;
+
+const currentBookings = filteredBookings.slice(
+  startIndex,
+  startIndex + itemsPerPage
+);
 
   return (
     <div
@@ -109,23 +129,57 @@ export default function CustomerBookingsPage() {
         />
 
         <main className="flex-1 overflow-y-auto p-5 lg:p-8 relative z-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-emerald-900 tracking-tight">
-                My Bookings
-              </h1>
-              <p className="text-sm text-gray-500 mt-1">
-                Manage your service requests
-              </p>
-            </div>
+         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
 
-        <button
-          onClick={fetchBookings}
-          className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-500 shadow-sm w-fit"
-        >
-          <RefreshCw size={16} />
-          Refresh
-        </button>
+  <div>
+   <h1
+  className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${
+    darkMode
+      ? "bg-gradient-to-r from-white to-emerald-300 bg-clip-text text-transparent"
+      : "text-emerald-900"
+  }`}
+>
+  My Bookings
+</h1>
+
+<p
+  className={`text-sm mt-1 ${
+    darkMode ? "text-gray-400" : "text-gray-500"
+  }`}
+>
+  Manage your service requests
+</p>
+  </div>
+
+  <div className="flex-1 flex justify-center">
+    <div className="relative w-full max-w-md">
+      <Search
+        size={18}
+        className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+      />
+
+      <input
+        type="text"
+        placeholder="Search service, status, date, place..."
+        value={searchTerm}
+        onChange={(e) => {
+          setSearchTerm(e.target.value);
+          setCurrentPage(1);
+        }}
+        className="w-full rounded-xl border border-gray-300 bg-white pl-11 pr-4 py-3 focus:outline-none"
+      />
+    </div>
+  </div>
+
+  <button
+    onClick={fetchBookings}
+    className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-3 rounded-xl hover:bg-emerald-500 shadow-sm"
+  >
+    <RefreshCw size={16} />
+    Refresh
+  </button>
+
+
       </div>
 
       <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border-0 overflow-hidden">
@@ -156,7 +210,7 @@ export default function CustomerBookingsPage() {
               </thead>
 
               <tbody>
-                {currentBookings.length === 0 ? (
+                {filteredBookings.length === 0? (
                   <tr>
                     <td
                       colSpan={6}
@@ -175,31 +229,46 @@ export default function CustomerBookingsPage() {
                         {booking.serviceName || "Service"}
                       </td>
 
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <CalendarDays
-                            size={17}
-                            className="text-emerald-600"
-                          />
+                     <td
+  className={`p-4 ${
+    darkMode ? "text-white" : "text-gray-700"
+  }`}
+>
+  <div className="flex items-center gap-2">
+    <CalendarDays
+      size={17}
+      className="text-emerald-600"
+    />
 
-                          {new Date(
-                            booking.bookingDate
-                          ).toLocaleDateString()}
-                        </div>
-                      </td>
+    <span>
+      {new Date(
+        booking.bookingDate
+      ).toLocaleDateString()}
+    </span>
+    
+  </div>
+</td>
 
-                      <td className="p-4">
-                        <div className="flex items-center gap-2 max-w-xs">
-                          <MapPin
-                            size={17}
-                            className="text-red-500"
-                          />
+                     <td className="p-4">
+  <div className="flex items-center gap-2">
+    <MapPin
+      size={17}
+      className="text-red-500 flex-shrink-0"
+    />
 
-                          <span className="truncate">
-                            {booking.address}
-                          </span>
-                        </div>
-                      </td>
+    <button
+      type="button"
+      onClick={() => {
+        setSelectedAddress(booking.address);
+        setShowAddressModal(true);
+      }}
+    className="max-w-[180px] truncate text-left hover:text-emerald-600"
+      title={booking.address}
+    >
+      {booking.address}
+    </button>
+  </div>
+</td>
 
                       <td className="p-4">
                         <div className="flex items-center gap-1 font-bold text-emerald-600">
@@ -244,7 +313,7 @@ export default function CustomerBookingsPage() {
 
         {!loading &&
           !error &&
-          bookings.length > itemsPerPage && (
+          filteredBookings.length > itemsPerPage && (
             <div className="flex justify-center items-center gap-4 p-4 border-t">
               <button
                 onClick={() =>
@@ -275,9 +344,30 @@ export default function CustomerBookingsPage() {
               </button>
             </div>
           )}
+      </div>{showAddressModal && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl p-6 w-[90%] max-w-lg">
+      <h2 className="text-xl font-bold mb-4">
+        Full Address
+      </h2>
+
+      <p className="break-words text-gray-700">
+        {selectedAddress}
+      </p>
+
+      <div className="flex justify-end mt-6">
+        <button
+          onClick={() => setShowAddressModal(false)}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg"
+        >
+          Close
+        </button>
       </div>
+    </div>
+  </div>
+)}
         </main>
       </div>
     </div>
   );
-}
+} 
