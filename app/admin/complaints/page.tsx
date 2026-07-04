@@ -5,6 +5,7 @@ import axios from "axios";
 import { Search, Filter, AlertCircle, CheckCircle, XCircle, LayoutList, ShieldAlert, Check, X } from "lucide-react";
 import AdminNavbar from "@/components/AdminNavbar";
 import AdminSidebar from "@/components/AdminSidebar";
+import { createPortal } from "react-dom";
 
 export default function AdminComplaintsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -12,6 +13,8 @@ export default function AdminComplaintsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
+  const ITEMS_PER_PAGE = 5;
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchComplaints();
@@ -75,6 +78,17 @@ export default function AdminComplaintsPage() {
   const resolved = complaints.filter((c) => c.status === "RESOLVED").length;
   const rejected = complaints.filter((c) => c.status === "REJECTED").length;
   const open = total - resolved - rejected;
+  const [selectedComplaint, setSelectedComplaint] = useState<any>(null);
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+
+const paginatedComplaints = filtered.slice(
+  (currentPage - 1) * ITEMS_PER_PAGE,
+  currentPage * ITEMS_PER_PAGE
+);
+
+useEffect(() => {
+  setCurrentPage(1);
+}, [search, typeFilter]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -272,8 +286,12 @@ export default function AdminComplaintsPage() {
                         </td>
                       </tr>
                     ) : (
-                      filtered.map((c) => (
-                        <tr key={c.id} className="hover:bg-emerald-50/30 dark:hover:bg-emerald-900/10 transition-colors group">
+                      paginatedComplaints.map((c) => ( 
+                       <tr
+  key={c.id}
+  onClick={() => setSelectedComplaint(c)}
+  className="cursor-pointer hover:bg-emerald-50/30 dark:hover:bg-emerald-900/10 transition-colors group"
+>
                           
                           <td className="px-6 py-4">
                             <div className="flex flex-col items-start gap-2">
@@ -327,6 +345,361 @@ export default function AdminComplaintsPage() {
                 </table>
               </div>
             </div>
+            <div className="flex items-center justify-between px-6 py-5 border-t border-gray-200 dark:border-gray-700">
+
+  <p className="text-sm text-gray-500">
+    Showing <span className="font-semibold">{currentPage}</span> of{" "}
+    <span className="font-semibold">{totalPages || 1}</span> pages
+  </p>
+
+  <div className="flex items-center gap-2">
+
+    <button
+      disabled={currentPage === 1}
+      onClick={() => setCurrentPage((p) => p - 1)}
+      className={`w-10 h-10 rounded-full border flex items-center justify-center transition ${
+        currentPage === 1
+          ? "opacity-40 cursor-not-allowed"
+          : "hover:bg-emerald-50"
+      }`}
+    >
+      ←
+    </button>
+
+    <button
+      disabled={currentPage === totalPages || totalPages === 0}
+      onClick={() => setCurrentPage((p) => p + 1)}
+      className={`w-10 h-10 rounded-full border flex items-center justify-center transition ${
+        currentPage === totalPages || totalPages === 0
+          ? "opacity-40 cursor-not-allowed"
+          : "hover:bg-emerald-50"
+      }`}
+    >
+      →
+    </button>
+
+  </div>
+
+</div>
+         {selectedComplaint &&
+         typeof window !== "undefined" &&
+         createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-start justify-center bg-black/40 backdrop-blur-md px-4 pt-12 pb-8 overflow-y-auto">
+      {/* Overlay */}
+
+      <div
+
+        className="absolute inset-0"
+        onClick={() => setSelectedComplaint(null)}
+      />
+      {/* Popup */}
+      <div
+
+        onClick={(e) => e.stopPropagation()}
+        className="relative z-[100000] w-full max-w-2xl my-8 rounded-3xl bg-white dark:bg-[#111827] border border-gray-200 dark:border-gray-700 shadow-2xl"
+      >
+        {/* Close */}
+
+        <button
+
+          onClick={() => setSelectedComplaint(null)}
+          className="absolute top-4 right-4 w-9 h-9 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center transition"
+        >
+          <X size={20} className="text-gray-500" />
+
+        </button>
+
+        <div className="p-6">
+
+          <div className="flex items-center gap-4 mb-6">
+
+            <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center text-xl font-bold text-emerald-700">
+
+              {selectedComplaint?.complainant?.name?.charAt(0) || "?"}
+
+            </div>
+
+            <div>
+
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+
+                Complaint Details
+
+              </h2>
+              <p className="text-sm text-gray-500">
+
+                Complaint #{selectedComplaint.id}
+
+              </p>
+
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+
+            {/* Complaint By */}
+
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#1F2937] p-4">
+
+              <h3 className="text-base font-bold text-emerald-600 mb-3">
+
+                Complaint By
+
+              </h3>
+
+              <div className="flex items-center gap-3">
+               <div className="w-11 h-11 rounded-full overflow-hidden bg-emerald-100 flex items-center justify-center">
+  {selectedComplaint?.complainant?.profileImage ? (
+    <img
+  src={`http://localhost:8080${selectedComplaint.complainant.profileImage}`}
+  alt="Complainant"
+  className="w-full h-full object-cover"
+/>
+  ) : (
+    <span className="text-lg font-bold text-emerald-700">
+      {selectedComplaint?.complainant?.name?.charAt(0) || "?"}
+    </span>
+  )}
+</div>
+                <div className="min-w-0">
+
+                  <p className="font-semibold text-gray-900 dark:text-white truncate">
+
+                    {selectedComplaint?.complainant?.name || ""}
+
+                  </p>
+                  <p className="text-xs text-gray-500">
+
+                    {selectedComplaint?.complainant?.role || ""}
+
+                  </p>
+
+                </div>
+              </div>
+              <div className="mt-4 space-y-2 text-sm">
+
+                 <div className="flex items-center gap-2 text-sm">
+  <span className="font-medium text-gray-500">Id:</span>
+  <span className="text-gray-900 dark:text-gray-100">
+    {selectedComplaint?.complainant?.id || ""}
+  </span>
+</div>
+                <div className="flex items-center gap-2 text-sm">
+  <span className="font-medium text-gray-500">Email:</span>
+  <span className="text-gray-900 dark:text-gray-100">
+    {selectedComplaint?.complainant?.email || ""}
+  </span>
+</div>
+                <div className="flex items-center gap-2 text-sm">
+  <span className="font-medium text-gray-500">Phone:</span>
+  <span className="text-gray-900 dark:text-gray-100">
+    {selectedComplaint?.complainant?.phone || ""}
+  </span>
+</div>
+              </div>
+            </div>
+            {/* Complaint Against */}
+
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#1F2937] p-4">
+              <h3 className="text-base font-bold text-red-600 mb-3">
+
+                Complaint Against
+
+              </h3>
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-full overflow-hidden bg-red-100 flex items-center justify-center">
+  {selectedComplaint?.against?.profileImage ? (
+    <img
+  src={`http://localhost:8080${selectedComplaint.against.profileImage}`}
+  alt="Against"
+  className="w-full h-full object-cover"
+/>
+  ) : (
+    <span className="text-lg font-bold text-red-700">
+      {selectedComplaint?.against?.name?.charAt(0) || "?"}
+    </span>
+  )}
+</div>
+
+                <div className="min-w-0">
+
+                  <p className="font-semibold text-gray-900 dark:text-white truncate">
+
+                    {selectedComplaint?.against?.name || ""}
+
+                  </p>
+                  <p className="text-xs text-gray-500">
+
+                    {selectedComplaint?.against?.role || ""}
+
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div className="mt-4 space-y-2 text-sm">
+              <div className="flex items-center gap-2 text-sm">
+                   <span className="font-medium text-gray-500">Id:</span>
+                   <span className="text-gray-900 dark:text-gray-100">
+                        {selectedComplaint?.against?.id || ""}
+                   </span>
+              </div>
+                <div className="flex items-center gap-2 text-sm">
+                   <span className="font-medium text-gray-500">Email:</span>
+                   <span className="text-gray-900 dark:text-gray-100">
+                        {selectedComplaint?.against?.email || ""}
+                   </span>
+              </div>
+
+               <div className="flex items-center gap-2 text-sm">
+                   <span className="font-medium text-gray-500">Phone:</span>
+                   <span className="text-gray-900 dark:text-gray-100">
+                        {selectedComplaint?.against?.phone || ""}
+                   </span>
+              </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Complaint Information */}
+
+          <div className="mt-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#1F2937] p-4">
+
+            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">
+
+              Complaint Information
+
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+              <div>
+
+                <p className="text-xs font-semibold uppercase text-gray-500">
+
+                  Type
+
+                </p>
+
+                <p className="mt-1 text-sm text-gray-900 dark:text-white">
+
+                  {selectedComplaint.type}
+
+                </p>
+
+              </div>
+              <div>
+
+                <p className="text-xs font-semibold uppercase text-gray-500">
+
+                  Subject
+
+                </p>
+                <p className="mt-1 text-sm text-gray-900 dark:text-white">
+
+                  {selectedComplaint.subject}
+
+                </p>
+
+              </div>
+              <div>
+
+                <p className="text-xs font-semibold uppercase text-gray-500">
+
+                  Status
+
+                </p>
+
+                <div className="mt-2">
+
+                  {getStatusBadge(selectedComplaint.status)}
+
+                </div>
+
+              </div>
+            </div>
+
+            {/* Message */}
+
+            <div className="mt-5">
+              <p className="text-xs font-semibold uppercase text-gray-500 mb-2">
+
+                Message
+
+              </p>
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#111827] p-4 min-h-[90px] text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words">
+
+                {selectedComplaint.message}
+
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+
+          <div className="flex justify-end gap-3 mt-5">
+            <button
+
+              onClick={() => setSelectedComplaint(null)}
+
+              className="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+
+            >
+
+              Close
+
+            </button>
+
+            {selectedComplaint.status === "OPEN" && (
+
+              <>
+
+                <button
+
+                  onClick={() => {
+
+                    resolveComplaint(selectedComplaint.id);
+
+                    setSelectedComplaint(null);
+
+                  }}
+
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition"
+
+                >
+
+                  Resolve
+
+                </button>
+                <button
+
+                  onClick={() => {
+
+                    rejectComplaint(selectedComplaint.id);
+
+                    setSelectedComplaint(null);
+
+                  }}
+
+                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white transition"
+
+                >
+
+                  Reject
+
+                </button>
+
+              </>
+
+            )}
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )
+
+}
 
           </div>
         </main>
