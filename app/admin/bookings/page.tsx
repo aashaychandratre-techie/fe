@@ -2,24 +2,22 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Search, Filter, CalendarCheck, ChevronLeft, ChevronRight, UserPlus } from "lucide-react";
+import { Search, Filter, CalendarCheck, UserPlus } from "lucide-react";
 import AdminNavbar from "@/components/AdminNavbar";
 import AdminSidebar from "@/components/AdminSidebar";
 
 export default function AdminBookingsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [bookings, setBookings] = useState<any[]>([]);
-  const [vendors, setVendors] = useState<any[]>([]);
+  const [vendors, setVendors] = useState<{ [key: string]: any[] }>({});
   const [loading, setLoading] = useState(true);
-
-  const [selectedVendor, setSelectedVendor] = useState<{ [key: number]: string }>({});
+  const [selectedVendor, setSelectedVendor] = useState<{ [key: string]: string }>({});
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
   useEffect(() => {
     fetchBookings();
-    fetchVendors();
   }, []);
 
   const fetchBookings = async () => {
@@ -27,6 +25,10 @@ export default function AdminBookingsPage() {
       setLoading(true);
       const res = await axios.get("http://localhost:8080/api/admin/bookings");
       setBookings(res.data);
+
+      res.data.forEach((booking: any) => {
+  fetchVendors(booking.id);
+});
     } catch (error) {
       console.error(error);
     } finally {
@@ -34,16 +36,22 @@ export default function AdminBookingsPage() {
     }
   };
 
-  const fetchVendors = async () => {
-    try {
-      const res = await axios.get("http://localhost:8080/auth/vendor/all");
-      setVendors(res.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+ const fetchVendors = async (bookingId: string) => {
+  try {
+    const res = await axios.get(
+      `http://localhost:8080/api/admin/eligible-vendors/${bookingId}`
+    );
 
-  const assignVendor = async (bookingId: number) => {
+    setVendors((prev) => ({
+  ...prev,
+  [bookingId]: res.data,
+}));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+  const assignVendor = async (bookingId: string) => {
     const vendorId = selectedVendor[bookingId];
 
     if (!vendorId) {
@@ -193,7 +201,6 @@ export default function AdminBookingsPage() {
                       <th className="px-6 py-4 font-semibold rounded-tr-2xl">Vendor Assignment</th>
                     </tr>
                   </thead>
-
                   <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
                     {loading ? (
                       <tr>
@@ -220,11 +227,11 @@ export default function AdminBookingsPage() {
                           
                           <td className="px-6 py-4">
                             <p className="font-bold text-gray-900 dark:text-white">Order #{b.id}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Cust ID: {b.customerId}</p>
+                           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Customer: {b.customerName || "N/A"}</p>
                           </td>
 
                           <td className="px-6 py-4">
-                            <p className="font-bold text-gray-900 dark:text-white">Svc ID: {b.serviceId}</p>
+                            <p className="font-bold text-gray-900 dark:text-white">{b.serviceName}</p>
                             <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">₹{b.amount}</p>
                           </td>
 
@@ -252,11 +259,11 @@ export default function AdminBookingsPage() {
                                   }
                                 >
                                   <option value="">Select Vendor</option>
-                                  {vendors.map((v) => (
-                                    <option key={v.id} value={v.id}>
-                                      {v.name} (ID: {v.id})
-                                    </option>
-                                  ))}
+                                 {(vendors[b.id] || []).map((v) => (
+  <option key={v.id} value={v.id}>
+    {v.name}
+  </option>
+))}
                                 </select>
                                 <button
                                   onClick={() => assignVendor(b.id)}
@@ -265,13 +272,15 @@ export default function AdminBookingsPage() {
                                   <UserPlus size={12} /> Assign
                                 </button>
                               </div>
-                           ) : b.vendorId ? (
+                           ) : b.providerName ? (
   <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-    {vendors.find((v) => v.id === b.vendorId)?.name || "Vendor Assigned"}
+    {b.providerName}
   </span>
 ) : (
-                              <span className="text-sm text-gray-400 italic">Not Assigned</span>
-                            )}
+  <span className="text-sm text-gray-400 italic">
+    Not Assigned
+  </span>
+)}
                           </td>
                         </tr>
                       ))
@@ -280,34 +289,38 @@ export default function AdminBookingsPage() {
                 </table>
               </div>
             </div>
+           <div className="flex items-center justify-between px-6 py-5 border-t border-gray-200 dark:border-gray-700">
+           <p className="text-sm text-gray-500">
+          Showing <span className="font-semibold">{currentPage}</span> of{" "}
+         <span className="font-semibold">{totalPages || 1}</span> pages
+         </p>
+         <div className="flex items-center gap-2">
+         <button
+         disabled={currentPage === 1}
+         onClick={() => setCurrentPage((p) => p - 1)}
+         className={`w-10 h-10 rounded-full border flex items-center justify-center transition ${
+         currentPage === 1
+          ? "opacity-40 cursor-not-allowed"
+          : "hover:bg-emerald-50"
+        }`}
+        >
+           ←
+        </button>
 
-            {/* PAGINATION */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between bg-white dark:bg-[#111827] px-6 py-3 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  Showing <span className="text-gray-900 dark:text-white font-bold">{currentPage}</span> of <span className="text-gray-900 dark:text-white font-bold">{totalPages}</span> pages
-                </span>
-                
-                <div className="flex items-center gap-2">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => p - 1)}
-                    className="w-9 h-9 rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-gray-700 dark:text-gray-300"
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
-                  <button
-                    disabled={currentPage === totalPages || totalPages === 0}
-                    onClick={() => setCurrentPage((p) => p + 1)}
-                    className="w-9 h-9 rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-gray-700 dark:text-gray-300"
-                  >
-                    <ChevronRight size={18} />
-                  </button>
-                </div>
-              </div>
-            )}
-
-          </div>
+        <button
+        disabled={currentPage === totalPages || totalPages === 0}
+        onClick={() => setCurrentPage((p) => p + 1)}
+                className={`w-10 h-10 rounded-full border flex items-center justify-center transition ${
+                currentPage === totalPages || totalPages === 0
+                ? "opacity-40 cursor-not-allowed"
+                : "hover:bg-emerald-50"
+                }`}
+                >
+                →
+        </button>
+        </div>
+        </div>
+        </div>
         </main>
       </div>
     </div>

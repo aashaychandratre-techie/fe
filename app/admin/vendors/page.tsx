@@ -5,7 +5,7 @@ import axios from "axios";
 
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminNavbar from "@/components/AdminNavbar";
-import { Search, Filter, X, Store, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Filter, X, Store, Star } from "lucide-react";
 
 export default function AdminVendorsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -18,7 +18,7 @@ export default function AdminVendorsPage() {
   const [filterOpen, setFilterOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 7;
+  const rowsPerPage = 5;
 
   // popup
   const [showVendorModal, setShowVendorModal] = useState(false);
@@ -300,34 +300,48 @@ export default function AdminVendorsPage() {
                   </tbody>
                 </table>
               </div>
-            </div>
+               </div>
+              {/* PAGINATION */}
+{totalPages > 1 && (
+  <div className="flex items-center justify-between px-6 py-5 border-t border-gray-200 dark:border-gray-700">
 
-            {/* PAGINATION */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between bg-white dark:bg-[#111827] px-6 py-3 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  Showing <span className="text-gray-900 dark:text-white font-bold">{currentPage}</span> of <span className="text-gray-900 dark:text-white font-bold">{totalPages}</span> pages
-                </span>
-                
-                <div className="flex items-center gap-2">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => p - 1)}
-                    className="w-9 h-9 rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-gray-700 dark:text-gray-300"
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
-                  <button
-                    disabled={currentPage === totalPages || totalPages === 0}
-                    onClick={() => setCurrentPage((p) => p + 1)}
-                    className="w-9 h-9 rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-gray-700 dark:text-gray-300"
-                  >
-                    <ChevronRight size={18} />
-                  </button>
-                </div>
-              </div>
-            )}
+    <p className="text-sm text-gray-500">
+      Showing <span className="font-semibold">{currentPage}</span> of{" "}
+      <span className="font-semibold">{totalPages || 1}</span> pages
+    </p>
 
+    <div className="flex items-center gap-2">
+
+      <button
+        disabled={currentPage === 1}
+        onClick={() => setCurrentPage((p) => p - 1)}
+        className={`w-10 h-10 rounded-full border flex items-center justify-center transition ${
+          currentPage === 1
+            ? "opacity-40 cursor-not-allowed"
+            : "hover:bg-emerald-50"
+        }`}
+      >
+        ←
+      </button>
+
+      <button
+        disabled={currentPage === totalPages || totalPages === 0}
+        onClick={() => setCurrentPage((p) => p + 1)}
+        className={`w-10 h-10 rounded-full border flex items-center justify-center transition ${
+          currentPage === totalPages || totalPages === 0
+            ? "opacity-40 cursor-not-allowed"
+            : "hover:bg-emerald-50"
+        }`}
+      >
+        →
+      </button>
+
+    </div>
+
+  </div>
+)}
+
+            
             {/* MODALS */}
             {showVendorModal && selectedVendor && modalType && (
               <div

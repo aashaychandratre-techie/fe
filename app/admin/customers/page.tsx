@@ -6,6 +6,7 @@ import AdminSidebar from "@/components/AdminSidebar";
 import AdminNavbar from "@/components/AdminNavbar";
 import { Search, Filter, X, User } from "lucide-react";
 
+
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -14,6 +15,8 @@ export default function CustomersPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("ALL");
   const [filterOpen, setFilterOpen] = useState(false);
+  const ITEMS_PER_PAGE = 5;
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Popup State
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
@@ -78,6 +81,16 @@ export default function CustomersPage() {
 }
     return data;
   }, [customers, search, filter]);
+  const totalPages = Math.ceil(filteredCustomers.length / ITEMS_PER_PAGE);
+
+const paginatedCustomers = filteredCustomers.slice(
+  (currentPage - 1) * ITEMS_PER_PAGE,
+  currentPage * ITEMS_PER_PAGE
+);
+
+useEffect(() => {
+  setCurrentPage(1);
+}, [search, filter]);
 
   return (
     <div className="flex h-screen bg-slate-50/50 dark:bg-[#0B1120] font-sans overflow-hidden">
@@ -207,7 +220,7 @@ export default function CustomersPage() {
                         </td>
                       </tr>
                     ) : (
-                      filteredCustomers.map((c: any, i: number) => (
+                      paginatedCustomers.map((c: any, i: number) =>  (
                         <tr
                           key={c.id || i}
                           className="hover:bg-emerald-50/30 dark:hover:bg-emerald-900/10 transition-colors group cursor-pointer"
@@ -264,6 +277,42 @@ export default function CustomersPage() {
                 </table>
               </div>
             </div>
+            <div className="flex items-center justify-between px-6 py-5 border-t border-gray-200 dark:border-gray-700">
+
+  <p className="text-sm text-gray-500">
+    Showing <span className="font-semibold">{currentPage}</span> of{" "}
+    <span className="font-semibold">{totalPages || 1}</span> pages
+  </p>
+
+  <div className="flex items-center gap-2">
+
+    <button
+      disabled={currentPage === 1}
+      onClick={() => setCurrentPage((p) => p - 1)}
+      className={`w-10 h-10 rounded-full border flex items-center justify-center transition ${
+        currentPage === 1
+          ? "opacity-40 cursor-not-allowed"
+          : "hover:bg-emerald-50"
+      }`}
+    >
+      ←
+    </button>
+
+    <button
+      disabled={currentPage === totalPages || totalPages === 0}
+      onClick={() => setCurrentPage((p) => p + 1)}
+      className={`w-10 h-10 rounded-full border flex items-center justify-center transition ${
+        currentPage === totalPages || totalPages === 0
+          ? "opacity-40 cursor-not-allowed"
+          : "hover:bg-emerald-50"
+      }`}
+    >
+      →
+    </button>
+
+  </div>
+
+</div>
 
             {/* CUSTOMER DETAILS POPUP */}
             {selectedCustomer && (
