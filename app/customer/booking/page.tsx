@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import API from "@/services/api";
-import { User, MapPin, CalendarDays, Clock, ArrowLeft, CheckCircle } from "lucide-react";
+import {User, MapPin,CalendarDays,Clock,CheckCircle,LocateFixed,} from "lucide-react";
 import CustomerSidebar from "@/components/CustomerSidebar";
 import CustomerNavbar from "@/components/CustomerNavbar";
 
@@ -15,6 +15,36 @@ function BookingContent() {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: "", address: "", date: "", time: "" });
 
+  const getCurrentLocation = () => {
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const { latitude, longitude } = position.coords;
+
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+        );
+
+        const data = await res.json();
+
+        setForm((prev) => ({
+          ...prev,
+          address: data.display_name,
+        }));
+      } catch {
+        alert("Unable to fetch address.");
+      }
+    },
+    () => {
+      alert("Location permission denied.");
+    }
+  );
+};
   const handleConfirm = async () => {
     if (!form.name || !form.address || !form.date || !form.time) {
       alert("Please fill all fields");
@@ -70,13 +100,18 @@ function BookingContent() {
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-gray-600">Address</span>
-            <div className="mt-2 flex items-center gap-3 border border-gray-200 bg-white rounded-2xl px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100">
-              <MapPin size={18} className="text-emerald-600" />
-              <input type="text" placeholder="Enter service address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="w-full outline-none bg-transparent text-sm" />
-            </div>
-          </label>
-
+  <span className="text-sm font-medium text-gray-600">Address</span>
+  <div className="mt-2 flex items-center gap-3 border border-gray-200 bg-white rounded-2xl px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100">
+    <MapPin size={18} className="text-emerald-600" />
+    <input
+      type="text"
+      placeholder="Enter service address"
+      value={form.address}
+      onChange={(e) => setForm({ ...form, address: e.target.value })}
+      className="w-full outline-none bg-transparent text-sm"
+    />
+  </div>
+</label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label className="block">
               <span className="text-sm font-medium text-gray-600">Date</span>

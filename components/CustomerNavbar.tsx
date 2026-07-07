@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Moon, Sun, Menu, Search, ChevronDown } from "lucide-react";
+import { Bell, Moon, Sun, Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type Props = {
@@ -38,13 +38,6 @@ export default function CustomerNavbar({ darkMode, setDarkMode, setSidebarOpen, 
           </div>
         </div>
 
-        <div className="hidden lg:flex flex-1 max-w-md mx-6">
-          <div className={`flex items-center w-full rounded-full px-5 h-11 border transition-all duration-300 focus-within:ring-4 focus-within:ring-emerald-500/10 focus-within:border-emerald-300 ${darkMode ? "bg-slate-800/50 border-slate-700/50" : "bg-gray-50/50 border-gray-100 hover:border-gray-200 focus-within:bg-white shadow-inner shadow-gray-50/50"}`}>
-            <Search size={16} className={`transition-colors ${darkMode ? "text-slate-400" : "text-gray-400"}`} />
-            <input type="text" placeholder="Search for anything..." style={{boxShadow: 'none', border: 'none', outline: 'none'}} className={`flex-1 ml-3 bg-transparent border-0 focus:ring-0 outline-none text-sm font-medium ${darkMode ? "text-white placeholder:text-slate-500" : "text-gray-700 placeholder:text-gray-400"}`} />
-          </div>
-        </div>
-
         <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           <button
             onClick={() => setDarkMode(!darkMode)}
@@ -72,7 +65,7 @@ export default function CustomerNavbar({ darkMode, setDarkMode, setSidebarOpen, 
               <p className={`text-sm font-semibold truncate max-w-32 leading-tight ${darkMode ? "text-white" : "text-gray-800"}`}>{userName}</p>
               <p className={`text-[11px] font-medium truncate mt-0.5 ${darkMode ? "text-emerald-400" : "text-emerald-600/80"}`}>Customer</p>
             </div>
-            <ChevronDown size={14} className={`hidden sm:block ml-1 transition-transform group-hover:translate-y-0.5 ${darkMode ? "text-slate-400" : "text-gray-400"}`} />
+        
           </button>
         </div>
       </div>

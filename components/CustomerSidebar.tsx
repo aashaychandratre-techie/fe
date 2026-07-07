@@ -78,7 +78,7 @@ export default function CustomerSidebar({ darkMode, open, setOpen }: Props) {
         </div>
 
         <div 
-          className="flex-1 overflow-y-auto flex flex-col justify-between scrollbar-custom"
+          className="flex-1 flex flex-col justify-between overflow-hidden"
         >
           <nav className="px-4 py-5 space-y-2">
           {menus.map((menu) => {

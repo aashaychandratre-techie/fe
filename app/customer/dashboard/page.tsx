@@ -135,7 +135,7 @@ useEffect(()=>{
                 font-medium
               "
             >
-              <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+           <Plus className="w-5 h-5 transition-all duration-300" />
               New Booking
             </button>
           </div>
@@ -229,7 +229,7 @@ useEffect(()=>{
               </div>
             ) : (
               <div className="space-y-4">
-                {bookings.slice(0, 5).map((b: any) => (
+               {bookings.slice(0, 4).map((b: any) => (
                   <div
                     key={b.id}
                     className="
