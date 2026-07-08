@@ -15,6 +15,58 @@ export default function SignUpPage() {
   const [mobileNumber, setMobileNumber] = useState("");
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
+
+  const getCurrentLocation = () => {
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  setLocationLoading(true);
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      try {
+        const { latitude, longitude } = position.coords;
+
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+        );
+
+        const data = await response.json();
+
+        setAddress(data.display_name || "");
+      } catch (error) {
+        alert("Unable to fetch address.");
+      } finally {
+        setLocationLoading(false);
+      }
+    },
+    (error) => {
+      setLocationLoading(false);
+
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          alert("Location permission denied.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("Location unavailable.");
+          break;
+        case error.TIMEOUT:
+          alert("Location request timed out.");
+          break;
+        default:
+          alert("Unable to fetch location.");
+      }
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+    }
+  );
+};
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +110,7 @@ export default function SignUpPage() {
             <Home size={22} />
           </div>
           <h1 className="text-3xl font-bold text-black">Create Account</h1>
-          <p className="text-gray-600 text-sm mt-1">Join ServiceSphere in a few details</p>
+          <p className="text-gray-600 text-sm mt-1">Join SqftServices in a few details</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-5">
@@ -91,12 +143,30 @@ export default function SignUpPage() {
           ))}
 
           <label className="block">
-            <span className="text-sm font-medium text-gray-700">Address</span>
-            <div className="mt-2 flex items-start gap-3 rounded-2xl bg-white border border-gray-200 px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100">
-              <MapPin size={18} className="text-emerald-600 mt-0.5" />
-              <textarea placeholder="Service address" value={address} onChange={(e) => setAddress(e.target.value)} rows={3} className="w-full bg-transparent outline-none resize-none text-sm" />
-            </div>
-          </label>
+  <div className="flex items-center justify-between">
+    <span className="text-sm font-medium text-gray-700">Address</span>
+
+    <button
+      type="button"
+      onClick={getCurrentLocation}
+      className="text-xs bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1 rounded-lg"
+    >
+      {locationLoading ? "Loading..." : "Use Current Location"}
+    </button>
+  </div>
+
+  <div className="mt-2 flex items-start gap-3 rounded-2xl bg-white border border-gray-200 px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100">
+    <MapPin size={18} className="text-emerald-600 mt-1" />
+
+    <textarea
+      placeholder="Service address"
+      value={address}
+      onChange={(e) => setAddress(e.target.value)}
+      rows={3}
+      className="w-full bg-transparent outline-none resize-none text-sm"
+    />
+  </div>
+</label>
 
           <button type="submit" disabled={loading} className="w-full bg-emerald-500 hover:bg-emerald-600 py-3 rounded-2xl text-white font-semibold shadow-lg shadow-emerald-100 disabled:opacity-60">
             {loading ? "Creating..." : "Create Account"}

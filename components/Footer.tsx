@@ -4,8 +4,8 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
-            <span className="text-white">Service</span>
-            <span className="text-emerald-400">Sphere</span>
+            <span className="text-white">Sqft</span>
+            <span className="text-emerald-400">Services</span>
           </h2>
           <p className="text-slate-400 mt-3 max-w-sm leading-relaxed">
             Trusted professionals for home services, repairs, cleaning, and everyday support.

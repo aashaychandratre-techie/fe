@@ -59,13 +59,13 @@ export default function CustomerSidebar({ darkMode, open, setOpen }: Props) {
       >
         <div className="px-5 pt-5 pb-4 border-b border-emerald-100/70">
           <div className="flex items-center justify-between">
-            <button onClick={() => router.push("/customer/dashboard")} className="flex items-center gap-3 text-left">
+            <button onClick={() => router.push("/")} className="flex items-center gap-3 text-left">
               <span className="h-10 w-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center font-bold shadow-lg shadow-emerald-100">
                 S
               </span>
               <span>
                 <span className={`block text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>
-                  Service<span className="text-emerald-500">Sphere</span>
+                  Sqft<span className="text-emerald-500">Services</span>
                 </span>
                 <span className={`text-xs ${darkMode ? "text-slate-400" : "text-gray-500"}`}>Customer Panel</span>
               </span>
