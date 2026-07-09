@@ -2,28 +2,23 @@
 
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminNavbar from "@/components/AdminNavbar";
 import { Search, Filter, X, Store, Star } from "lucide-react";
 
 export default function AdminVendorsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const [vendors, setVendors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [filterOpen, setFilterOpen] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
 
   // popup
   const [showVendorModal, setShowVendorModal] = useState(false);
   const [modalType, setModalType] = useState<"DETAIL" | "RATINGS" | null>(null);
-
   const [selectedVendor, setSelectedVendor] = useState<any>(null);
   const [selectedVendorRatings, setSelectedVendorRatings] = useState<any[]>(
     []
@@ -45,6 +40,43 @@ export default function AdminVendorsPage() {
       setLoading(false);
     }
   };
+  const approveVendor = async (vendorId: string) => {
+  try {
+    await axios.put(
+      `http://localhost:8080/api/admin/approve-vendor/${vendorId}`
+    );
+
+    // Status update hone ke baad list dubara load hogi
+    fetchVendors();
+  } catch (err) {
+    console.log(err);
+    alert("Failed to approve vendor");
+  }
+};
+const rejectVendor = async (vendorId: string) => {
+  try {
+    await axios.put(
+      `http://localhost:8080/api/admin/reject-vendor/${vendorId}`
+    );
+
+    fetchVendors();
+  } catch (err) {
+    console.log(err);
+    alert("Failed to reject vendor");
+  }
+};
+const blockVendor = async (vendorId: string) => {
+  try {
+    await axios.put(
+      `http://localhost:8080/api/admin/block-vendor/${vendorId}`
+    );
+
+    fetchVendors();
+  } catch (err) {
+    console.log(err);
+    alert("Failed to block vendor");
+  }
+};
 
   const filteredVendors = useMemo(() => {
     let data = [...vendors];
@@ -174,9 +206,9 @@ export default function AdminVendorsPage() {
 
                   {/* Custom Dropdown Menu */}
                  {filterOpen && (
-  <div
-    className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
-  >
+                 <div
+                 className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+                 >
                     <div className="p-1">
                       {[
                         { val: "ALL", label: "All Status" },
@@ -188,10 +220,10 @@ export default function AdminVendorsPage() {
                         <div
                           key={opt.val}
                           onClick={() => {
-  setStatusFilter(opt.val);
-  setCurrentPage(1);
-  setFilterOpen(false);
-}}
+                          setStatusFilter(opt.val);
+                          setCurrentPage(1);
+                          setFilterOpen(false);
+                          }}
                           className={`px-3 py-2 text-sm rounded-xl cursor-pointer transition-colors ${
                             statusFilter === opt.val 
                               ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 font-semibold" 
@@ -218,6 +250,7 @@ export default function AdminVendorsPage() {
                       <th className="px-6 py-4 font-semibold">Contact Info</th>
                       <th className="px-6 py-4 font-semibold">Status</th>
                       <th className="px-6 py-4 font-semibold rounded-tr-2xl">Ratings</th>
+                      <th className="px-6 py-4 font-semibold text-center">Actions</th>
                     </tr>
                   </thead>
 
@@ -294,6 +327,71 @@ export default function AdminVendorsPage() {
                               </span>
                             </div>
                           </td>
+                         <td className="px-6 py-4 text-center">
+  {/* Pending */}
+  {v.status === "PENDING" && (
+    <div className="flex justify-center gap-2">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          approveVendor(v.id);
+        }}
+        className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-semibold"
+      >
+        Approve
+      </button>
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          rejectVendor(v.id);
+        }}
+        className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold"
+      >
+        Reject
+      </button>
+    </div>
+  )}
+
+  {/* Approved */}
+  {v.status === "APPROVED" && (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        blockVendor(v.id);
+      }}
+      className="px-3 py-1 bg-gray-700 hover:bg-gray-800 text-white rounded-lg text-xs font-semibold"
+    >
+      Block
+    </button>
+  )}
+
+  {/* Rejected */}
+  {v.status === "REJECTED" && (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        approveVendor(v.id);
+      }}
+      className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-semibold"
+    >
+      Approve
+    </button>
+  )}
+
+  {/* Blocked */}
+  {v.status === "BLOCKED" && (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        approveVendor(v.id);
+      }}
+      className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-semibold"
+    >
+      Unblock
+    </button>
+  )}
+</td>
                         </tr>
                       ))
                     )}
@@ -302,22 +400,20 @@ export default function AdminVendorsPage() {
               </div>
                </div>
               {/* PAGINATION */}
-{totalPages > 1 && (
-  <div className="flex items-center justify-between px-6 py-5 border-t border-gray-200 dark:border-gray-700">
+              {totalPages > 1 && (
+              <div className="flex items-center justify-between px-6 py-5 border-t border-gray-200 dark:border-gray-700">
 
-    <p className="text-sm text-gray-500">
-      Showing <span className="font-semibold">{currentPage}</span> of{" "}
-      <span className="font-semibold">{totalPages || 1}</span> pages
-    </p>
-
-    <div className="flex items-center gap-2">
-
-      <button
-        disabled={currentPage === 1}
-        onClick={() => setCurrentPage((p) => p - 1)}
-        className={`w-10 h-10 rounded-full border flex items-center justify-center transition ${
-          currentPage === 1
-            ? "opacity-40 cursor-not-allowed"
+              <p className="text-sm text-gray-500">
+               Showing <span className="font-semibold">{currentPage}</span> of{" "}
+              <span className="font-semibold">{totalPages || 1}</span> pages
+              </p>
+             <div className="flex items-center gap-2">
+             <button
+             disabled={currentPage === 1}
+             onClick={() => setCurrentPage((p) => p - 1)}
+             className={`w-10 h-10 rounded-full border flex items-center justify-center transition ${
+             currentPage === 1
+             ? "opacity-40 cursor-not-allowed"
             : "hover:bg-emerald-50"
         }`}
       >
@@ -339,9 +435,7 @@ export default function AdminVendorsPage() {
     </div>
 
   </div>
-)}
-
-            
+)}    
             {/* MODALS */}
             {showVendorModal && selectedVendor && modalType && (
               <div
@@ -352,7 +446,6 @@ export default function AdminVendorsPage() {
                   className="bg-white dark:bg-[#111827] rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-200 border border-gray-100 dark:border-gray-800"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  
                   {/* Decorative Banner */}
                   <div className={`h-24 relative ${modalType === "DETAIL" ? "bg-gradient-to-r from-emerald-500 to-emerald-700" : "bg-gradient-to-r from-amber-400 to-amber-600"}`}>
                     <button
@@ -362,14 +455,12 @@ export default function AdminVendorsPage() {
                       <X size={16} />
                     </button>
                   </div>
-
                   <div className="px-6 pb-6 relative">
                     <div className="w-20 h-20 rounded-2xl bg-white dark:bg-[#111827] p-1.5 absolute -top-10 shadow-sm border border-gray-100 dark:border-gray-800">
                       <div className={`w-full h-full rounded-xl flex items-center justify-center text-3xl font-bold ${modalType === "DETAIL" ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" : "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"}`}>
                         {modalType === "DETAIL" ? (selectedVendor.name || "V")[0].toUpperCase() : <Star className="fill-current" size={32} />}
                       </div>
                     </div>
-
                     <div className="pt-12 mb-6">
                       <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                         {modalType === "DETAIL" ? (selectedVendor.name || "Vendor Details") : `${selectedVendor.name}'s Ratings`}
@@ -402,7 +493,6 @@ export default function AdminVendorsPage() {
                             </div>
                           </div>
                         </div>
-
                         <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-800/30 rounded-2xl p-4 border border-gray-100 dark:border-gray-800/50">
                           <span className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</span>
                           {getStatusBadge(selectedVendor.status || "PENDING")}
@@ -434,7 +524,6 @@ export default function AdminVendorsPage() {
                         )}
                       </div>
                     )}
-
                     <div className="mt-6 flex justify-end">
                       <button
                         onClick={() => setShowVendorModal(false)}
@@ -443,12 +532,10 @@ export default function AdminVendorsPage() {
                         Done
                       </button>
                     </div>
-
                   </div>
                 </div>
               </div>
             )}
-
           </div>
         </main>
       </div>

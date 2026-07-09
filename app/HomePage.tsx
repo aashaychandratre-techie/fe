@@ -16,6 +16,27 @@ const services = [
 export default function HomePage() {
   const router = useRouter();
 
+  const handleBookService = () => {
+  const user = localStorage.getItem("user");
+  const vendor = localStorage.getItem("vendor");
+
+  if (user) {
+    router.push("/customer/dashboard");
+  } else {
+    router.push("/signup");
+  }
+};
+
+const handleBecomeProvider = () => {
+  const vendor = localStorage.getItem("vendor");
+
+  if (vendor) {
+    router.push("/vendor/dashboard");
+  } else {
+    router.push("/signup");
+  }
+};
+
   return (
     <div className="min-h-screen bg-[#F9FAFB] text-[#111827] overflow-x-hidden">
       <Navbar />
@@ -39,10 +60,10 @@ export default function HomePage() {
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-              <button onClick={() => router.push("/signup")} className="px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold shadow-lg shadow-emerald-100">
+              <button onClick={handleBookService} className="px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold shadow-lg shadow-emerald-100">
                 Book a Service
               </button>
-              <button onClick={() => router.push("/signup")} className="px-6 py-3 rounded-2xl border border-emerald-200 text-emerald-700 hover:bg-emerald-50 font-semibold bg-white">
+              <button onClick={handleBecomeProvider} className="px-6 py-3 rounded-2xl border border-emerald-200 text-emerald-700 hover:bg-emerald-50 font-semibold bg-white">
                 Become Provider
               </button>
             </div>
@@ -64,7 +85,11 @@ export default function HomePage() {
           <div className="relative min-h-[360px]">
             <div className="absolute inset-0 rounded-[2rem] bg-emerald-100 rotate-2" />
             <div className="relative rounded-[2rem] overflow-hidden border border-white shadow-2xl bg-white h-[360px] sm:h-[430px]">
-              <img src="/background.png" alt="Service professional" className="h-full w-full object-cover" />
+              <img
+  src="/team-service.png"
+  alt="Verified Service Providers"
+  className="h-full w-full object-cover"
+/>
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-transparent" />
               <div className="absolute bottom-5 left-5 right-5 glass-panel rounded-2xl p-4">
                 <div className="flex items-center gap-3 text-left">
