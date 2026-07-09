@@ -88,16 +88,17 @@ export default function CustomerComplaintsPage() {
             <div className="space-y-5">
               <label className="block">
                 <span className="text-sm font-medium text-gray-700">Booking ID</span>
-                <div className="mt-2 flex items-center gap-3 border border-gray-200 bg-white rounded-2xl px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
-                  <Hash size={18} className="text-gray-400" />
-                  <input
-                    type="number"
-                    placeholder="Enter Booking ID"
-                    value={bookingId}
-                    onChange={(e) => setBookingId(e.target.value)}
-                    className="w-full outline-none bg-transparent text-sm"
-                  />
-                </div>
+      <div className="mt-2 flex items-center gap-3 border border-gray-200 bg-white rounded-2xl px-4 py-3 transition-all">
+  <input
+    type="text"
+    inputMode="numeric"
+    placeholder="Enter Booking ID"
+    value={bookingId}
+    onChange={(e) => setBookingId(e.target.value)}
+    className="w-full bg-transparent text-sm border-none outline-none focus:outline-none"
+  />
+</div>
+                
               </label>
 
               <label className="block">

@@ -14,7 +14,6 @@ import {
 import API from "@/services/api";
 import CustomerSidebar from "@/components/CustomerSidebar";
 import CustomerNavbar from "@/components/CustomerNavbar";
-
 type Booking = {
   id: number;
   serviceName: string;
@@ -23,6 +22,12 @@ type Booking = {
   amount: number;
   otp: string | null;
   status: string;
+
+  bookingTime?: string;
+  customerName?: string;
+  phoneNumber?: string;
+  vendorName?: string;
+  paymentMethod?: string;
 };
 
 export default function CustomerBookingsPage() {
@@ -40,6 +45,10 @@ export default function CustomerBookingsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedAddress, setSelectedAddress] = useState("");
   const [showAddressModal, setShowAddressModal] = useState(false); 
+ 
+
+const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+const [showDetailsModal, setShowDetailsModal] = useState(false);
   const itemsPerPage = 8;
 
   useEffect(() => {
@@ -206,6 +215,7 @@ const currentBookings = filteredBookings.slice(
                   <th className="p-4">Amount</th>
                   <th className="p-4">Status</th>
                   <th className="p-4">OTP</th>
+                  <th className="p-4 text-center">Details</th>
                 </tr>
               </thead>
 
@@ -213,7 +223,7 @@ const currentBookings = filteredBookings.slice(
                 {filteredBookings.length === 0? (
                   <tr>
                     <td
-                      colSpan={6}
+                      colSpan={7}
                       className="p-10 text-center text-gray-400"
                     >
                       No Bookings Found
@@ -247,29 +257,21 @@ const currentBookings = filteredBookings.slice(
     </span>
     
   </div>
-</td>
-
-                     <td className="p-4">
+</td><td className="p-4 max-w-xs">
   <div className="flex items-center gap-2">
     <MapPin
       size={17}
       className="text-red-500 flex-shrink-0"
     />
 
-    <button
-      type="button"
-      onClick={() => {
-        setSelectedAddress(booking.address);
-        setShowAddressModal(true);
-      }}
-    className="max-w-[180px] truncate text-left hover:text-emerald-600"
+    <span
+      className="block max-w-[180px] truncate text-gray-700"
       title={booking.address}
     >
       {booking.address}
-    </button>
+    </span>
   </div>
 </td>
-
                       <td className="p-4">
                         <div className="flex items-center gap-1 font-bold text-emerald-600">
                           <IndianRupee size={16} />
@@ -303,6 +305,17 @@ const currentBookings = filteredBookings.slice(
                           </span>
                         )}
                       </td>
+                      <td className="p-4 text-center">
+  <button
+    onClick={() => {
+      setSelectedBooking(booking);
+      setShowDetailsModal(true);
+    }}
+    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+  >
+    Show Details
+  </button>
+</td>
                     </tr>
                   ))
                 )}
@@ -344,27 +357,124 @@ const currentBookings = filteredBookings.slice(
               </button>
             </div>
           )}
-      </div>{showAddressModal && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-2xl p-6 w-[90%] max-w-lg">
-      <h2 className="text-xl font-bold mb-4">
-        Full Address
-      </h2>
+      </div>{showDetailsModal && selectedBooking && (
+ <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden">
 
-      <p className="break-words text-gray-700">
-        {selectedAddress}
-      </p>
+   {/* Header */}
+<div className="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-8 py-6 flex justify-between items-center">
+  <div>
+    <h2 className="text-2xl font-bold">
+      Booking Details
+    </h2>
 
-      <div className="flex justify-end mt-6">
+    <p className="text-emerald-100 text-sm mt-1">
+      Complete booking information
+    </p>
+  </div>
+
+  <div className="bg-white/20 px-4 py-2 rounded-full font-semibold">
+    Booking ID: {selectedBooking.id}
+  </div>
+</div>
+    <div className="p-8">
+
+      <div className="grid md:grid-cols-2 gap-5">
+
+        {/* Service */}
+        <div className="bg-gray-50 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+          <p className="text-gray-500 text-sm">
+            Service
+          </p>
+
+          <p className="text-lg font-bold text-gray-800 mt-1">
+            {selectedBooking.serviceName}
+          </p>
+        </div>
+
+        {/* Status */}
+        <div className="bg-gray-50 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+          <p className="text-gray-500 text-sm">
+            Status
+          </p>
+
+          <span
+            className={`inline-flex mt-2 px-4 py-2 rounded-full text-sm font-semibold
+            ${
+              selectedBooking.status === "COMPLETED"
+                ? "bg-green-100 text-green-700"
+                : selectedBooking.status === "PENDING"
+                ? "bg-yellow-100 text-yellow-700"
+                : "bg-blue-100 text-blue-700"
+            }`}
+          >
+            {selectedBooking.status}
+          </span>
+        </div>
+
+        {/* Booking Date */}
+        <div className="bg-gray-50 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+          <p className="text-gray-500 text-sm">
+            Booking Date
+          </p>
+
+          <p className="font-semibold mt-1">
+            {new Date(
+              selectedBooking.bookingDate
+            ).toLocaleDateString()}
+          </p>
+        </div>
+
+        {/* Amount */}
+        <div className="bg-gray-50 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+          <p className="text-gray-500 text-sm">
+            Amount
+          </p>
+
+          <p className="text-2xl font-bold text-emerald-600 mt-1">
+            ₹ {selectedBooking.amount}
+          </p>
+        </div>
+
+        {/* OTP */}
+        <div className="bg-gray-50 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+          <p className="text-gray-500 text-sm">
+            Verification OTP
+          </p>
+
+          <p className="text-xl font-bold tracking-widest text-blue-600 mt-1">
+            {selectedBooking.otp || "Waiting..."}
+          </p>
+        </div>
+
+        {/* Address */}
+        <div className="bg-gray-50 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+          <p className="text-gray-500 text-sm">
+            Service Address
+          </p>
+
+          <p className="font-medium text-gray-800 mt-2 break-words">
+            {selectedBooking.address}
+          </p>
+        </div>
+
+      </div>
+
+      <div className="flex justify-end mt-8">
+
         <button
-          onClick={() => setShowAddressModal(false)}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg"
+          onClick={() => setShowDetailsModal(false)}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200"
         >
           Close
         </button>
+
       </div>
+
     </div>
+
   </div>
+</div>
 )}
         </main>
       </div>
