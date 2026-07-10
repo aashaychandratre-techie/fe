@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { AlertCircle, FileText, Hash } from "lucide-react";
+import { AlertCircle, FileText, } from "lucide-react";
 import CustomerSidebar from "@/components/CustomerSidebar";
 import CustomerNavbar from "@/components/CustomerNavbar";
 
@@ -22,30 +22,40 @@ export default function CustomerComplaintsPage() {
   const userName = user.fullName || "Customer";
   const firstLetter = userName.charAt(0).toUpperCase();
 
-  const handleSubmit = async () => {
-    if (!bookingId || !subject || !message) {
-      alert("Please fill all fields");
-      return;
-    }
+ const handleSubmit = async () => {
+  if (!bookingId || !subject || !message) {
+    alert("Please fill all fields");
+    return;
+  }
 
-    try {
-      await axios.post("http://localhost:8080/complaints", {
-        customerId: user.id,
-        bookingId: Number(bookingId),
-        subject,
-        message,
-      });
+  try {
+    // Get booking details first
+    const bookingRes = await axios.get(
+      `http://localhost:8080/bookings/${bookingId}`
+    );
 
-      alert("Complaint Submitted Successfully");
-      setBookingId("");
-      setSubject("");
-      setMessage("");
-    } catch (err) {
-      console.log(err);
-      alert("Failed to submit complaint");
-    }
-  };
+    const booking = bookingRes.data;
 
+    await axios.post("http://localhost:8080/complaints", {
+      customerId: user.id,
+      vendorId: booking.vendorId,
+      bookingId:  bookingId,
+      subject,
+      message,
+      type: "SERVICE_COMPLAINT",
+    });
+
+    alert("Complaint Submitted Successfully");
+
+    setBookingId("");
+    setSubject("");
+    setMessage("");
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to submit complaint");
+  }
+};
   return (
     <div
       className={`min-h-screen flex font-sans ${
@@ -86,20 +96,22 @@ export default function CustomerComplaintsPage() {
             </div>
 
             <div className="space-y-5">
-              <label className="block">
-                <span className="text-sm font-medium text-gray-700">Booking ID</span>
-      <div className="mt-2 flex items-center gap-3 border border-gray-200 bg-white rounded-2xl px-4 py-3 transition-all">
-  <input
-    type="text"
-    inputMode="numeric"
-    placeholder="Enter Booking ID"
-    value={bookingId}
-    onChange={(e) => setBookingId(e.target.value)}
-    className="w-full bg-transparent text-sm border-none outline-none focus:outline-none"
-  />
-</div>
-                
-              </label>
+             <label className="block">
+  <span className="text-sm font-medium text-gray-700">
+    Booking ID
+  </span>
+
+  <div className="mt-2 flex items-center gap-3 border border-gray-200 bg-white rounded-2xl px-4 py-3 transition-all">
+    <input
+      type="text"
+      inputMode="numeric"
+      placeholder="Enter Booking ID"
+      value={bookingId}
+      onChange={(e) => setBookingId(e.target.value)}
+      className="w-full bg-transparent text-sm border-none outline-none focus:outline-none"
+    />
+  </div>
+</label>
 
               <label className="block">
                 <span className="text-sm font-medium text-gray-700">Subject</span>
