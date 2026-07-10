@@ -13,7 +13,7 @@ export default function AdminComplaintsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
-  const ITEMS_PER_PAGE = 5;
+  const ITEMS_PER_PAGE = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const [showResolveModal, setShowResolveModal] = useState(false);
   const [complaintToResolve, setComplaintToResolve] = useState<any>(null);
