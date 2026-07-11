@@ -24,60 +24,104 @@ function BookingContent() {
   const amount = searchParams.get("amount");
 
   const [loading, setLoading] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
 
-  const [form, setForm] = useState({
-    name: "",
-    address: "",
-    date: "",
-    timeSlot: "",
-  });
+ const [form, setForm] = useState({
+  name: "",
+  mobileNumber: "",
+  houseNo: "",
+  area: "",
+  landmark: "",
+  city: "",
+  state: "",
+  pincode: "",
+  date: "",
 
-  const timeSlots = [
-    "09:00 AM - 11:00 AM",
-    "11:00 AM - 01:00 PM",
-    "01:00 PM - 03:00 PM",
-    "03:00 PM - 05:00 PM",
-    "05:00 PM - 07:00 PM",
-  ];
+  preferredStartTime: "",
+  preferredEndTime: "",
+
+  alternateStartTime: "",
+  alternateEndTime: "",
+});
+ const timeOptions = [
+  "09:00 AM",
+  "10:00 AM",
+  "11:00 AM",
+  "12:00 PM",
+  "01:00 PM",
+  "02:00 PM",
+  "03:00 PM",
+  "04:00 PM",
+  "05:00 PM",
+  "06:00 PM",
+  "07:00 PM",
+];
 
   const getCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported.");
-      return;
-    }
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported.");
+    return;
+  }
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
+  setLocationLoading(true);
 
-        try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-          );
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const { latitude, longitude } = position.coords;
 
-          const data = await response.json();
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+        );
 
-          setForm((prev) => ({
-            ...prev,
-            address: data.display_name,
-          }));
-        } catch {
-          alert("Unable to fetch current location.");
-        }
-      },
-      () => {
-        alert("Location permission denied.");
+        const data = await response.json();
+        const address = data.address;
+
+        setForm((prev) => ({
+          ...prev,
+          houseNo: address.house_number || "",
+          area:
+            address.road ||
+            address.suburb ||
+            address.neighbourhood ||
+            "",
+          landmark: address.amenity || "",
+          city:
+            address.city ||
+            address.town ||
+            address.village ||
+            "",
+          state: address.state || "",
+          pincode: address.postcode || "",
+        }));
+      } catch {
+        alert("Unable to fetch current location.");
+      } finally {
+        setLocationLoading(false);
       }
-    );
-  };
-
+    },
+    () => {
+      setLocationLoading(false);
+      alert("Location permission denied.");
+    }
+  );
+};
+    
   const handleConfirm = async () => {
-    if (
-      !form.name ||
-      !form.address ||
-      !form.date ||
-      !form.timeSlot
-    ) {
+  if (
+  !form.name ||
+  !form.mobileNumber ||
+  !form.houseNo ||
+  !form.area ||
+  !form.city ||
+  !form.state ||
+  !form.pincode ||
+  !form.date ||
+  !form.preferredStartTime ||
+  !form.preferredEndTime ||
+  !form.alternateStartTime ||
+  !form.alternateEndTime
+) {
       alert("Please fill all fields.");
       return;
     }
@@ -93,8 +137,15 @@ function BookingContent() {
         serviceId: String(serviceId),
         vendorId: null,
         bookingDate: form.date,
-        bookingTime: form.timeSlot,
-        address: form.address,
+      bookingTime: `${form.preferredStartTime} - ${form.preferredEndTime}`,
+
+alternateBookingTime: `${form.alternateStartTime} - ${form.alternateEndTime}`,
+
+address: `${form.houseNo},
+${form.area},
+${form.landmark},
+${form.city},
+${form.state} - ${form.pincode}`,
         amount: amount ? parseFloat(amount) : 0,
         status: "PENDING",
         user: user,
@@ -124,7 +175,7 @@ function BookingContent() {
     <div className="relative z-10">
 
       <div className="mb-6">
-        <h1 className="text-3xl font-extrabold text-emerald-900">
+        <h1  className="text-2xl font-bold text-emerald-900 tracking-tight">
           Complete Booking
         </h1>
 
@@ -142,7 +193,7 @@ function BookingContent() {
             Customer Name
           </span>
 
-          <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-3">
+          <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-2">
             <User size={18} className="text-emerald-600" />
 
             <input
@@ -160,104 +211,334 @@ function BookingContent() {
           </div>
         </label>
 
-        {/* Address */}
+         {/* Mobile */}
 
-        <label className="block">
-          <span className="text-sm font-medium text-gray-600">
-            Service Address
-          </span>
 
-          <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-3">
-            <MapPin size={18} className="text-emerald-600" />
+        <label className="block mt-5">
+  <span className="text-sm font-medium text-gray-600">
+    Mobile Number
+  </span>
 
-            <input
-              type="text"
-              placeholder="Enter address"
-              value={form.address}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  address: e.target.value,
-                })
-              }
-              className="w-full outline-none bg-transparent"
-            />
-          </div>
+  <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-2">
+    <User size={18} className="text-emerald-600" />
 
-          <button
-            type="button"
-            onClick={getCurrentLocation}
-            className="mt-3 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl transition"
-          >
-            <LocateFixed size={16} />
-            Use Current Location
-          </button>
-        </label>
+    <input
+      type="tel"
+      placeholder="Enter Mobile Number"
+      value={form.mobileNumber}
+      maxLength={10}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          mobileNumber: e.target.value,
+        })
+      }
+      className="w-full outline-none bg-transparent"
+    />
+  </div>
+</label>
 
-        {/* Date & Time Slot */}
+        
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Address */}
 
-          <label>
-            <span className="text-sm font-medium text-gray-600">
-              Booking Date
-            </span>
+<div>
+  <div className="flex items-center justify-between mb-4">
+    <span className="text-sm font-semibold text-gray-700">
+      Service Address
+    </span>
 
-            <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-3">
-              <CalendarDays
-                size={18}
-                className="text-emerald-600"
-              />
+   <button
+  type="button"
+  onClick={getCurrentLocation}
+  disabled={locationLoading}
+  className="flex items-center gap-2 text-xs bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-400 text-white px-3 py-2 rounded-lg transition"
+>
+  <LocateFixed size={14} />
+  {locationLoading ? "Loading..." : "Use Current Location"}
+</button>
+</div>
 
-              <input
-                type="date"
-                value={form.date}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    date: e.target.value,
-                  })
-                }
-                className="w-full outline-none bg-transparent"
-              />
-            </div>
-          </label>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          <label>
-            <span className="text-sm font-medium text-gray-600">
-              Time Slot
-            </span>
+    {/* House No */}
 
-            <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-3">
-              <Clock
-                size={18}
-                className="text-emerald-600"
-              />
+    <label>
+      <span className="text-sm text-gray-600">
+        House / Flat No.
+      </span>
 
-              <select
-                value={form.timeSlot}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    timeSlot: e.target.value,
-                  })
-                }
-                className="w-full outline-none bg-transparent"
-              >
-                <option value="">
-                  Select Time Slot
-                </option>
+      <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-2">
+        <MapPin size={18} className="text-emerald-600" />
 
-                {timeSlots.map((slot) => (
-                  <option key={slot} value={slot}>
-                    {slot}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </label>
+        <input
+          type="text"
+          placeholder="House / Flat No."
+          value={form.houseNo}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              houseNo: e.target.value,
+            })
+          }
+          className="w-full outline-none bg-transparent"
+        />
+      </div>
+    </label>
 
-        </div>
+    {/* Area */}
+
+    <label>
+      <span className="text-sm text-gray-600">
+        Area / Street
+      </span>
+
+      <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-2">
+        <MapPin size={18} className="text-emerald-600" />
+
+        <input
+          type="text"
+          placeholder="Area / Street"
+          value={form.area}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              area: e.target.value,
+            })
+          }
+          className="w-full outline-none bg-transparent"
+        />
+      </div>
+    </label>
+
+    {/* Landmark */}
+
+    <label>
+      <span className="text-sm text-gray-600">
+        Landmark
+      </span>
+
+      <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-2">
+        <MapPin size={18} className="text-emerald-600" />
+
+        <input
+          type="text"
+          placeholder="Nearby Landmark"
+          value={form.landmark}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              landmark: e.target.value,
+            })
+          }
+          className="w-full outline-none bg-transparent"
+        />
+      </div>
+    </label>
+
+    {/* City */}
+
+    <label>
+      <span className="text-sm text-gray-600">
+        City
+      </span>
+
+      <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-2">
+        <MapPin size={18} className="text-emerald-600" />
+
+        <input
+          type="text"
+          placeholder="City"
+          value={form.city}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              city: e.target.value,
+            })
+          }
+          className="w-full outline-none bg-transparent"
+        />
+      </div>
+    </label>
+
+    {/* State */}
+
+    <label>
+      <span className="text-sm text-gray-600">
+        State
+      </span>
+
+      <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-2">
+        <MapPin size={18} className="text-emerald-600" />
+
+        <input
+          type="text"
+          placeholder="State"
+          value={form.state}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              state: e.target.value,
+            })
+          }
+          className="w-full outline-none bg-transparent"
+        />
+      </div>
+    </label>
+
+    {/* Pincode */}
+
+    <label>
+      <span className="text-sm text-gray-600">
+        Pincode
+      </span>
+
+      <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-2">
+        <MapPin size={18} className="text-emerald-600" />
+
+        <input
+          type="text"
+          placeholder="Pincode"
+          value={form.pincode}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              pincode: e.target.value,
+            })
+          }
+          className="w-full outline-none bg-transparent"
+        />
+      </div>
+    </label>
+
+  </div>
+</div>
+
+      <div className="space-y-5">
+
+  <label>
+    <span className="text-sm font-medium text-gray-600">
+      Booking Date
+    </span>
+
+    <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-2">
+      <CalendarDays size={18} className="text-emerald-600" />
+
+      <input
+        type="date"
+        value={form.date}
+        onChange={(e) =>
+          setForm({
+            ...form,
+            date: e.target.value,
+          })
+        }
+        className="w-full outline-none bg-transparent"
+      />
+    </div>
+  </label>
+
+ <div className="mt-6 grid md:grid-cols-2 gap-6">
+
+    <div>
+      <span className="text-sm font-medium text-gray-600">
+      Preferred Time
+      </span>
+
+      <div className="grid grid-cols-2 gap-3">
+
+        <select
+          value={form.preferredStartTime}
+          onChange={(e)=>
+            setForm({
+              ...form,
+              preferredStartTime:e.target.value
+            })
+          }
+          className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-500 outline-none focus:border-emerald-500 focus:ring-0 appearance-none"
+        >
+         <option value="" className="text-gray-400">
+  Start Time
+</option>
+
+          {timeOptions.map(time=>(
+            <option key={time}>{time}</option>
+          ))}
+        </select>
+
+        <select
+          value={form.preferredEndTime}
+          onChange={(e)=>
+            setForm({
+              ...form,
+              preferredEndTime:e.target.value
+            })
+          }
+          className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-500 outline-none focus:border-emerald-500 focus:ring-0 appearance-none"
+        >
+         <option value="" className="text-gray-400">
+  End Time
+</option>
+
+          {timeOptions.map(time=>(
+            <option key={time}>{time}</option>
+          ))}
+        </select>
+
+      </div>
+    </div>
+
+    <div>
+      <span className="text-sm font-medium text-gray-600">
+      Alternate Time
+      </span>
+
+      <div className="grid grid-cols-2 gap-3">
+
+        <select
+          value={form.alternateStartTime}
+          onChange={(e)=>
+            setForm({
+              ...form,
+              alternateStartTime:e.target.value
+            })
+          }
+          className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-500 outline-none focus:border-emerald-500 focus:ring-0 appearance-none"
+        >
+         <option value="" className="text-gray-400">
+  Start Time
+</option>
+
+          {timeOptions.map(time=>(
+            <option key={time}>{time}</option>
+          ))}
+        </select>
+
+        <select
+          value={form.alternateEndTime}
+          onChange={(e)=>
+            setForm({
+              ...form,
+              alternateEndTime:e.target.value
+            })
+          }
+          className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-500 outline-none focus:border-emerald-500 focus:ring-0 appearance-none"
+        >
+         <option value="" className="text-gray-400">
+  End Time
+</option>
+
+          {timeOptions.map(time=>(
+            <option key={time}>{time}</option>
+          ))}
+        </select>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
 
       </div>
               <div className="flex flex-col sm:flex-row gap-3 mt-8">

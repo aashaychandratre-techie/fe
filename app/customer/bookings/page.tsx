@@ -14,6 +14,8 @@ import {
 import API from "@/services/api";
 import CustomerSidebar from "@/components/CustomerSidebar";
 import CustomerNavbar from "@/components/CustomerNavbar";
+
+
 type Booking = {
   id: number;
   serviceName: string;
@@ -125,27 +127,29 @@ const currentBookings = filteredBookings.slice(
       />
 
       <div className="flex-1 flex flex-col min-h-0 min-w-0 relative">
+
+        <div className="md:hidden">
+          <CustomerNavbar
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+            setSidebarOpen={setSidebarOpen}
+            userName={userName}
+            firstLetter={firstLetter}
+          />
+        </div>
         {/* Premium Blur Blobs */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-400/5 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
-        <CustomerNavbar
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
-          setSidebarOpen={setSidebarOpen}
-          userName={userName}
-          firstLetter={firstLetter}
-        />
+       
 
         <main className="flex-1 overflow-y-auto p-5 lg:p-8 relative z-10">
          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
 
   <div>
-   <h1
-  className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${
-    darkMode
-      ? "bg-gradient-to-r from-white to-emerald-300 bg-clip-text text-transparent"
-      : "text-emerald-900"
+  <h1
+  className={`text-2xl font-bold tracking-tight ${
+    darkMode ? "text-white" : "text-emerald-900"
   }`}
 >
   My Bookings
@@ -182,10 +186,10 @@ const currentBookings = filteredBookings.slice(
 
   <button
     onClick={fetchBookings}
-    className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-3 rounded-xl hover:bg-emerald-500 shadow-sm"
+    className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-3 rounded-xl hover:bg-emerald-500 shadow-sm cursor-pointer"
   >
     <RefreshCw size={16} />
-    Refresh
+    
   </button>
 
 
@@ -211,7 +215,6 @@ const currentBookings = filteredBookings.slice(
                 <tr className="text-left text-sm text-gray-700">
                   <th className="p-4">Service</th>
                   <th className="p-4">Date</th>
-                  <th className="p-4">Address</th>
                   <th className="p-4">Amount</th>
                   <th className="p-4">Status</th>
                   <th className="p-4">OTP</th>
@@ -257,20 +260,6 @@ const currentBookings = filteredBookings.slice(
     </span>
     
   </div>
-</td><td className="p-4 max-w-xs">
-  <div className="flex items-center gap-2">
-    <MapPin
-      size={17}
-      className="text-red-500 flex-shrink-0"
-    />
-
-    <span
-      className="block max-w-[180px] truncate text-gray-700"
-      title={booking.address}
-    >
-      {booking.address}
-    </span>
-  </div>
 </td>
                       <td className="p-4">
                         <div className="flex items-center gap-1 font-bold text-emerald-600">
@@ -293,28 +282,28 @@ const currentBookings = filteredBookings.slice(
                         </span>
                       </td>
 
-                      <td className="p-4">
-                        {booking.otp ? (
-                          <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-xl w-fit font-bold">
-                            <ShieldCheck size={17} />
-                            {booking.otp}
-                          </div>
-                        ) : (
-                          <span className="text-gray-400 text-sm">
-                            Waiting...
-                          </span>
-                        )}
-                      </td>
+                     <td className="p-4">
+  {booking.otp ? (
+    <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-4 py-2">
+      <ShieldCheck size={16} className="text-emerald-600" />
+      <span className="font-bold text-emerald-700 tracking-[0.2em]">
+        {booking.otp}
+      </span>
+    </div>
+  ) : (
+    <span className="text-gray-400 text-sm">Waiting...</span>
+  )}
+</td>
                       <td className="p-4 text-center">
-  <button
-    onClick={() => {
-      setSelectedBooking(booking);
-      setShowDetailsModal(true);
-    }}
-    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
-  >
-    Show Details
-  </button>
+<button
+  onClick={() => {
+    setSelectedBooking(booking);
+    setShowDetailsModal(true);
+  }}
+  className="px-3 py-1.5 rounded-full bg-emerald-300 text-emerald-900 hover:bg-emerald-400 shadow-sm text-sm font-semibold transition-all duration-200 cursor-pointer"
+>
+  View Details
+</button>
 </td>
                     </tr>
                   ))
@@ -460,16 +449,28 @@ const currentBookings = filteredBookings.slice(
 
       </div>
 
-      <div className="flex justify-end mt-8">
+     <div className="flex justify-between mt-8">
 
-        <button
-          onClick={() => setShowDetailsModal(false)}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200"
-        >
-          Close
-        </button>
+  <button
+    onClick={() =>
+      router.push(
+        `/customer/complaints?bookingId=${selectedBooking.id}`
+      )
+    }
+    className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200"
+  >
+    Raise Complaint
+  </button>
 
-      </div>
+
+  <button
+    onClick={() => setShowDetailsModal(false)}
+    className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200"
+  >
+    Close
+  </button>
+
+</div>
 
     </div>
 
