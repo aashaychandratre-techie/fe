@@ -7,6 +7,8 @@ import API from "@/services/api";
 import CustomerSidebar from "@/components/CustomerSidebar";
 import CustomerNavbar from "@/components/CustomerNavbar";
 
+
+
 type Service = {
   id:number;
   name:string;
@@ -88,13 +90,18 @@ return(
       />
 
       <div className="flex-1 flex flex-col min-h-0 min-w-0 relative">
-        <CustomerNavbar
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
-          setSidebarOpen={setSidebarOpen}
-          userName={userName}
-          firstLetter={firstLetter}
-        />
+        
+        <div className="md:hidden">
+  <CustomerNavbar
+    darkMode={darkMode}
+    setDarkMode={setDarkMode}
+    setSidebarOpen={setSidebarOpen}
+    userName={userName}
+    firstLetter={firstLetter}
+  />
+</div>
+        
+       
 
         <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 relative">
           <div className="max-w-7xl mx-auto space-y-8">
@@ -103,7 +110,7 @@ return(
             <div className="bg-white rounded-3xl shadow-sm px-6 py-5 md:px-8 md:py-6 flex flex-col md:flex-row md:items-center justify-between gap-6 border border-emerald-50 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full blur-3xl -z-0 opacity-60 pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
               <div className="relative z-10">
-                <h1 className="text-3xl font-extrabold text-emerald-900 tracking-tight">
+                <h1 className="text-2xl font-bold text-emerald-900 tracking-tight">
                   Explore Services
                 </h1>
                 <p className="text-gray-500 mt-1 text-sm md:text-base">
@@ -176,7 +183,7 @@ return(
               </div>
 
               {/* DESKTOP PILL TABS */}
-              <div className="hidden md:inline-flex items-center bg-white rounded-full p-1.5 shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-gray-50/50">
+              <div className="hidden md:inline-flex items-center bg-white rounded-full p-1.5 shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-gray-50/50 ">
                 {[
                   "All",
                   "Electrician",
@@ -190,7 +197,7 @@ return(
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
                     className={`
-                      relative px-6 py-2.5 rounded-full text-base font-bold whitespace-nowrap transition-all duration-300
+                      relative px-6 py-2.5 rounded-full text-base font-bold whitespace-nowrap transition-all duration-300 cursor-pointer
                       ${activeCategory === cat 
                         ? "bg-[#00C37B] text-white shadow-md shadow-[#00C37B]/20" 
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-50/50"}
@@ -269,7 +276,7 @@ return(
                           </div>
                           <button
                             onClick={() => bookService(service.id, service.price)}
-                            className="bg-gray-900 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md hover:shadow-lg hover:shadow-emerald-600/30 transition-all duration-300 active:scale-95"
+                            className="bg-gray-900 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md hover:shadow-lg hover:shadow-emerald-600/30 transition-all duration-300 active:scale-95 cursor-pointer"
                           >
                             Book Now
                           </button>

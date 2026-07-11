@@ -51,24 +51,25 @@ const handleBecomeProvider = () => {
               Trusted doorstep services
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight max-w-3xl mx-auto lg:mx-0">
-              Book reliable home services without the back-and-forth.
-            </h1>
+       <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight max-w-3xl mx-auto lg:mx-0">
+  Book reliable home services without the <br />
+  back-and-forth.
+</h1>
 
             <p className="mt-6 text-gray-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               Verified professionals for plumbing, electrical work, repairs, painting and more, all organized in one simple platform.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-              <button onClick={handleBookService} className="px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold shadow-lg shadow-emerald-100">
+              <button onClick={handleBookService} className="px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold shadow-lg shadow-emerald-100 cursor-pointer">
                 Book a Service
               </button>
-              <button onClick={handleBecomeProvider} className="px-6 py-3 rounded-2xl border border-emerald-200 text-emerald-700 hover:bg-emerald-50 font-semibold bg-white">
+              <button onClick={handleBecomeProvider} className="px-6 py-3 rounded-2xl border border-emerald-200 text-emerald-700 hover:bg-emerald-50 font-semibold bg-white cursor-pointer">
                 Become Provider
               </button>
             </div>
 
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-lg mx-auto lg:mx-0">
+           <div className="mt-8 grid grid-cols-3 gap-2 sm:gap-3 max-w-lg mx-auto lg:mx-0">
               {[
                 ["10K+", "Customers"],
                 ["4.8/5", "Rating"],
