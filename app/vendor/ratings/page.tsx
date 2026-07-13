@@ -105,14 +105,16 @@ const submitReport = async () => {
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-slate-300/10 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
         {/* NAVBAR */}
-        <VendorNavbar setOpen={setOpen} />
+        <div className="md:hidden">
+                <VendorNavbar setOpen={setOpen} />
+                </div>
 
         {/* CONTENT */}
         <main className="flex-1 overflow-y-auto relative z-10">
           <div className="max-w-7xl mx-auto p-4 md:p-8 lg:p-10 space-y-8">
             {/* HEADER */}
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500 mb-1.5">
+              <h1 className="text-2xl font-bold text-emerald-900 tracking-tight">
                 Customer Ratings
               </h1>
               <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400/60">
@@ -120,42 +122,73 @@ const submitReport = async () => {
               </p>
             </div>
 
-            {/* KPI CARDS */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-2xl">
-                    ⭐
-                  </div>
-                  <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Average Rating</span>
-                </div>
-                <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white">{avg}</h2>
-                <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400 mt-2">Overall Score</p>
-              </div>
+           {/* KPI CARDS */}
+<div className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-6">
 
-              <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-xl">
-                    📝
-                  </div>
-                  <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Reviews</span>
-                </div>
-                <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white">{ratings.length}</h2>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2">Feedback Received</p>
-              </div>
+  {/* Average Rating */}
+  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
 
-              <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all duration-300 group relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-100 opacity-20 rounded-full blur-xl -mt-6 -mr-6 group-hover:scale-150 transition-transform duration-700"></div>
-                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap relative z-10">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-xl">
-                    💚
-                  </div>
-                  <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Satisfaction Rate</span>
-                </div>
-                <h2 className="text-4xl font-extrabold text-emerald-600 dark:text-emerald-400 relative z-10">{satisfaction}%</h2>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2 relative z-10">4+ Star Reviews</p>
-              </div>
-            </div>
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+          Average Rating
+        </p>
+
+        <h2 className="text-3xl font-bold text-gray-900">
+          {avg}
+        </h2>
+      </div>
+
+      <div className="p-2 lg:p-3 bg-yellow-100 rounded-xl lg:rounded-2xl text-yellow-600">
+        ⭐
+      </div>
+    </div>
+  </div>
+
+  {/* Total Reviews */}
+  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+          Total Reviews
+        </p>
+
+        <h2 className="text-3xl font-bold text-gray-900">
+          {ratings.length}
+        </h2>
+      </div>
+
+      <div className="p-2 lg:p-3 bg-blue-100 rounded-xl lg:rounded-2xl text-blue-600">
+        📝
+      </div>
+    </div>
+  </div>
+
+  {/* Satisfaction Rate */}
+  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group col-span-2 lg:col-span-1">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+          Satisfaction Rate
+        </p>
+
+        <h2 className="text-3xl font-bold text-emerald-600">
+          {satisfaction}%
+        </h2>
+      </div>
+
+      <div className="p-2 lg:p-3 bg-green-100 rounded-xl lg:rounded-2xl text-green-600">
+        💚
+      </div>
+    </div>
+  </div>
+
+</div>
 
             {/* TABLE */}
             <div className="bg-white dark:bg-[#111827] rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">

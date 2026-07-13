@@ -107,14 +107,16 @@ export default function ActivePage() {
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-slate-300/10 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
         {/* NAVBAR */}
+        <div className="md:hidden">
         <VendorNavbar setOpen={setOpen} />
+        </div>
 
         {/* CONTENT */}
         <main className="flex-1 overflow-y-auto relative z-10">
           <div className="max-w-7xl mx-auto p-4 md:p-8 lg:p-10 space-y-8">
             {/* HEADER */}
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500 mb-1.5">
+              <h1 className="text-2xl font-bold text-emerald-900 tracking-tight">
                 Services Management
               </h1>
               <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400/60">

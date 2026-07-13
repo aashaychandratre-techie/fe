@@ -163,7 +163,7 @@ const blockVendor = async (vendorId: string) => {
             {/* HEADER */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500 mb-1.5">
+                <h1 className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500 mb-1.5">
                   Vendors Overview
                 </h1>
                 <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400/60">

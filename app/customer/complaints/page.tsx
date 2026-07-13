@@ -5,6 +5,7 @@ import { AlertCircle, FileText,ImagePlus } from "lucide-react";
 import CustomerSidebar from "@/components/CustomerSidebar";
 import { useSearchParams } from "next/navigation";
 import API from "@/services/api";
+import axios from "axios";
 
 
 
@@ -35,50 +36,28 @@ const handleSubmit = async () => {
 
   try {
     // Fetch booking details
-    const bookingRes = await API.get(
-      `/bookings/${bookingId}`
-    );
-
+    const bookingRes = await API.get(`/bookings/${bookingId}`);
     const booking = bookingRes.data;
 
-    // Submit complaint
-   
-const formData = new FormData();
-formData.append("customerId", user.id);
-formData.append("vendorId", booking.vendorId);
+    // JSON payload
+    const payload = {
+      customerId: user.id,
+      vendorId: booking.vendorId,
+      bookingId,
+      subject,
+      message,
+      type: "SERVICE_COMPLAINT",
+    };
 
-formData.append("bookingId", bookingId);
+    console.log("Complaint Payload:", payload);
 
-formData.append("subject", subject);
-
-formData.append("message", message);
-
-formData.append("type", "SERVICE_COMPLAINT");
-
-
-
-if (image) {
-
-  formData.append("image", image);
-
-}
-
-
-
-await API.post("http://localhost:8080/complaints", formData, {
-
-  headers: {
-
-    "Content-Type": "multipart/form-data",
-
-  },
-
-});
+   await axios.post("http://localhost:8080/complaints", payload);
 
     alert("Complaint Submitted Successfully");
 
     setSubject("");
     setMessage("");
+    setImage(null);
 
   } catch (err) {
     console.error(err);

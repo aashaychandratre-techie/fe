@@ -74,14 +74,14 @@ export default function VendorDeskPage() {
         {/* Background blobs for premium feel */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-slate-300/10 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
-
+        <div className="md:hidden">
         <VendorNavbar setOpen={setOpen} />
-
+        </div>
         <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 relative z-10">
           <div className="max-w-6xl mx-auto space-y-8">
             {/* HEADER */}
             <div>
-              <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+              <h1 className="text-2xl font-bold text-emerald-900 tracking-tight">
                 Vendor Workspace
               </h1>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1.5">
@@ -251,23 +251,51 @@ export default function VendorDeskPage() {
             {activeTab === "earnings" && (
               <div className="space-y-8">
                 {/* STATS */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-8 rounded-3xl shadow-xl shadow-emerald-500/20 text-white relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white dark:bg-[#111827] opacity-10 rounded-full blur-2xl -mt-10 -mr-10"></div>
-                    <p className="text-emerald-50 text-sm font-semibold tracking-wide uppercase mb-1">Total Earnings</p>
-                    <h2 className="text-5xl font-extrabold flex items-center gap-1">
-                      <span className="text-emerald-200">₹</span>{totalEarnings}
-                    </h2>
-                  </div>
+               <div className="grid grid-cols-2 gap-3 lg:gap-6">
 
-                  <div className="bg-white dark:bg-[#111827] p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col justify-center">
-                    <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-sm font-semibold tracking-wide uppercase mb-1">Completed Jobs</p>
-                    <h2 className="text-5xl font-extrabold text-gray-900 dark:text-white">
-                      {completedWorks.length}
-                    </h2>
-                  </div>
-                </div>
+  {/* Total Earnings */}
+  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
 
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+          Total Earnings
+        </p>
+
+        <h2 className="text-3xl font-bold text-emerald-600">
+          ₹{totalEarnings.toLocaleString()}
+        </h2>
+      </div>
+
+      <div className="p-2 lg:p-3 bg-emerald-100 rounded-xl lg:rounded-2xl text-emerald-600">
+        <IndianRupee className="w-4 h-4 lg:w-6 lg:h-6" />
+      </div>
+    </div>
+  </div>
+
+  {/* Completed Jobs */}
+  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+          Completed Jobs
+        </p>
+
+        <h2 className="text-3xl font-bold text-gray-900">
+          {completedWorks.length}
+        </h2>
+      </div>
+
+      <div className="p-2 lg:p-3 bg-green-100 rounded-xl lg:rounded-2xl text-green-600">
+        <CheckCircle2 className="w-4 h-4 lg:w-6 lg:h-6" />
+      </div>
+    </div>
+  </div>
+
+</div>
                 {/* LIST */}
                 <div className="bg-white dark:bg-[#111827] p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
                   <div className="flex items-center justify-between mb-6 gap-2 flex-wrap">

@@ -137,7 +137,7 @@ function BookingContent() {
         serviceId: String(serviceId),
         vendorId: null,
         bookingDate: form.date,
-      bookingTime: `${form.preferredStartTime} - ${form.preferredEndTime}`,
+       timeSlot: `${form.preferredStartTime} - ${form.preferredEndTime}`,
 
 alternateBookingTime: `${form.alternateStartTime} - ${form.alternateEndTime}`,
 
