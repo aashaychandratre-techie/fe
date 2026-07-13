@@ -39,7 +39,6 @@ export default function CustomerSidebar({ darkMode, open, setOpen }: Props) {
     { name: "Dashboard", path: "/customer/dashboard", icon: <LayoutDashboard size={19} /> },
     { name: "Services", path: "/customer/services", icon: <Briefcase size={19} /> },
     { name: "Bookings", path: "/customer/bookings", icon: <CalendarDays size={19} /> },
-    { name: "Complaints", path: "/customer/complaints", icon: <Bell size={19} /> },
     { name: "Profile", path: "/customer/profile", icon: <User size={19} /> },
   ];
 
@@ -57,9 +56,9 @@ export default function CustomerSidebar({ darkMode, open, setOpen }: Props) {
           open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         } ${darkMode ? "bg-[#0F172A] border-slate-800" : "bg-white/95 backdrop-blur-xl border-emerald-100"}`}
       >
-        <div className="px-5 pt-5 pb-4 border-b border-emerald-100/70">
+       <div className="px-5 pt-5 pb-4">
           <div className="flex items-center justify-between">
-            <button onClick={() => router.push("/")} className="flex items-center gap-3 text-left">
+            <button onClick={() => router.push("/")} className="flex items-center gap-3 text-left cursor-pointer">
               <span className="h-10 w-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center font-bold shadow-lg shadow-emerald-100">
                 S
               </span>
@@ -67,7 +66,7 @@ export default function CustomerSidebar({ darkMode, open, setOpen }: Props) {
                 <span className={`block text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>
                   Sqft<span className="text-emerald-500">Services</span>
                 </span>
-                <span className={`text-xs ${darkMode ? "text-slate-400" : "text-gray-500"}`}>Customer Panel</span>
+                <span className={`text-xs ${darkMode ? "text-slate-400" : "text-gray-500"}`}>Customer</span>
               </span>
             </button>
 
@@ -126,7 +125,17 @@ export default function CustomerSidebar({ darkMode, open, setOpen }: Props) {
               </Link>
             );
           })}
+
+ <button
+  onClick={logout}
+ className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-all duration-200 cursor-pointer"
+>
+  <LogOut size={19} />
+  <span>Logout</span>
+</button>
+
           </nav>
+        
 
           <div>
             <div className="px-5 mb-5 mt-4">
@@ -146,18 +155,13 @@ export default function CustomerSidebar({ darkMode, open, setOpen }: Props) {
                   24/7 priority support for bookings, payments, and active service issues.
                 </p>
                 
-                <button onClick={() => router.push("/support")} className={`relative z-10 w-full text-sm py-2.5 rounded-xl font-bold transition-all duration-200 shadow-sm ${darkMode ? "bg-emerald-500 hover:bg-emerald-600 text-white" : "bg-white text-emerald-700 hover:bg-emerald-50 hover:shadow-md"}`}>
+                <button onClick={() => router.push("/support")} className={`relative z-10 w-full text-sm py-2.5 rounded-xl font-bold transition-all duration-200 shadow-sm cursor-pointer ${darkMode ? "bg-emerald-500 hover:bg-emerald-600 text-white" : "bg-white text-emerald-700 hover:bg-emerald-50 hover:shadow-md" }`}>
                   Contact Support
                 </button>
               </div>
             </div>
 
-            <div className="px-4 pb-5">
-              <button onClick={logout} className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-2xl text-red-500 hover:bg-red-50 font-medium">
-                <LogOut size={19} />
-                Logout
-              </button>
-            </div>
+            
           </div>
         </div>
       </aside>

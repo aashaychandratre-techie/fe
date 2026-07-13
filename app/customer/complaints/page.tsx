@@ -1,19 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { AlertCircle, FileText, } from "lucide-react";
+import { AlertCircle, FileText,ImagePlus } from "lucide-react";
 import CustomerSidebar from "@/components/CustomerSidebar";
-import CustomerNavbar from "@/components/CustomerNavbar";
+import { useSearchParams } from "next/navigation";
+import API from "@/services/api";
+
+
 
 export default function CustomerComplaintsPage() {
-  const [bookingId, setBookingId] = useState("");
+
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState<any>({});
+  const [image, setImage] = useState<File | null>(null);
 
+  const searchParams = useSearchParams();
+  const bookingId = searchParams.get("bookingId") || "";
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
@@ -22,32 +27,56 @@ export default function CustomerComplaintsPage() {
   const userName = user.fullName || "Customer";
   const firstLetter = userName.charAt(0).toUpperCase();
 
- const handleSubmit = async () => {
+const handleSubmit = async () => {
   if (!bookingId || !subject || !message) {
     alert("Please fill all fields");
     return;
   }
 
   try {
-    // Get booking details first
-    const bookingRes = await axios.get(
-      `http://localhost:8080/bookings/${bookingId}`
+    // Fetch booking details
+    const bookingRes = await API.get(
+      `/bookings/${bookingId}`
     );
 
     const booking = bookingRes.data;
 
-    await axios.post("http://localhost:8080/complaints", {
-      customerId: user.id,
-      vendorId: booking.vendorId,
-      bookingId:  bookingId,
-      subject,
-      message,
-      type: "SERVICE_COMPLAINT",
-    });
+    // Submit complaint
+   
+const formData = new FormData();
+formData.append("customerId", user.id);
+formData.append("vendorId", booking.vendorId);
+
+formData.append("bookingId", bookingId);
+
+formData.append("subject", subject);
+
+formData.append("message", message);
+
+formData.append("type", "SERVICE_COMPLAINT");
+
+
+
+if (image) {
+
+  formData.append("image", image);
+
+}
+
+
+
+await API.post("http://localhost:8080/complaints", formData, {
+
+  headers: {
+
+    "Content-Type": "multipart/form-data",
+
+  },
+
+});
 
     alert("Complaint Submitted Successfully");
 
-    setBookingId("");
     setSubject("");
     setMessage("");
 
@@ -69,14 +98,7 @@ export default function CustomerComplaintsPage() {
       />
 
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <CustomerNavbar
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
-          setSidebarOpen={setSidebarOpen}
-          userName={userName}
-          firstLetter={firstLetter}
-        />
-
+       
         <main className="flex-1 overflow-y-auto relative flex items-center justify-center p-4 sm:p-6">
           {/* Blurred Background Effect */}
           <div className="absolute inset-0 bg-white/40 backdrop-blur-md z-0"></div>
@@ -90,25 +112,23 @@ export default function CustomerComplaintsPage() {
                 <AlertCircle size={24} />
               </div>
               <div>
-                <h1 className="text-3xl font-extrabold text-emerald-900 tracking-tight">Raise a Complaint</h1>
+                <h1 className="text-2xl font-bold text-emerald-900 tracking-tight">Raise a Complaint</h1>
                 <p className="text-sm text-gray-500 mt-1">We're here to help resolve your issues.</p>
               </div>
             </div>
 
             <div className="space-y-5">
-             <label className="block">
+            <label className="block">
   <span className="text-sm font-medium text-gray-700">
     Booking ID
   </span>
 
-  <div className="mt-2 flex items-center gap-3 border border-gray-200 bg-white rounded-2xl px-4 py-3 transition-all">
+  <div className="mt-2 flex items-center gap-3 border border-gray-200 bg-white rounded-2xl px-4 py-3">
     <input
       type="text"
-      inputMode="numeric"
-      placeholder="Enter Booking ID"
       value={bookingId}
-      onChange={(e) => setBookingId(e.target.value)}
-      className="w-full bg-transparent text-sm border-none outline-none focus:outline-none"
+      readOnly
+      className="w-full bg-transparent text-sm border-none outline-none text-gray-500"
     />
   </div>
 </label>
@@ -127,18 +147,66 @@ export default function CustomerComplaintsPage() {
                 </div>
               </label>
 
-              <label className="block">
-                <span className="text-sm font-medium text-gray-700">Message</span>
-                <div className="mt-2 border border-gray-200 bg-white rounded-2xl p-4 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
-                  <textarea
-                    placeholder="Describe your issue in detail..."
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    className="w-full h-28 outline-none bg-transparent text-sm resize-none"
-                  />
-                </div>
-              </label>
+           <label className="block">
+  <span className="text-sm font-medium text-gray-700">Message</span>
 
+  <div className="mt-2 border border-gray-200 bg-white rounded-2xl px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+    <textarea
+      rows={4}
+      placeholder="Describe your issue in detail..."
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      className="w-full outline-none bg-transparent text-sm resize-none overflow-hidden"
+    />
+  </div>
+</label>
+
+             <label className="block">
+  <div className="flex items-center justify-between mb-2">
+    <span className="text-sm font-medium text-gray-700">
+      Upload Image
+    </span>
+
+    <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+      Optional
+    </span>
+  </div>
+
+  <div className="border-2 border-dashed border-emerald-200 rounded-xl p-3 bg-emerald-50/30 hover:bg-emerald-50 transition-all">
+    <label className="flex flex-col items-center justify-center cursor-pointer">
+      <ImagePlus size={22} className="text-emerald-600 mb-1" />
+
+      <span className="text-xs font-medium text-gray-700">
+        Click to upload image
+      </span>
+
+      <input
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          if (e.target.files?.[0]) {
+            setImage(e.target.files[0]);
+          }
+        }}
+      />
+    </label>
+
+    {image && (
+      <div className="mt-3">
+        <img
+          src={URL.createObjectURL(image)}
+          alt="Preview"
+          className="w-full h-28 object-cover rounded-lg border"
+        />
+
+        <p className="mt-1 text-[11px] text-gray-500 truncate">
+          {image.name}
+        </p>
+      </div>
+    )}
+  </div>
+</label>
               <button
                 onClick={handleSubmit}
                 className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-emerald-200 hover:shadow-emerald-300 transition-all duration-300 mt-4 flex justify-center items-center gap-2"

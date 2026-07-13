@@ -106,11 +106,11 @@ export default function Navbar() {
           : "bg-white/70 backdrop-blur-md border-b border-white/50"
       }`}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center ">
         {/* Logo */}
         <button
           onClick={() => goTo("/")}
-          className="group flex items-center gap-2 text-left"
+          className="group flex items-center gap-2 text-left cursor-pointer"
         >
           <span className="h-9 w-9 rounded-2xl bg-emerald-500 text-white flex items-center justify-center font-black shadow-lg shadow-emerald-200 group-hover:-translate-y-0.5 transition">
             S
@@ -126,7 +126,7 @@ export default function Navbar() {
         <nav className="hidden md:flex gap-3 text-sm items-center">
           <button
             onClick={() => goTo("/support")}
-            className="inline-flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-emerald-50 hover:text-emerald-700 text-gray-600"
+            className="inline-flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-emerald-50 hover:text-emerald-700 text-gray-600 cursor-pointer"
           >
             <Headphones size={16} />
             Support
@@ -135,7 +135,7 @@ export default function Navbar() {
           {!isLoggedIn ? (
             <button
               onClick={() => goTo("/signin")}
-              className="rounded-xl px-3 py-2 hover:bg-emerald-50 hover:text-emerald-700 text-gray-600"
+              className="rounded-xl px-3 py-2 hover:bg-emerald-50 hover:text-emerald-700 text-gray-600 cursor-pointer"
             >
               Sign In
             </button>
@@ -143,7 +143,7 @@ export default function Navbar() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-               className="flex items-center gap-2 h-10 px-2.5 border border-emerald-300 rounded-full bg-white hover:border-emerald-500 hover:shadow-md transition-all duration-200"
+               className="flex items-center gap-2 h-10 px-2.5 border border-emerald-300 rounded-full bg-white hover:border-emerald-500 hover:shadow-md transition-all duration-200 cursor-pointer"
                 >
                 <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-semibold text-sm">
   {firstLetter}
@@ -164,7 +164,7 @@ export default function Navbar() {
               </button>
 
               {profileOpen && (
-              <div className="absolute right-0 mt-1 w-32 bg-white rounded-xl shadow-lg border border-gray-100 py-1">
+              <div className="absolute right-0 mt-1 w-32 bg-white rounded-xl shadow-lg border border-gray-100 py-1 ">
                   <button
   onClick={() => {
     if (userRole === "Vendor") {
@@ -173,7 +173,7 @@ export default function Navbar() {
       goTo("/customer/profile");
     }
   }}
-                    className="w-full flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-gray-50"
+                    className="w-full flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-gray-50 cursor-pointer"
                   >
                     <User size={22} />
                     <span className="text-lg">Profile</span>
@@ -181,7 +181,7 @@ export default function Navbar() {
 
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-6 py-3 text-red-600 hover:bg-red-50"
+                    className="w-full flex items-center gap-3 px-6 py-3 text-red-600 hover:bg-red-50 cursor-pointer"
                   >
                     <LogOut size={22} />
                     <span className="text-lg">Logout</span>
