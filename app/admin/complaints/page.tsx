@@ -333,7 +333,8 @@ useEffect(() => {
                 <table className="w-full text-sm text-left">
                   <thead>
                     <tr className="bg-gray-50/50 dark:bg-gray-800/30 text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">
-                      <th className="px-6 py-4 font-semibold rounded-tl-2xl">Report Details</th>
+                     
+    <th className="w-[30%] px-6 py-4 font-semibold rounded-tl-2xl">Report Details </th>
                       <th className="px-6 py-4 font-semibold">Message</th>
                       <th className="px-6 py-4 font-semibold">Status</th>
                       <th className="px-6 py-4 font-semibold rounded-tr-2xl">Actions</th>
@@ -497,7 +498,7 @@ useEffect(() => {
                 Complaint Details
               </h2>
               <p className="text-sm text-gray-500">
-                Complaint #{selectedComplaint.id}
+                Complaint {selectedComplaint.id}
               </p>
             </div>
           </div>
@@ -606,60 +607,84 @@ useEffect(() => {
           </div>
 
           {/* Complaint Information */}
+<div className="mt-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#1F2937] p-4">
+  <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">
+    Complaint Information
+  </h3>
 
-          <div className="mt-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#1F2937] p-4">
-            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">
-              Complaint Information
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase text-gray-500">
-                  Type
-                </p>
-                <p className="mt-1 text-sm text-gray-900 dark:text-white">
-                  {selectedComplaint.type}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-semibold uppercase text-gray-500">
-                  Subject
-                </p>
-                <p className="mt-1 text-sm text-gray-900 dark:text-white">
-                  {selectedComplaint.subject}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-semibold uppercase text-gray-500">
-                  Status
-                </p>
-                <div className="mt-2">
-                  {getStatusBadge(selectedComplaint.status)}
-                </div>
-              </div>
-            </div>
+ <div className="mb-5">
+  <p className="text-xs font-semibold uppercase text-gray-500 mb-2">
+    Service Name
+  </p>
 
-            {/* Message */}
+  <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#111827] p-4 text-sm font-medium text-gray-900 dark:text-white">
+    {selectedComplaint.serviceName || "N/A"}
+  </div>
+</div>
 
-            <div className="mt-5">
-              <p className="text-xs font-semibold uppercase text-gray-500 mb-2">
-                Message
-              </p>
-              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#111827] p-4 min-h-[90px] text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words">
-                {selectedComplaint.message}
-              </div>
-            </div>
-            {selectedComplaint.status === "RESOLVED" &&
-             selectedComplaint.resolutionNote && (
-            <div className="mt-5">
-            <p className="text-xs font-semibold uppercase text-gray-500 mb-2">
-            Resolution Note
-            </p>
-            <div className="rounded-xl border border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20 p-4 text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
-            {selectedComplaint.resolutionNote}
-            </div>
-            </div>
-            )}
-          </div>
+  {/* Customer Review */}
+  <div className="mt-5">
+    <p className="text-xs font-semibold uppercase text-gray-500 mb-2">
+      Customer Review
+    </p>
+
+    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#111827] p-4 min-h-[90px] text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words">
+       {selectedComplaint.customerReview || "No Review"}
+    </div>
+  </div>
+
+  {/* Vendor Report Reason */}
+  {selectedComplaint.type === "REVIEW_REPORT" &&
+    selectedComplaint.reportReason && (
+      <div className="mt-5">
+        <p className="text-xs font-semibold uppercase text-gray-500 mb-2">
+          Vendor Report Reason
+        </p>
+
+        <div className="rounded-xl border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/20 p-4 text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
+          {selectedComplaint.reportReason}
+        </div>
+      </div>
+  )}
+
+  {/* Resolution Note */}
+  {selectedComplaint.status === "RESOLVED" &&
+    selectedComplaint.resolutionNote && (
+      <div className="mt-5">
+        <p className="text-xs font-semibold uppercase text-gray-500 mb-2">
+          Resolution Note
+        </p>
+
+        <div className="rounded-xl border border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20 p-4 text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
+          {selectedComplaint.resolutionNote}
+        </div>
+      </div>
+  )}
+</div>
+
+{/* Action Taken */}
+{selectedComplaint.status === "RESOLVED" &&
+  selectedComplaint.actionTaken && (
+    <div className="mt-5">
+      <p className="text-xs font-semibold uppercase text-gray-500 mb-2">
+        Action Taken
+      </p>
+
+      <div className="rounded-xl border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20 p-4">
+        <p className="font-semibold text-blue-700 dark:text-blue-300">
+          {selectedComplaint.actionTaken
+            ?.replaceAll("_", " ")
+            .toUpperCase()}
+        </p>
+
+        {selectedComplaint.actionDate && (
+          <p className="text-xs text-gray-500 mt-2">
+            {new Date(selectedComplaint.actionDate).toLocaleString()}
+          </p>
+        )}
+      </div>
+    </div>
+)}
 
           {/* Footer */}
 

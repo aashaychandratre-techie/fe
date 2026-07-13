@@ -5,13 +5,16 @@ import API from "@/services/api";
 
 import VendorSidebar from "@/components/VendorSidebar";
 import VendorNavbar from "@/components/VendorNavbar";
+import ReportReviewModal from "@/components/vendor/ReportReviewModal";
 
 interface Rating {
   id: string;
   bookingId: string;
   rating: number;
   review: string;
-  reported?: boolean;
+
+  reported: boolean;
+  reportStatus?: "PENDING" | "APPROVED" | "REJECTED";
 }
 
 export default function VendorRatingsPage() {
@@ -19,6 +22,10 @@ export default function VendorRatingsPage() {
   const [loading, setLoading] = useState(true);
 
   const [open, setOpen] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [selectedRatingId, setSelectedRatingId] = useState<string | null>(null);
+ const [reportReason, setReportReason] = useState("");
+ const [selectedReview, setSelectedReview] = useState<Rating | null>(null);
 
   useEffect(() => {
     fetchRatings();
@@ -38,23 +45,43 @@ export default function VendorRatingsPage() {
     }
   };
 
-  const handleReport = async (id: string) => {
-    const ok = confirm("Report this review?");
-    if (!ok) return;
+ const handleReport = (id: string) => {
+  setSelectedRatingId(id);
+  setReportReason("");
+  setReportModalOpen(true);
+};
 
-    try {
-      await API.post(`/ratings/report/${id}`);
+const submitReport = async () => {
+  if (!selectedRatingId) return;
 
-      setRatings((prev) =>
-        prev.map((r) =>
-          r.id === id ? { ...r, reported: true } : r
-        )
-      );
-    } catch (err) {
-      alert("Failed to report");
-    }
-  };
+  if (!reportReason.trim()) {
+    alert("Please enter the reason for reporting.");
+    return;
+  }
 
+  try {
+    await API.post(`/ratings/report/${selectedRatingId}`, {
+      reason: reportReason,
+    });
+
+    setRatings((prev) =>
+      prev.map((r) =>
+        r.id === selectedRatingId
+          ? { ...r, reported: true }
+          : r
+      )
+    );
+
+    setReportModalOpen(false);
+    setSelectedRatingId(null);
+    setReportReason("");
+
+    alert("Report submitted successfully.");
+  } catch (error) {
+    console.error(error);
+    alert("Failed to submit report.");
+  }
+};
   const avg =
     ratings.length > 0
       ? (ratings.reduce((a, b) => a + b.rating, 0) / ratings.length).toFixed(1)
@@ -147,25 +174,38 @@ export default function VendorRatingsPage() {
                   <table className="w-full text-sm text-left whitespace-nowrap">
                     <thead className="bg-gray-50/80 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider font-bold text-xs border-b border-gray-100 dark:border-gray-800">
                       <tr>
-                        <th className="px-6 py-4">Booking</th>
+                        <th className="px-6 py-4">Booking ID</th>
                         <th className="px-6 py-4">Rating</th>
                         <th className="px-6 py-4">Review</th>
                         <th className="px-6 py-4">Status</th>
-                        <th className="px-6 py-4 text-center">Action</th>
+                        <th className="px-6 py-4 text-center">Report</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                       {ratings.map((r) => (
                         <tr key={r.id} className="hover:bg-emerald-50/30 transition-colors">
                           <td className="px-6 py-4 font-bold text-gray-900 dark:text-white whitespace-nowrap">
-                            #{r.bookingId}
+                            {r.bookingId}
                           </td>
                           <td className="px-6 py-4 font-extrabold text-amber-500 text-lg">
                             ⭐ {r.rating}
                           </td>
-                          <td className="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 max-w-sm">
-                            <span className="line-clamp-2">{r.review || "No review"}</span>
-                          </td>
+                         <td className="px-6 py-4 max-w-xs">
+  <button
+    onClick={() => setSelectedReview(r)}
+    className="text-left w-full"
+  >
+    <p className="line-clamp-2 text-gray-700 dark:text-gray-300">
+      {r.review || "No review"}
+    </p>
+
+    {r.review && r.review.length > 60 && (
+      <span className="text-emerald-600 text-xs font-semibold hover:underline">
+        View Review
+      </span>
+    )}
+  </button>
+</td>
                           <td className="px-6 py-4">
                             {r.reported ? (
                               <span className="px-3 py-1 text-xs rounded-full font-extrabold tracking-wide uppercase bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100">
@@ -179,7 +219,7 @@ export default function VendorRatingsPage() {
                           </td>
                           <td className="px-6 py-4 text-center">
                             {r.reported ? (
-                              <span className="text-red-400 text-sm font-bold">Flagged</span>
+                              <span className="text-amber-600 text-sm font-semibold">Submitted</span>
                             ) : (
                               <button
                                 onClick={() => handleReport(r.id)}
@@ -198,6 +238,91 @@ export default function VendorRatingsPage() {
             </div>
           </div>
         </main>
+        <ReportReviewModal
+  open={reportModalOpen}
+  reportReason={reportReason}
+  setReportReason={setReportReason}
+  onClose={() => {
+    setReportModalOpen(false);
+    setSelectedRatingId(null);
+    setReportReason("");
+  }}
+  onSubmit={submitReport}
+/>
+
+
+
+{selectedReview && (
+  <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div
+      className="absolute inset-0"
+      onClick={() => setSelectedReview(null)}
+    />
+
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="relative z-[100000] w-full max-w-xl rounded-3xl bg-white dark:bg-[#111827] shadow-2xl"
+    >
+      <button
+        onClick={() => setSelectedReview(null)}
+        className="absolute top-4 right-4 w-9 h-9 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center"
+      >
+        ✕
+      </button>
+
+      <div className="p-8">
+
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          Customer Review
+        </h2>
+
+        <div className="space-y-4">
+
+          <div>
+            <p className="text-xs uppercase font-semibold text-gray-500">
+              Booking ID
+            </p>
+
+            <p className="font-semibold">
+              {selectedReview.bookingId}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase font-semibold text-gray-500">
+              Rating
+            </p>
+
+            <p className="text-2xl font-bold text-amber-500">
+              ⭐ {selectedReview.rating}/5
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase font-semibold text-gray-500 mb-2">
+              Review
+            </p>
+
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#1F2937] p-5 whitespace-pre-wrap break-words text-gray-700 dark:text-gray-300">
+              {selectedReview.review || "No review"}
+            </div>
+          </div>
+
+        </div>
+
+        <div className="flex justify-end mt-6">
+          <button
+            onClick={() => setSelectedReview(null)}
+            className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
+            Close
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+)}
       </div>
     </div>
   );
