@@ -138,67 +138,99 @@ export default function Dashboard() {
 
             {/* HEADER */}
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500 mb-1.5">
+              <h1 className="text-2xl font-bold text-emerald-900 tracking-tight">
                 Dashboard Overview
               </h1>
-              <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400/60">
-                ServiceSphere Vendor Workspace
-              </p>
             </div>
 
             {/* STATS */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              
-              {/* Requests Stat */}
-              <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <ClipboardList size={22} className="text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                  <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Requests</span>
-                </div>
-                <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white">{totalRequests}</h2>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2">Total Service Requests</p>
-              </div>
+           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
 
-              {/* Active Stat */}
-              <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <Wrench size={22} className="text-indigo-600 dark:text-indigo-400" />
-                  </div>
-                  <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Active</span>
-                </div>
-                <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white">{activeServices}</h2>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2">Ongoing Services</p>
-              </div>
+  {/* Total Requests */}
+  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
 
-              {/* Revenue Stat */}
-              <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <IndianRupee size={22} className="text-amber-600 dark:text-amber-400" />
-                  </div>
-                  <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Revenue</span>
-                </div>
-                <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white">₹{totalEarnings.toLocaleString()}</h2>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2">Total Earnings</p>
-              </div>
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+          Total Requests
+        </p>
 
-              {/* Growth Stat (Premium Gradient) */}
-              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-3xl p-6 text-white shadow-xl shadow-emerald-500/20 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-white dark:bg-[#111827] opacity-10 rounded-full blur-xl -mt-6 -mr-6 group-hover:scale-150 transition-transform duration-700"></div>
-                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap relative z-10">
-                  <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <TrendingUp size={22} className="text-white" />
-                  </div>
-                  <span className="text-xs font-bold text-emerald-100 uppercase tracking-wider">Growth</span>
-                </div>
-                <h2 className="text-4xl font-extrabold relative z-10">+{monthlyGrowth}%</h2>
-                <p className="text-sm font-medium text-emerald-50 mt-2 relative z-10">Monthly Growth Rate</p>
-              </div>
+        <h2 className="text-3xl font-bold text-gray-900">
+          {totalRequests}
+        </h2>
+      </div>
 
-            </div>
+      <div className="p-2 lg:p-3 bg-emerald-100 rounded-xl lg:rounded-2xl text-emerald-600">
+        <ClipboardList className="w-4 h-4 lg:w-6 lg:h-6" />
+      </div>
+    </div>
+  </div>
+
+  {/* Active Services */}
+  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+          Active Services
+        </p>
+
+        <h2 className="text-3xl font-bold text-gray-900">
+          {activeServices}
+        </h2>
+      </div>
+
+      <div className="p-2 lg:p-3 bg-green-100 rounded-xl lg:rounded-2xl text-green-600">
+        <Wrench className="w-4 h-4 lg:w-6 lg:h-6" />
+      </div>
+    </div>
+  </div>
+
+  {/* Pending Requests */}
+  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+          Pending Requests
+        </p>
+
+        <h2 className="text-3xl font-bold text-gray-900">
+          {newRequests.length}
+        </h2>
+      </div>
+
+      <div className="p-2 lg:p-3 bg-orange-100 rounded-xl lg:rounded-2xl text-orange-600">
+        <ClipboardList className="w-4 h-4 lg:w-6 lg:h-6" />
+      </div>
+    </div>
+  </div>
+
+  {/* Total Earnings */}
+  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+          Total Earnings
+        </p>
+
+        <h2 className="text-3xl font-bold text-emerald-600">
+          ₹{totalEarnings.toLocaleString()}
+        </h2>
+      </div>
+
+      <div className="p-2 lg:p-3 bg-emerald-100 rounded-xl lg:rounded-2xl text-emerald-600">
+        <IndianRupee className="w-4 h-4 lg:w-6 lg:h-6" />
+      </div>
+    </div>
+  </div>
+
+</div>
 
             {/* GRID */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -232,7 +264,7 @@ export default function Dashboard() {
                               <span className="text-lg">📅</span> {item.bookingDate}
                             </p>
                             <p className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 flex items-center gap-2">
-                              <span className="text-lg">🕒</span> {item.bookingTime || "No time specified"}
+                              <span className="text-lg">🕒</span> {item.timeSlot || "No time specified"}
                             </p>
                             <p className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 flex items-center gap-2">
                               <span className="text-lg">📍</span> {item.address}

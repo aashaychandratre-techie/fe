@@ -49,7 +49,7 @@ export default function VendorSidebar({ open, setOpen }: SidebarProps) {
           open ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
-        <div className="flex items-center justify-between p-5 border-b border-emerald-100 dark:border-emerald-900/30/70">
+        <div className="flex items-center justify-between p-5">
           <button onClick={() => router.push("/")} className="flex items-center gap-3 text-left">
             <span className="h-10 w-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center font-bold shadow-lg shadow-emerald-100">S</span>
             <span>

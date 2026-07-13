@@ -67,15 +67,16 @@ export default function AnalyticsPage() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-purple-400/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-400/5 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
+       <div className="md:hidden">
         <AdminNavbar setSidebarOpen={setSidebarOpen} />
-
+       </div>
         <main className="flex-1 overflow-y-auto relative z-10">
           <div className="max-w-7xl mx-auto p-4 md:p-8 lg:p-10 space-y-8">
             
             {/* HEADER */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500 mb-1.5 flex items-center gap-3">
+                <h1 className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500 mb-1.5 flex items-center gap-3">
                   <BarChart3 className="text-emerald-600" size={32} />
                   Analytics Overview
                 </h1>

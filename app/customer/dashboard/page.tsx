@@ -313,46 +313,46 @@ const filteredServices = services.filter((service) => {
                 {upcomingBooking.serviceName}
               </h3>
 
-              <p className="text-sm text-gray-500 mt-1">
-                Your booking is confirmed.
-              </p>
-
             </div>
 
           </div>
 
-          {/* Right */}
+        {/* Right */}
 
-          <div className="grid grid-cols-2 gap-4">
+<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-            <div className="bg-gray-50 rounded-2xl p-4 min-w-[150px]">
+  <div className="bg-gray-50 rounded-2xl p-4 min-w-[150px]">
+    <p className="text-xs uppercase text-gray-400 tracking-wide">
+      Booking Date
+    </p>
 
-              <p className="text-xs uppercase text-gray-400 tracking-wide">
-                Booking Date
-              </p>
+    <p className="text-base font-semibold text-gray-900 mt-1">
+      {upcomingBooking.bookingDate ?? "Not Available"}
+    </p>
+  </div>
 
-              <p className="text-base font-semibold text-gray-900 mt-1">
-                {upcomingBooking.bookingDate}
-              </p>
+  <div className="bg-gray-50 rounded-2xl p-4 min-w-[150px]">
+    <p className="text-xs uppercase text-gray-400 tracking-wide">
+      Booking Time
+    </p>
 
-            </div>
+    <p className="text-sm font-semibold text-gray-900 mt-1">
+      {upcomingBooking.bookingTime ?? "Not Available"}
+    </p>
+  </div>
 
-            <div className="bg-gray-50 rounded-2xl p-4 min-w-[150px]">
+  <div className="bg-gray-50 rounded-2xl p-4 min-w-[150px]">
+    <p className="text-xs uppercase text-gray-400 tracking-wide">
+      Amount
+    </p>
 
-              <p className="text-xs uppercase text-gray-400 tracking-wide">
-                Amount
-              </p>
+    <p className="text-base font-semibold text-emerald-600 mt-1">
+      ₹{upcomingBooking.amount}
+    </p>
+  </div>
 
-              <p className="text-base font-semibold text-emerald-600 mt-1">
-                ₹{upcomingBooking.amount}
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
+</div>
+</div>
         {/* Progress */}
 
         <div className="mt-8">

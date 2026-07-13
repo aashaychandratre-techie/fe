@@ -61,7 +61,9 @@ export default function SchedulePage() {
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-slate-300/10 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
         {/* NAVBAR */}
-        <VendorNavbar setOpen={setOpen} />
+        <div className="md:hidden">
+                <VendorNavbar setOpen={setOpen} />
+                </div>
 
         {/* CONTENT */}
         <main className="flex-1 overflow-y-auto relative z-10">
@@ -69,7 +71,7 @@ export default function SchedulePage() {
             {/* HEADER */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
               <div>
-                <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500 mb-1.5">
+                <h1 className="text-2xl font-bold text-emerald-900 tracking-tight">
                   Schedule
                 </h1>
                 <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400/60">
@@ -96,30 +98,52 @@ export default function SchedulePage() {
               </button>
             </div>
 
-            {/* STATS */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <CalendarDays size={22} className="text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                  <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Appointments</span>
-                </div>
-                <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white">{schedules.length}</h2>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2">Total Bookings</p>
-              </div>
+           {/* STATS */}
+<div className="grid grid-cols-2 gap-3 lg:gap-6">
 
-              <div className="bg-white dark:bg-[#111827] rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <CheckCircle2 size={22} className="text-indigo-600 dark:text-indigo-400" />
-                  </div>
-                  <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Completed</span>
-                </div>
-                <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white">{completedCount}</h2>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2">Finished Services</p>
-              </div>
-            </div>
+  {/* Total Bookings */}
+  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+          Total Bookings
+        </p>
+
+        <h2 className="text-3xl font-bold text-gray-900">
+          {schedules.length}
+        </h2>
+      </div>
+
+      <div className="p-2 lg:p-3 bg-emerald-100 rounded-xl lg:rounded-2xl text-emerald-600">
+        <CalendarDays className="w-4 h-4 lg:w-6 lg:h-6" />
+      </div>
+    </div>
+  </div>
+
+  {/* Completed */}
+  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+          Completed
+        </p>
+
+        <h2 className="text-3xl font-bold text-gray-900">
+          {completedCount}
+        </h2>
+      </div>
+
+      <div className="p-2 lg:p-3 bg-green-100 rounded-xl lg:rounded-2xl text-green-600">
+        <CheckCircle2 className="w-4 h-4 lg:w-6 lg:h-6" />
+      </div>
+    </div>
+  </div>
+
+</div>
 
             {/* SCHEDULE SECTION */}
             <div className="bg-white dark:bg-[#111827] rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 md:p-8">

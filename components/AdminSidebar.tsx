@@ -30,7 +30,6 @@ export default function AdminSidebar({ sidebarOpen = false, setSidebarOpen = () 
     { name: "Services", icon: Briefcase, path: "/admin/services" },
     { name: "Bookings", icon: CalendarCheck, path: "/admin/bookings" },
     { name: "Complaints", icon: Flag, path: "/admin/complaints" },
-    { name: "Payments", icon: CreditCard, path: "/admin/payments" },
     { name: "Analytics", icon: BarChart3, path: "/admin/analytics" },
   ];
 
@@ -43,7 +42,7 @@ export default function AdminSidebar({ sidebarOpen = false, setSidebarOpen = () 
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
-        <div className="flex items-center justify-between p-5 border-b border-emerald-100/70 dark:border-emerald-900/30">
+       <div className="flex items-center justify-between p-5">
           <button onClick={() => router.push("/")} className="flex items-center gap-3 text-left">
             <span className="h-10 w-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center font-bold shadow-lg shadow-emerald-100 dark:shadow-emerald-900/20">S</span>
             <span>

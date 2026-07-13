@@ -149,7 +149,9 @@ useEffect(() => {
         <div className="absolute top-0 right-0 w-96 h-96 bg-red-400/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-400/5 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
+        <div className="md:hidden">
         <AdminNavbar setSidebarOpen={setSidebarOpen} />
+        </div>
 
         <main className="flex-1 overflow-y-auto relative z-10">
           <div className="max-w-7xl mx-auto p-4 md:p-8 lg:p-10 space-y-8">
@@ -157,7 +159,7 @@ useEffect(() => {
             {/* HEADER */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500 mb-1.5">
+                <h1 className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500 mb-1.5">
                   Complaints Overview
                 </h1>
                 <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400/60">
@@ -660,6 +662,19 @@ useEffect(() => {
         </div>
       </div>
   )}
+  {/* Resolved Date & Time */}
+{selectedComplaint.status === "RESOLVED" &&
+ selectedComplaint.actionDate && (
+  <div className="mt-5">
+    <p className="text-xs font-semibold uppercase text-gray-500 mb-2">
+      Resolved On
+    </p>
+
+    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-gray-800">
+      {new Date(selectedComplaint.actionDate).toLocaleString()}
+    </div>
+  </div>
+)}
 </div>
 
 {/* Action Taken */}
@@ -694,28 +709,9 @@ useEffect(() => {
               className="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
               Close
             </button>
-            {selectedComplaint.status === "PENDING" && (
-              <>
-               <button
-               onClick={() => {
-               setComplaintToResolve(selectedComplaint);
-               setShowResolveModal(true);
-                }}
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition"
-              >
-              Resolve
-              </button>
-                <button
-                  onClick={() => {
-                    rejectComplaint(selectedComplaint.id);
-                    setSelectedComplaint(null);
-                  }}
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white transition"
-                >
-                  Reject
-                </button>
-              </>
-            )}
+            
+             
+           
           </div>
         </div>
       </div>
