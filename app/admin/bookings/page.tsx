@@ -13,6 +13,8 @@ export default function AdminBookingsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedVendor, setSelectedVendor] = useState<{ [key: string]: string }>({});
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
@@ -191,21 +193,26 @@ export default function AdminBookingsPage() {
 
             {/* TABLE */}
             <div className="bg-white dark:bg-[#111827] rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
-              <div className="overflow-x-auto p-1">
-                <table className="w-full text-sm text-left">
+              <div className="w-full">
+                <table className="w-full table-fixed text-sm text-left">
                   <thead>
                     <tr className="bg-gray-50/50 dark:bg-gray-800/30 text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">
-                      <th className="px-6 py-4 font-semibold rounded-tl-2xl">Order Details</th>
-                      <th className="px-6 py-4 font-semibold">Service Info</th>
-                      <th className="px-6 py-4 font-semibold">Location</th>
-                      <th className="px-6 py-4 font-semibold">Status</th>
-                      <th className="px-6 py-4 font-semibold rounded-tr-2xl">Vendor Assignment</th>
+                   <th className="w-[22%] px-6 py-4">Order Details</th>
+                      <th className="w-[10%] px-6 py-4">Service</th>
+
+                  <th className="w-[16%] px-6 py-4">Schedule</th>
+
+                  <th className="w-[26%] px-6 py-4">Location</th>
+
+                   <th className="w-[10%] px-6 py-4">Status</th>
+
+                       <th className="w-[18%] px-6 py-4">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
                     {loading ? (
                       <tr>
-                        <td colSpan={5} className="px-6 py-10 text-center text-gray-500">
+                        <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
                           <div className="flex justify-center items-center gap-2">
                             <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
                             Loading bookings...
@@ -214,7 +221,7 @@ export default function AdminBookingsPage() {
                       </tr>
                     ) : currentBookings.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="px-6 py-16 text-center">
+                        <td colSpan={6} className="px-6 py-16 text-center">
                           <div className="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
                             <CalendarCheck size={48} className="mb-4 opacity-20" />
                             <p className="text-base font-medium text-gray-900 dark:text-white">No bookings found</p>
@@ -226,18 +233,30 @@ export default function AdminBookingsPage() {
                       currentBookings.map((b) => (
                         <tr key={b.id} className="hover:bg-emerald-50/30 dark:hover:bg-emerald-900/10 transition-colors group">
                           
-                          <td className="px-6 py-4">
-                            <p className="font-bold text-gray-900 dark:text-white">Order #{b.id}</p>
-                           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Customer: {b.customerName || "N/A"}</p>
-                          </td>
+                        <td className="px-6 py-4">
+  <p
+    className="font-bold text-gray-900 dark:text-white truncate"
+    title={b.id}
+  >
+    {b.id}
+  </p>
+
+  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
+    Customer: {b.customerName || "N/A"}
+  </p>
+</td>
 
                           <td className="px-6 py-4">
                             <p className="font-bold text-gray-900 dark:text-white">{b.serviceName}</p>
                             <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">₹{b.amount}</p>
                           </td>
+                           <td className="px-6 py-4 min-w-[190px]">
+                           <div className="flex flex-col"><span className="font-semibold text-gray-900 dark:text-white"> 📅 {b.bookingDate} </span>
+
+                         <span className="text-sm text-gray-500 dark:text-gray-400 mt-1  whitespace-nowrap"> 🕒 {b.bookingTime}</span> </div></td>
 
                           <td className="px-6 py-4">
-                            <p className="text-sm text-gray-700 dark:text-gray-300 max-w-[200px] truncate" title={b.address}>
+                           <p className="text-sm text-gray-700 dark:text-gray-300 break-words" title={b.address}>
                               {b.address || "No address provided"}
                             </p>
                           </td>
@@ -247,42 +266,16 @@ export default function AdminBookingsPage() {
                           </td>
 
                           <td className="px-6 py-4">
-                            {b.status === "PENDING" ? (
-                              <div className="flex items-center gap-2">
-                                <select
-                                  className="w-32 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-xs rounded-lg px-2 py-1.5 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-                                  value={selectedVendor[b.id] || ""}
-                                  onChange={(e) =>
-                                    setSelectedVendor({
-                                      ...selectedVendor,
-                                      [b.id]: e.target.value,
-                                    })
-                                  }
-                                >
-                                  <option value="">Select Vendor</option>
-                                 {(vendors[b.id] || []).map((v) => (
-  <option key={v.id} value={v.id}>
-    {v.name}
-  </option>
-))}
-                                </select>
-                                <button
-                                  onClick={() => assignVendor(b.id)}
-                                  className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md"
-                                >
-                                  <UserPlus size={12} /> Assign
-                                </button>
-                              </div>
-                           ) : b.providerName ? (
-  <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-    {b.providerName}
-  </span>
-) : (
-  <span className="text-sm text-gray-400 italic">
-    Not Assigned
-  </span>
-)}
-                          </td>
+  <button
+    onClick={() => {
+      setSelectedBooking(b);
+      setShowModal(true);
+    }}
+    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition"
+  >
+    View Details
+  </button>
+</td>
                         </tr>
                       ))
                     )}
@@ -322,7 +315,203 @@ export default function AdminBookingsPage() {
         </div>
         </div>
         </div>
-        </main>
+        {showModal && selectedBooking && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+
+    <div className="bg-white dark:bg-[#111827] rounded-3xl shadow-2xl w-full max-w-3xl mx-4 overflow-hidden">
+
+      {/* Header */}
+
+      <div className="px-8 py-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Booking Details
+          </h2>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Booking ID : {selectedBooking.id}
+          </p>
+        </div>
+
+        <button
+          onClick={() => setShowModal(false)}
+          className="text-gray-500 hover:text-red-500 text-3xl"
+        >
+          ×
+        </button>
+
+      </div>
+
+      {/* Body */}
+
+      <div className="p-8 space-y-8">
+
+        <div className="grid grid-cols-2 gap-6">
+
+          <div>
+
+            <h3 className="font-semibold text-gray-500 mb-2">
+              Customer
+            </h3>
+
+            <p className="font-bold text-lg">
+              {selectedBooking.customerName}
+            </p>
+
+          </div>
+
+          <div>
+
+            <h3 className="font-semibold text-gray-500 mb-2">
+              Service
+            </h3>
+
+            <p className="font-bold text-lg">
+              {selectedBooking.serviceName}
+            </p>
+
+          </div>
+
+          <div>
+
+            <h3 className="font-semibold text-gray-500 mb-2">
+              Booking Date
+            </h3>
+
+            <p className="font-semibold">
+              📅 {selectedBooking.bookingDate}
+            </p>
+
+          </div>
+
+          <div>
+
+            <h3 className="font-semibold text-gray-500 mb-2">
+              Booking Time
+            </h3>
+
+            <p className="font-semibold">
+              🕒 {selectedBooking.bookingTime}
+            </p>
+
+          </div>
+
+          <div>
+
+            <h3 className="font-semibold text-gray-500 mb-2">
+              Amount
+            </h3>
+
+            <p className="font-bold text-emerald-600 text-lg">
+              ₹{selectedBooking.amount}
+            </p>
+
+          </div>
+
+          <div>
+
+            <h3 className="font-semibold text-gray-500 mb-2">
+              Status
+            </h3>
+
+            {getStatusBadge(selectedBooking.status)}
+
+          </div>
+
+        </div>
+
+        {/* Address */}
+
+        <div>
+
+          <h3 className="font-semibold text-gray-500 mb-2">
+            Address
+          </h3>
+
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-4">
+            {selectedBooking.address}
+          </div>
+
+        </div>
+
+        {/* Vendor Assign */}
+
+        {selectedBooking.status === "PENDING" && (
+
+          <div className="border-t pt-6">
+
+            <h3 className="font-bold text-lg mb-4">
+              Assign Vendor
+            </h3>
+
+            <div className="flex gap-4">
+
+              <select
+                className="flex-1 border rounded-xl p-3 bg-white dark:bg-gray-900"
+                value={selectedVendor[selectedBooking.id] || ""}
+                onChange={(e) =>
+                  setSelectedVendor({
+                    ...selectedVendor,
+                    [selectedBooking.id]: e.target.value,
+                  })
+                }
+              >
+
+                <option value="">Select Vendor</option>
+
+                {(vendors[selectedBooking.id] || []).map((v: any) => (
+
+                  <option key={v.id} value={v.id}>
+                    {v.name}
+                  </option>
+
+                ))}
+
+              </select>
+
+              <button
+                onClick={() => {
+                  assignVendor(selectedBooking.id);
+                  setShowModal(false);
+                }}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 rounded-xl font-semibold"
+              >
+                Assign Vendor
+              </button>
+
+            </div>
+
+          </div>
+
+        )}
+
+        {selectedBooking.providerName && (
+
+          <div className="border-t pt-6">
+
+            <h3 className="font-semibold text-gray-500 mb-2">
+              Assigned Vendor
+            </h3>
+
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 rounded-xl p-4">
+
+              <p className="font-bold text-emerald-700">
+                {selectedBooking.providerName}
+              </p>
+
+            </div>
+
+          </div>
+
+        )}
+
+      </div>
+
+    </div>
+
+  </div>
+)}</main>
       </div>
     </div>
   );
