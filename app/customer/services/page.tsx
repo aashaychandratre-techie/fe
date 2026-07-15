@@ -9,14 +9,20 @@ import CustomerNavbar from "@/components/CustomerNavbar";
 
 
 
-type Service = {
-  id:number;
-  name:string;
-  description:string;
-  price:number;
-  imageUrl?:string;
+type AdditionalService = {
+  id: string;
+  name: string;
+  price: number;
 };
 
+type Service = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  imageUrl?: string;
+  additionalServices: AdditionalService[];
+};
 export default function ServicesPage(){
 
   const router = useRouter();
@@ -26,7 +32,8 @@ export default function ServicesPage(){
   const [search,setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  
+ 
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState<any>({});
@@ -58,7 +65,7 @@ export default function ServicesPage(){
   };
 
 
-  const bookService=(id:number,price:number)=>{
+  const bookService=(id:string,price:number)=>{
 
     router.push(
       `/customer/booking?serviceId=${id}&amount=${price}`
@@ -75,6 +82,8 @@ export default function ServicesPage(){
       service.description.toLowerCase().includes(activeCategory.toLowerCase());
     return matchesSearch && matchesCategory;
   });
+
+
 
 
 return(
@@ -274,12 +283,14 @@ return(
                               ₹{service.price}
                             </p>
                           </div>
-                          <button
-                            onClick={() => bookService(service.id, service.price)}
-                            className="bg-gray-900 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md hover:shadow-lg hover:shadow-emerald-600/30 transition-all duration-300 active:scale-95 cursor-pointer"
-                          >
-                            Book Now
-                          </button>
+                         <button
+  onClick={() => {
+  router.push(`/customer/service-details?id=${service.id}`);
+}}
+  className="bg-gray-900 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md hover:shadow-lg hover:shadow-emerald-600/30 transition-all duration-300 active:scale-95 cursor-pointer"
+>
+  View Details
+</button>
                         </div>
                       </div>
                     </div>
@@ -330,6 +341,9 @@ return(
             </div>
 
           </div>
+
+        
+
         </main>
       </div>
     </div>

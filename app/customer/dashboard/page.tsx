@@ -492,11 +492,13 @@ const filteredServices = services.filter((service) => {
                             </p>
                           </div>
                           <button
-                            onClick={() => bookService(service.id, service.price)}
-                            className="bg-gray-900 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md hover:shadow-lg hover:shadow-emerald-600/30 transition-all duration-300 active:scale-95 cursor-pointer"
-                          >
-                            Book Now
-                          </button>
+  onClick={() => {
+  router.push(`/customer/service-details?id=${service.id}`);
+}}
+  className="bg-gray-900 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md hover:shadow-lg hover:shadow-emerald-600/30 transition-all duration-300 active:scale-95 cursor-pointer"
+>
+  View Details
+</button>
                         </div>
                       </div>
                     </div>
