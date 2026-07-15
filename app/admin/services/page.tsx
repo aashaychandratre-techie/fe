@@ -6,12 +6,19 @@ import { Pencil, Trash2, Plus, Image as ImageIcon, UploadCloud } from "lucide-re
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminNavbar from "@/components/AdminNavbar";
 
+interface AdditionalService {
+  id?: string;
+  name: string;
+  price: number;
+}
+
 interface Service {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
   imageUrl?: string;
+  additionalServices: AdditionalService[];
 }
 
 export default function ServicesAdminPage() {
@@ -21,7 +28,15 @@ export default function ServicesAdminPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [editId, setEditId] = useState<number | null>(null);
+  const [additionalServices, setAdditionalServices] = useState<
+  AdditionalService[]
+>([
+  {
+    name: "",
+    price: 0,
+  },
+]);
+  const [editId, setEditId] = useState<string | null>(null);
 
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
@@ -63,6 +78,40 @@ export default function ServicesAdminPage() {
     return res.data;
   };
 
+  const addAdditionalService = () => {
+  setAdditionalServices([
+    ...additionalServices,
+    {
+      name: "",
+      price: 0,
+    },
+  ]);
+};
+
+const removeAdditionalService = (index: number) => {
+  setAdditionalServices(
+    additionalServices.filter((_, i) => i !== index)
+  );
+};
+
+const updateAdditionalService = (
+  index: number,
+  field: "name" | "price",
+  value: string
+) => {
+  const temp = [...additionalServices];
+
+  temp[index] = {
+    ...temp[index],
+    [field]:
+      field === "price"
+        ? Number(value)
+        : value,
+  };
+
+  setAdditionalServices(temp);
+};
+
   const handleSave = async () => {
     if (!name || !description || !price) {
       alert("Please fill all fields");
@@ -78,12 +127,16 @@ export default function ServicesAdminPage() {
         imageUrl = await uploadImage();
       }
 
-      const serviceData = {
-        name,
-        description,
-        price: Number(price),
-        imageUrl,
-      };
+     const serviceData = {
+  name,
+  description,
+  price: Number(price),
+  imageUrl,
+
+  additionalServices: additionalServices.filter(
+    (item) => item.name.trim() !== ""
+  ),
+};
 
       if (editId) {
         await axios.put(
@@ -103,6 +156,12 @@ export default function ServicesAdminPage() {
       setFile(null);
       setPreview("");
       setEditId(null);
+      setAdditionalServices([
+  {
+    name: "",
+    price: 0,
+  },
+]);
 
       fetchServices();
     } catch (error) {
@@ -113,7 +172,7 @@ export default function ServicesAdminPage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
+ const handleDelete = async (id: string) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this service?"
     );
@@ -142,7 +201,25 @@ export default function ServicesAdminPage() {
       setPreview("");
     }
     setFile(null);
-  };
+   if (
+    service.additionalServices &&
+    service.additionalServices.length > 0
+  ) {
+    setAdditionalServices(
+      service.additionalServices.map((item) => ({
+        name: item.name,
+        price: item.price,
+      }))
+    );
+  } else {
+    setAdditionalServices([
+      {
+        name: "",
+        price: 0,
+      },
+    ]);
+  }
+};
 
   const handleCancelEdit = () => {
     setName("");
@@ -151,6 +228,13 @@ export default function ServicesAdminPage() {
     setEditId(null);
     setPreview("");
     setFile(null);
+
+    setAdditionalServices([
+  {
+    name: "",
+    price: 0,
+  },
+]);
   };
 
   return (
@@ -165,7 +249,9 @@ export default function ServicesAdminPage() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-400/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-400/5 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
+        <div className="md:hidden">
         <AdminNavbar setSidebarOpen={setSidebarOpen} />
+        </div>
 
         <main className="flex-1 overflow-y-auto relative z-10">
           <div className="max-w-7xl mx-auto p-4 md:p-8 lg:p-10 space-y-8">
@@ -234,6 +320,97 @@ export default function ServicesAdminPage() {
                   </div>
                 </div>
               </div>
+              {/* ADDITIONAL SERVICES */}
+<div className="mt-8 relative z-10">
+
+  <div className="flex items-center justify-between mb-4">
+    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+      Additional Services
+    </label>
+
+    <button
+      type="button"
+      onClick={addAdditionalService}
+      className="flex items-center gap-2 px-4 py-2 rounded-xl 
+      bg-emerald-50 text-emerald-600 
+      hover:bg-emerald-100 transition-all 
+      font-bold text-sm"
+    >
+      <Plus size={16} />
+      Add More
+    </button>
+  </div>
+
+
+  <div className="space-y-3">
+
+    {additionalServices.map((item, index) => (
+      <div
+        key={index}
+        className="flex flex-col md:flex-row gap-3 items-center"
+      >
+
+        <input
+          type="text"
+          placeholder="Additional service name"
+          value={item.name}
+          onChange={(e) =>
+            updateAdditionalService(
+              index,
+              "name",
+              e.target.value
+            )
+          }
+          className="flex-1 w-full px-4 py-3 rounded-xl 
+          border border-gray-200 dark:border-gray-800
+          bg-gray-50/50 dark:bg-gray-800/30
+          focus:outline-none focus:ring-2
+          focus:ring-emerald-500/20
+          dark:text-white"
+        />
+
+
+        <input
+          type="number"
+          placeholder="Price"
+          value={item.price}
+          onChange={(e) =>
+            updateAdditionalService(
+              index,
+              "price",
+              e.target.value
+            )
+          }
+          className="w-full md:w-40 px-4 py-3 rounded-xl 
+          border border-gray-200 dark:border-gray-800
+          bg-gray-50/50 dark:bg-gray-800/30
+          focus:outline-none focus:ring-2
+          focus:ring-emerald-500/20
+          dark:text-white"
+        />
+
+
+        {additionalServices.length > 1 && (
+          <button
+            type="button"
+            onClick={() =>
+              removeAdditionalService(index)
+            }
+            className="w-10 h-10 rounded-full
+            bg-red-50 text-red-600
+            hover:bg-red-100
+            flex items-center justify-center"
+          >
+            ✕
+          </button>
+        )}
+
+      </div>
+    ))}
+
+  </div>
+
+</div>
 
               <div className="mt-6 relative z-10">
                 <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Service Image</label>

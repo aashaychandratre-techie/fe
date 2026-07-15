@@ -264,7 +264,7 @@ export default function Dashboard() {
                               <span className="text-lg">📅</span> {item.bookingDate}
                             </p>
                             <p className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 flex items-center gap-2">
-                              <span className="text-lg">🕒</span> {item.timeSlot || "No time specified"}
+                              <span className="text-lg">🕒</span> {item.bookingTime || "No time specified"}
                             </p>
                             <p className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 flex items-center gap-2">
                               <span className="text-lg">📍</span> {item.address}

@@ -7,6 +7,7 @@ import API from "@/services/api";
 import {
   User,
   MapPin,
+  Phone,
   CalendarDays,
   Clock,
   CheckCircle,
@@ -17,14 +18,30 @@ import CustomerSidebar from "@/components/CustomerSidebar";
 import CustomerNavbar from "@/components/CustomerNavbar";
 
 function BookingContent() {
+  
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const serviceId = searchParams.get("serviceId");
   const amount = searchParams.get("amount");
+  const additionalServicesParam = searchParams.get("additionalServices");
+  
 
   const [loading, setLoading] = useState(false);
+  const [selectedAdditionalServices, setSelectedAdditionalServices] = useState<string[]>([]);
   const [locationLoading, setLocationLoading] = useState(false);
+
+  useEffect(() => {
+
+  if(additionalServicesParam){
+
+    setSelectedAdditionalServices(
+      additionalServicesParam.split(",")
+    );
+
+  }
+
+},[additionalServicesParam]);
 
  const [form, setForm] = useState({
   name: "",
@@ -43,20 +60,7 @@ function BookingContent() {
   alternateStartTime: "",
   alternateEndTime: "",
 });
- const timeOptions = [
-  "09:00 AM",
-  "10:00 AM",
-  "11:00 AM",
-  "12:00 PM",
-  "01:00 PM",
-  "02:00 PM",
-  "03:00 PM",
-  "04:00 PM",
-  "05:00 PM",
-  "06:00 PM",
-  "07:00 PM",
-];
-
+ 
   const getCurrentLocation = () => {
   if (!navigator.geolocation) {
     alert("Geolocation is not supported.");
@@ -136,7 +140,9 @@ function BookingContent() {
         customerId: String(user.id),
         serviceId: String(serviceId),
         vendorId: null,
+        additionalServiceIds: selectedAdditionalServices.join(","),
         bookingDate: form.date,
+        
        timeSlot: `${form.preferredStartTime} - ${form.preferredEndTime}`,
 
 alternateBookingTime: `${form.alternateStartTime} - ${form.alternateEndTime}`,
@@ -188,56 +194,62 @@ ${form.state} - ${form.pincode}`,
 
         {/* Name */}
 
-        <label className="block">
-          <span className="text-sm font-medium text-gray-600">
-            Customer Name
-          </span>
+       {/* Customer Details */}
 
-          <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-2">
-            <User size={18} className="text-emerald-600" />
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-            <input
-              type="text"
-              placeholder="Enter your name"
-              value={form.name}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  name: e.target.value,
-                })
-              }
-              className="w-full outline-none bg-transparent"
-            />
-          </div>
-        </label>
+  {/* Customer Name */}
 
-         {/* Mobile */}
+  <label>
+    <span className="text-sm font-medium text-gray-600">
+      Customer Name
+    </span>
 
+    <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-3 focus-within:border-emerald-500 transition">
+      <User size={18} className="text-emerald-600" />
 
-        <label className="block mt-5">
-  <span className="text-sm font-medium text-gray-600">
-    Mobile Number
-  </span>
+      <input
+        type="text"
+        placeholder="Enter your name"
+        value={form.name}
+        onChange={(e) =>
+          setForm({
+            ...form,
+            name: e.target.value,
+          })
+        }
+        className="w-full outline-none bg-transparent text-sm"
+      />
+    </div>
+  </label>
 
-  <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-2">
-    <User size={18} className="text-emerald-600" />
+  {/* Mobile Number */}
 
-    <input
-      type="tel"
-      placeholder="Enter Mobile Number"
-      value={form.mobileNumber}
-      maxLength={10}
-      onChange={(e) =>
-        setForm({
-          ...form,
-          mobileNumber: e.target.value,
-        })
-      }
-      className="w-full outline-none bg-transparent"
-    />
-  </div>
-</label>
+  <label>
+    <span className="text-sm font-medium text-gray-600">
+      Mobile Number
+    </span>
 
+    <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-3 focus-within:border-emerald-500 transition">
+      <Phone size={18} className="text-emerald-600" />
+
+      <input
+        type="tel"
+        placeholder="    "
+        value={form.mobileNumber}
+        maxLength={10}
+        onChange={(e) =>
+          setForm({
+            ...form,
+            mobileNumber: e.target.value,
+          })
+        }
+        className="w-full outline-none bg-transparent text-sm"
+      />
+    </div>
+  </label>
+
+</div>
         
 
       {/* Address */}
@@ -447,43 +459,29 @@ ${form.state} - ${form.pincode}`,
 
       <div className="grid grid-cols-2 gap-3">
 
-        <select
-          value={form.preferredStartTime}
-          onChange={(e)=>
-            setForm({
-              ...form,
-              preferredStartTime:e.target.value
-            })
-          }
-          className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-500 outline-none focus:border-emerald-500 focus:ring-0 appearance-none"
-        >
-         <option value="" className="text-gray-400">
-  Start Time
-</option>
+        <input
+  type="time"
+  value={form.preferredStartTime}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      preferredStartTime: e.target.value,
+    })
+  }
+  className="w-full rounded-2xl border border-gray-200 px-4 py-3 outline-none focus:border-emerald-500"
+/>
 
-          {timeOptions.map(time=>(
-            <option key={time}>{time}</option>
-          ))}
-        </select>
-
-        <select
-          value={form.preferredEndTime}
-          onChange={(e)=>
-            setForm({
-              ...form,
-              preferredEndTime:e.target.value
-            })
-          }
-          className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-500 outline-none focus:border-emerald-500 focus:ring-0 appearance-none"
-        >
-         <option value="" className="text-gray-400">
-  End Time
-</option>
-
-          {timeOptions.map(time=>(
-            <option key={time}>{time}</option>
-          ))}
-        </select>
+<input
+  type="time"
+  value={form.preferredEndTime}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      preferredEndTime: e.target.value,
+    })
+  }
+  className="w-full rounded-2xl border border-gray-200 px-4 py-3 outline-none focus:border-emerald-500"
+/>
 
       </div>
     </div>
@@ -495,43 +493,29 @@ ${form.state} - ${form.pincode}`,
 
       <div className="grid grid-cols-2 gap-3">
 
-        <select
-          value={form.alternateStartTime}
-          onChange={(e)=>
-            setForm({
-              ...form,
-              alternateStartTime:e.target.value
-            })
-          }
-          className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-500 outline-none focus:border-emerald-500 focus:ring-0 appearance-none"
-        >
-         <option value="" className="text-gray-400">
-  Start Time
-</option>
+       <input
+  type="time"
+  value={form.alternateStartTime}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      alternateStartTime: e.target.value,
+    })
+  }
+  className="w-full rounded-2xl border border-gray-200 px-4 py-3 outline-none focus:border-emerald-500"
+/>
 
-          {timeOptions.map(time=>(
-            <option key={time}>{time}</option>
-          ))}
-        </select>
-
-        <select
-          value={form.alternateEndTime}
-          onChange={(e)=>
-            setForm({
-              ...form,
-              alternateEndTime:e.target.value
-            })
-          }
-          className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-gray-500 outline-none focus:border-emerald-500 focus:ring-0 appearance-none"
-        >
-         <option value="" className="text-gray-400">
-  End Time
-</option>
-
-          {timeOptions.map(time=>(
-            <option key={time}>{time}</option>
-          ))}
-        </select>
+<input
+  type="time"
+  value={form.alternateEndTime}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      alternateEndTime: e.target.value,
+    })
+  }
+  className="w-full rounded-2xl border border-gray-200 px-4 py-3 outline-none focus:border-emerald-500"
+/>
 
       </div>
     </div>
@@ -597,6 +581,7 @@ ${form.state} - ${form.pincode}`,
       />
 
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        <div className="md:hidden">
         <CustomerNavbar
           darkMode={darkMode}
           setDarkMode={setDarkMode}
@@ -604,6 +589,7 @@ ${form.state} - ${form.pincode}`,
           userName={userName}
           firstLetter={firstLetter}
         />
+        </div>
 
         <main className="flex-1 overflow-y-auto p-6 lg:p-10">
           <Suspense
