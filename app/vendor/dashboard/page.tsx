@@ -33,7 +33,7 @@ export default function Dashboard() {
   const getVendorId = () =>
     typeof window !== "undefined" ? localStorage.getItem("vendorId") : null;
 
-  // ================= DASHBOARD =================
+  
   const fetchDashboardData = async () => {
     try {
       const vendorId = getVendorId();
@@ -85,7 +85,7 @@ export default function Dashboard() {
     }
   };
 
-  // ================= SCHEDULE =================
+ 
   const fetchTodaySchedule = async () => {
   try {
     const vendorId = getVendorId();
@@ -94,7 +94,8 @@ export default function Dashboard() {
     const res = await axios.get(
       `http://localhost:8080/vendor/requests/${vendorId}`
     );
-
+    
+    
     const today = new Date().toISOString().split("T")[0];
 
     setTodaySchedule(
@@ -109,7 +110,7 @@ export default function Dashboard() {
   }
 };
 
-  // ================= ACTIONS =================
+  
   const acceptRequest = async (id: number) => {
     await axios.put(`http://localhost:8080/vendor/accept/${id}`);
     fetchNewRequests();
@@ -306,6 +307,15 @@ export default function Dashboard() {
                           <p className="font-extrabold text-gray-900 dark:text-white text-lg mt-2 mb-1">{req.serviceName}</p>
                           <div className="space-y-1">
                             <p className="text-sm font-medium text-gray-600 dark:text-gray-300">👤 {req.customerName}</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  📅 {req.bookingDate}
+</p>
+
+<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  🕒 {req.bookingTime || "No time specified"}
+</p>
+
+
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">📍 {req.address}</p>
                           </div>
                         </div>
