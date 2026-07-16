@@ -7,6 +7,7 @@ import { CheckCircle2, IndianRupee, Briefcase, Activity, ChevronDown } from "luc
 import VendorSidebar from "@/components/VendorSidebar";
 import VendorNavbar from "@/components/VendorNavbar";
 
+import PaymentQrModal from "@/components/vendor/PaymentQrModal";
 export default function VendorDeskPage() {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("active");
@@ -16,6 +17,8 @@ export default function VendorDeskPage() {
   const [completedWorks, setCompletedWorks] = useState<any[]>([]);
   const [earnings, setEarnings] = useState<any[]>([]);
   const [otpValues, setOtpValues] = useState<any>({});
+  const [showQrModal, setShowQrModal] = useState(false);
+const [selectedBooking, setSelectedBooking] = useState<any>(null);
 
   useEffect(() => {
     fetchVendorWorks();
@@ -47,11 +50,19 @@ export default function VendorDeskPage() {
 
     try {
       await axios.put(
-        `http://localhost:8080/auth/vendor/complete/${bookingId}?otp=${otp}`
-      );
+  `http://localhost:8080/auth/vendor/complete/${bookingId}?otp=${otp}`
+);
 
-      alert("Work Completed!");
-      fetchVendorWorks();
+
+const booking = activeWorks.find((b) => b.id === bookingId);
+
+setSelectedBooking(booking);
+
+// Popup Open
+setShowQrModal(true);
+
+// Data Refresh
+fetchVendorWorks();
 
       setOtpValues((p: any) => ({ ...p, [bookingId]: "" }));
     } catch (err: any) {
@@ -341,6 +352,11 @@ export default function VendorDeskPage() {
             )}
           </div>
         </main>
+        <PaymentQrModal
+   open={showQrModal}
+   booking={selectedBooking}
+   onClose={() => setShowQrModal(false)}
+/>
       </div>
     </div>
   );

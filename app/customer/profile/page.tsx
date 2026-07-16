@@ -280,10 +280,9 @@ className="flex gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer"
 
 Camera
 <input
-
 type="file"
 accept="image/*"
-capture="environment"
+capture="user"
 className="hidden"
 onChange={selectImage}
 />
@@ -323,15 +322,7 @@ Customer Account
 <UserRound size={18}/>
 Verified Customer
 </div>
-<div className="bg-gray-50 p-3 rounded-xl flex gap-2">
-<VenusAndMars
-size={18}
-className="text-emerald-600"
-/>
-{
-profile.gender || "Select Gender"
-}
-</div>
+
 </div>
 </div>
 </div>
