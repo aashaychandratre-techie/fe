@@ -9,7 +9,26 @@ import { ChevronDown } from "lucide-react";
 
 export default function RequestsPage() {
   const [open, setOpen] = useState(false);
-  const [requests, setRequests] = useState<any[]>([]);
+  type AdditionalService = {
+  id: string;
+  name: string;
+  price: number;
+};
+
+type BookingRequest = {
+  id: string;
+  serviceName: string;
+  customerName: string;
+  mobileNumber: string;
+  bookingDate: string;
+  bookingTime: string;
+  address: string;
+  amount: number;
+  status: string;
+  additionalServices: AdditionalService[];
+};
+
+const [requests, setRequests] = useState<BookingRequest[]>([]);
   const [activeTab, setActiveTab] = useState("ASSIGNED");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -34,16 +53,22 @@ export default function RequestsPage() {
     }
   };
 
-  const acceptRequest = async (id: number) => {
-    try {
-      await axios.put(`http://localhost:8080/vendor/accept/${id}`);
-      fetchRequests();
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const acceptRequest = async (id: string) => {
+  try {
+    await axios.put(`http://localhost:8080/vendor/accept/${id}`);
 
-  const rejectRequest = async (id: number) => {
+    // Active tab open ho jayega
+    setActiveTab("ACCEPTED");
+
+    // Fresh data fetch hoga
+    fetchRequests();
+
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+  const rejectRequest = async (id: string) => {
     try {
       await axios.put(`http://localhost:8080/vendor/reject/${id}`);
       fetchRequests();
@@ -168,7 +193,6 @@ export default function RequestsPage() {
                         <th className="px-6 py-4">Mobile</th>
                         <th className="px-6 py-4">Address</th>
                         <th className="px-6 py-4">Amount</th>
-                        <th className="px-6 py-4">Status</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -196,11 +220,7 @@ export default function RequestsPage() {
                             <td className="px-6 py-4 font-extrabold text-emerald-600 dark:text-emerald-400">
                               ₹{req.amount}
                             </td>
-                            <td className="px-6 py-4">
-                              <span className={`px-3 py-1 rounded-full text-xs font-extrabold tracking-wide uppercase ${getStatusColor(req.status)}`}>
-                                {req.status}
-                              </span>
-                            </td>
+                        
                           </tr>
                         ))
                       )}
@@ -209,61 +229,134 @@ export default function RequestsPage() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="space-y-4">
                 {filteredRequests.length === 0 ? (
                   <div className="col-span-full text-center py-16 bg-white/50 backdrop-blur-sm rounded-3xl border border-gray-200 dark:border-gray-700 border-dashed">
                     <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium text-lg">No {activeTab.toLowerCase()} requests right now.</p>
                   </div>
                 ) : (
                   filteredRequests.map((req: any) => (
-                    <div
-                      key={req.id}
-                      className="bg-white dark:bg-[#111827] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-emerald-100 dark:border-emerald-900/30 transition-all duration-300 flex flex-col justify-between"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-3">
-                          <span className={`px-3 py-1 text-xs rounded-full font-extrabold tracking-wide uppercase ${getStatusColor(req.status)}`}>
-                            {req.status}
-                          </span>
-                          <span className="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1 rounded-xl">
-                            ₹{req.amount}
-                          </span>
-                        </div>
-                        
-                        <h2 className="text-xl font-extrabold text-gray-900 dark:text-white mb-4 break-words">
-                          {req.serviceName}
-                        </h2>
+                   <div
+  key={req.id}
+  className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 p-5"
+>
+  {/* Top Row */}
+  <div className="flex items-center justify-between">
 
-                        <div className="space-y-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-[#1f2937] p-4 rounded-2xl border border-gray-100 dark:border-gray-800/50">
-                          <p className="flex items-center gap-2">
-                            <span className="text-gray-400 dark:text-gray-500">👤</span> {req.customerName}
-                          </p>
-                          <p className="flex items-center gap-2">
-                            <span className="text-gray-400 dark:text-gray-500">📞</span> {req.mobileNumber}
-                          </p>
-                          <p className="flex items-start gap-2 text-gray-500 dark:text-gray-400 dark:text-gray-500 text-xs mt-1">
-                            <span className="text-gray-400 dark:text-gray-500 text-sm mt-0.5">📍</span> {req.address}
-                          </p>
-                        </div>
-                      </div>
+    <div>
+      <h2 className="text-xl font-bold text-gray-900">
+        {req.serviceName}
+      </h2>
 
-                      {req.status === "ASSIGNED" && (
-                        <div className="flex gap-3 mt-6 pt-5 border-t border-gray-50">
-                          <button
-                            onClick={() => acceptRequest(req.id)}
-                            className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-2xl text-sm shadow-sm hover:shadow transition-all"
-                          >
-                            Accept
-                          </button>
-                          <button
-                            onClick={() => rejectRequest(req.id)}
-                            className="flex-1 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 text-red-600 dark:text-red-400 font-bold py-2.5 rounded-2xl text-sm transition-all"
-                          >
-                            Decline
-                          </button>
-                        </div>
-                      )}
-                    </div>
+     <p className="text-xs text-gray-500 mt-1 break-all">
+  Booking ID : {req.id}
+</p>
+    </div>
+
+    <div className="flex items-center gap-4">
+
+      <p className="text-2xl font-bold text-emerald-600">
+        ₹{req.amount}
+      </p>
+
+      <span
+        className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(
+          req.status
+        )}`}
+      >
+        {req.status}
+      </span>
+
+    </div>
+  </div>
+
+  <div className="border-t my-4"></div>
+
+  {/* Customer Details */}
+
+  <div className="flex flex-wrap items-center gap-6 text-sm">
+
+    <span>
+      <span className="text-gray-500">Customer :</span>{" "}
+      <span className="font-semibold">{req.customerName}</span>
+    </span>
+
+    <span>
+      <span className="text-gray-500">Mobile :</span>{" "}
+      <span className="font-semibold">{req.mobileNumber}</span>
+    </span>
+
+    <span>
+      <span className="text-gray-500">Date :</span>{" "}
+      <span className="font-semibold">{req.bookingDate}</span>
+    </span>
+
+    <span>
+      <span className="text-gray-500">Time :</span>{" "}
+      <span className="font-semibold">{req.bookingTime}</span>
+    </span>
+
+  </div>
+
+  {/* Address */}
+
+  <div className="mt-4 flex items-start gap-2 text-sm">
+    <span className="text-gray-500 font-medium">Address :</span>
+
+    <span className="text-gray-700">
+      {req.address}
+    </span>
+  </div>
+
+  {/* Additional Services */}
+
+  {req.additionalServices?.length > 0 && (
+
+    <div className="mt-4">
+
+      <p className="text-sm font-semibold mb-2">
+        Additional Services
+      </p>
+
+      <div className="flex flex-wrap gap-2">
+
+        {req.additionalServices.map((item: AdditionalService) => (
+
+          <div
+            key={item.id}
+            className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium"
+          >
+            {item.name} • ₹{item.price}
+          </div>
+
+        ))}
+
+      </div>
+
+    </div>
+
+  )}
+
+  {/* Buttons */}
+
+  <div className="flex justify-end gap-3 mt-5">
+
+    <button
+      onClick={() => rejectRequest(req.id)}
+      className="px-4 py-1.5 rounded-lg border border-red-300 text-red-600 hover:bg-red-50 text-sm font-medium transition"
+    >
+      Decline
+    </button>
+
+    <button
+      onClick={() => acceptRequest(req.id)}
+      className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition"
+    >
+      Accept Booking
+    </button>
+
+  </div>
+</div>
                   ))
                 )}
               </div>

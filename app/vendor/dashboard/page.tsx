@@ -12,6 +12,8 @@ import {
 
 import VendorSidebar from "@/components/VendorSidebar";
 import VendorNavbar from "@/components/VendorNavbar";
+import VendorMap from "@/components/VendorMap";
+
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -33,7 +35,7 @@ export default function Dashboard() {
   const getVendorId = () =>
     typeof window !== "undefined" ? localStorage.getItem("vendorId") : null;
 
-  
+
   const fetchDashboardData = async () => {
     try {
       const vendorId = getVendorId();
@@ -85,32 +87,47 @@ export default function Dashboard() {
     }
   };
 
- 
+
   const fetchTodaySchedule = async () => {
-  try {
-    const vendorId = getVendorId();
-    if (!vendorId) return;
+    try {
+      const vendorId = getVendorId();
+      if (!vendorId) return;
 
-    const res = await axios.get(
-      `http://localhost:8080/vendor/requests/${vendorId}`
-    );
-    
-    
-    const today = new Date().toISOString().split("T")[0];
+      const res = await axios.get(
+        `http://localhost:8080/vendor/requests/${vendorId}`
+      );
+      console.log("All Vendor Requests:", res.data);
 
-    setTodaySchedule(
-      (res.data || []).filter(
-        (i: any) =>
-          (i.status === "ACCEPTED" || i.status === "COMPLETED") &&
-          i.bookingDate === today
-      )
-    );
-  } catch (err) {
-    console.log(err);
-  }
-};
 
-  
+      const today = new Date().toISOString().split("T")[0];
+
+      //new
+      
+
+const filtered = (res.data || []).filter(
+  (i: any) =>
+    (i.status === "ACCEPTED" || i.status === "COMPLETED") &&
+    i.bookingDate === today
+);
+
+console.log("Today's Date:", today);
+console.log("Today's Schedule:", filtered);
+
+setTodaySchedule(filtered);
+
+      setTodaySchedule(
+        (res.data || []).filter(
+          (i: any) =>
+            (i.status === "ACCEPTED" || i.status === "COMPLETED") &&
+            i.bookingDate === today
+        )
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
   const acceptRequest = async (id: number) => {
     await axios.put(`http://localhost:8080/vendor/accept/${id}`);
     fetchNewRequests();
@@ -145,93 +162,93 @@ export default function Dashboard() {
             </div>
 
             {/* STATS */}
-           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
 
-  {/* Total Requests */}
-  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+              {/* Total Requests */}
+              <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
 
-    <div className="flex justify-between items-start">
-      <div>
-        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
-          Total Requests
-        </p>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+                      Total Requests
+                    </p>
 
-        <h2 className="text-3xl font-bold text-gray-900">
-          {totalRequests}
-        </h2>
-      </div>
+                    <h2 className="text-3xl font-bold text-gray-900">
+                      {totalRequests}
+                    </h2>
+                  </div>
 
-      <div className="p-2 lg:p-3 bg-emerald-100 rounded-xl lg:rounded-2xl text-emerald-600">
-        <ClipboardList className="w-4 h-4 lg:w-6 lg:h-6" />
-      </div>
-    </div>
-  </div>
+                  <div className="p-2 lg:p-3 bg-emerald-100 rounded-xl lg:rounded-2xl text-emerald-600">
+                    <ClipboardList className="w-4 h-4 lg:w-6 lg:h-6" />
+                  </div>
+                </div>
+              </div>
 
-  {/* Active Services */}
-  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+              {/* Active Services */}
+              <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
 
-    <div className="flex justify-between items-start">
-      <div>
-        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
-          Active Services
-        </p>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+                      Active Services
+                    </p>
 
-        <h2 className="text-3xl font-bold text-gray-900">
-          {activeServices}
-        </h2>
-      </div>
+                    <h2 className="text-3xl font-bold text-gray-900">
+                      {activeServices}
+                    </h2>
+                  </div>
 
-      <div className="p-2 lg:p-3 bg-green-100 rounded-xl lg:rounded-2xl text-green-600">
-        <Wrench className="w-4 h-4 lg:w-6 lg:h-6" />
-      </div>
-    </div>
-  </div>
+                  <div className="p-2 lg:p-3 bg-green-100 rounded-xl lg:rounded-2xl text-green-600">
+                    <Wrench className="w-4 h-4 lg:w-6 lg:h-6" />
+                  </div>
+                </div>
+              </div>
 
-  {/* Pending Requests */}
-  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+              {/* Pending Requests */}
+              <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
 
-    <div className="flex justify-between items-start">
-      <div>
-        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
-          Pending Requests
-        </p>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+                      Pending Requests
+                    </p>
 
-        <h2 className="text-3xl font-bold text-gray-900">
-          {newRequests.length}
-        </h2>
-      </div>
+                    <h2 className="text-3xl font-bold text-gray-900">
+                      {newRequests.length}
+                    </h2>
+                  </div>
 
-      <div className="p-2 lg:p-3 bg-orange-100 rounded-xl lg:rounded-2xl text-orange-600">
-        <ClipboardList className="w-4 h-4 lg:w-6 lg:h-6" />
-      </div>
-    </div>
-  </div>
+                  <div className="p-2 lg:p-3 bg-orange-100 rounded-xl lg:rounded-2xl text-orange-600">
+                    <ClipboardList className="w-4 h-4 lg:w-6 lg:h-6" />
+                  </div>
+                </div>
+              </div>
 
-  {/* Total Earnings */}
-  <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+              {/* Total Earnings */}
+              <div className="relative p-3 sm:p-4 lg:p-6 rounded-2xl lg:rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
 
-    <div className="flex justify-between items-start">
-      <div>
-        <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
-          Total Earnings
-        </p>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-xs lg:text-sm font-medium text-gray-500 mb-1">
+                      Total Earnings
+                    </p>
 
-        <h2 className="text-3xl font-bold text-emerald-600">
-          ₹{totalEarnings.toLocaleString()}
-        </h2>
-      </div>
+                    <h2 className="text-3xl font-bold text-emerald-600">
+                      ₹{totalEarnings.toLocaleString()}
+                    </h2>
+                  </div>
 
-      <div className="p-2 lg:p-3 bg-emerald-100 rounded-xl lg:rounded-2xl text-emerald-600">
-        <IndianRupee className="w-4 h-4 lg:w-6 lg:h-6" />
-      </div>
-    </div>
-  </div>
+                  <div className="p-2 lg:p-3 bg-emerald-100 rounded-xl lg:rounded-2xl text-emerald-600">
+                    <IndianRupee className="w-4 h-4 lg:w-6 lg:h-6" />
+                  </div>
+                </div>
+              </div>
 
-</div>
+            </div>
 
             {/* GRID */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -277,16 +294,38 @@ export default function Dashboard() {
                   )}
                 </div>
               </div>
+              {/* TODAY'S ROUTE */}
+<div className="lg:col-span-2 bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 rounded-3xl p-6 shadow-sm">
+  <div className="flex items-center justify-between mb-5">
+    <div>
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+        Today's Route
+      </h3>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        View today's scheduled service locations
+      </p>
+    </div>
+
+    <span className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-xs font-semibold">
+      {todaySchedule.length} Stops
+    </span>
+  </div>
+
+  <div className="h-[420px] overflow-hidden rounded-2xl border border-gray-200">
+    <VendorMap />
+  </div>
+</div>
 
               {/* REQUESTS */}
+
               <div className="lg:col-span-2 bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 rounded-3xl p-6 shadow-sm">
+
                 <div className="flex items-center justify-between mb-6 gap-2 flex-wrap">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">New Booking Requests</h3>
                   <span className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-100 dark:border-emerald-900/30">
                     {newRequests.length} Pending
                   </span>
                 </div>
-
                 <div className="space-y-4">
                   {newRequests.length === 0 ? (
                     <div className="text-center py-16 bg-gray-50 dark:bg-[#1f2937] rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
@@ -308,12 +347,12 @@ export default function Dashboard() {
                           <div className="space-y-1">
                             <p className="text-sm font-medium text-gray-600 dark:text-gray-300">👤 {req.customerName}</p>
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-  📅 {req.bookingDate}
-</p>
+                              📅 {req.bookingDate}
+                            </p>
 
-<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-  🕒 {req.bookingTime || "No time specified"}
-</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                              🕒 {req.bookingTime || "No time specified"}
+                            </p>
 
 
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">📍 {req.address}</p>
@@ -344,6 +383,7 @@ export default function Dashboard() {
           </div>
         </main>
       </div>
+
     </div>
   );
 }

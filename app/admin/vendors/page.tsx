@@ -104,11 +104,34 @@ const blockVendor = async (vendorId: string) => {
   );
 
   // 👉 NAME CLICK (DETAILS)
-  const openVendorDetails = (vendor: any) => {
-    setSelectedVendor(vendor);
-    setModalType("DETAIL");
-    setShowVendorModal(true);
-  };
+ const openVendorDetails = async (vendor: any) => {
+  try {
+    const res = await axios.get(
+      `http://localhost:8080/vendor/requests/${vendor.id}`
+    );
+
+    const filtered = res.data.filter(
+      (item: any) =>
+        item.status === "ACCEPTED" ||
+        item.status === "COMPLETED"
+    );
+
+    setSelectedVendor({
+      ...vendor,
+      totalBookings: filtered.length,
+    });
+  } catch (err) {
+    console.log(err);
+
+    setSelectedVendor({
+      ...vendor,
+      totalBookings: 0,
+    });
+  }
+
+  setModalType("DETAIL");
+  setShowVendorModal(true);
+};
 
   // 👉 RATING CLICK (ONLY RATINGS)
   const openVendorRatings = async (vendor: any) => {
@@ -135,10 +158,36 @@ const blockVendor = async (vendorId: string) => {
         return <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/30">Rejected</span>;
       case "BLOCKED":
         return <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-200 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700">Blocked</span>;
+      case "SUSPENDED":
+        return ( <span className="px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700 border border-yellow-200">Suspended </span> );
       default:
         return <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/30">Pending</span>;
     }
   };
+  const suspendVendor = async (vendorId: string) => {
+  try {
+    await axios.put(
+      `http://localhost:8080/api/admin/suspend-vendor/${vendorId}`
+    );
+
+    fetchVendors();
+  } catch (err) {
+    console.log(err);
+    alert("Failed to suspend vendor");
+  }
+};
+const resumeVendor = async (vendorId: string) => {
+  try {
+    await axios.put(
+      `http://localhost:8080/api/admin/resume-vendor/${vendorId}`
+    );
+
+    fetchVendors();
+  } catch (err) {
+    console.log(err);
+    alert("Failed to resume vendor");
+  }
+};
 
   return (
     <div className="flex h-screen bg-slate-50/50 dark:bg-[#0B1120] font-sans overflow-hidden">
@@ -152,10 +201,12 @@ const blockVendor = async (vendorId: string) => {
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-400/5 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
+        <div className="md:hidden">
         <AdminNavbar
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
         />
+        </div>
 
         <main className="flex-1 overflow-y-auto relative z-10">
           <div className="max-w-7xl mx-auto p-4 md:p-8 lg:p-10 space-y-8">
@@ -353,18 +404,7 @@ const blockVendor = async (vendorId: string) => {
     </div>
   )}
 
-  {/* Approved */}
-  {v.status === "APPROVED" && (
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        blockVendor(v.id);
-      }}
-      className="px-3 py-1 bg-gray-700 hover:bg-gray-800 text-white rounded-lg text-xs font-semibold"
-    >
-      Block
-    </button>
-  )}
+
 
   {/* Rejected */}
   {v.status === "REJECTED" && (
@@ -380,17 +420,43 @@ const blockVendor = async (vendorId: string) => {
   )}
 
   {/* Blocked */}
-  {v.status === "BLOCKED" && (
+ {v.status === "APPROVED" && (
+  <div className="flex justify-center gap-2">
     <button
       onClick={(e) => {
         e.stopPropagation();
-        approveVendor(v.id);
+        blockVendor(v.id);
       }}
-      className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-semibold"
+      className="px-3 py-1 bg-gray-700 hover:bg-gray-800 text-white rounded-lg text-xs font-semibold"
     >
-      Unblock
+      Block
     </button>
-  )}
+
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        suspendVendor(v.id);
+      }}
+      className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-xs font-semibold"
+    >
+      Suspend
+    </button>
+
+  </div>
+  
+)}
+{/* Suspended */}
+{v.status === "SUSPENDED" && (
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      resumeVendor(v.id);
+    }}
+    className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-semibold"
+  >
+    Resume
+  </button>
+)}
 </td>
                         </tr>
                       ))
@@ -454,51 +520,124 @@ const blockVendor = async (vendorId: string) => {
                     >
                       <X size={16} />
                     </button>
+                    {modalType === "DETAIL" && (
+  <div className="absolute top-14 right-4 text-right">
+    <p className="text-[11px] text-white/70 font-medium">
+      Vendor ID
+    </p>
+
+    <p className="text-xs font-semibold text-white break-all max-w-[240px]">
+      {selectedVendor.id}
+    </p>
+  </div>
+)}
                   </div>
                   <div className="px-6 pb-6 relative">
-                    <div className="w-20 h-20 rounded-2xl bg-white dark:bg-[#111827] p-1.5 absolute -top-10 shadow-sm border border-gray-100 dark:border-gray-800">
-                      <div className={`w-full h-full rounded-xl flex items-center justify-center text-3xl font-bold ${modalType === "DETAIL" ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" : "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"}`}>
-                        {modalType === "DETAIL" ? (selectedVendor.name || "V")[0].toUpperCase() : <Star className="fill-current" size={32} />}
-                      </div>
-                    </div>
+                   <div className="w-20 h-20 rounded-2xl bg-white dark:bg-[#111827] p-1.5 absolute -top-10 shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+  {modalType === "DETAIL" ? (
+    selectedVendor.profileImage ? (
+      <img
+        src={`http://localhost:8080/uploads/profile/${selectedVendor.profileImage}`}
+        alt="Vendor"
+        className="w-full h-full object-cover rounded-xl"
+      />
+    ) : (
+      <div className="w-full h-full rounded-xl flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-3xl font-bold">
+        {(selectedVendor.name || "V")[0].toUpperCase()}
+      </div>
+    )
+  ) : (
+    <div className="w-full h-full rounded-xl flex items-center justify-center bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+      <Star className="fill-current" size={32} />
+    </div>
+  )}
+</div>
                     <div className="pt-12 mb-6">
                       <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                         {modalType === "DETAIL" ? (selectedVendor.name || "Vendor Details") : `${selectedVendor.name}'s Ratings`}
                       </h2>
-                      <div className="flex items-center gap-2 mt-1">
-                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                          {modalType === "DETAIL" ? "Business Profile" : "Customer Feedback"}
-                        </p>
-                        {modalType === "DETAIL" && (
-                          <>
-                            <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700"></span>
-                            <p className="text-xs text-gray-400 dark:text-gray-500">ID: {selectedVendor.id}</p>
-                          </>
-                        )}
-                      </div>
+                      
                     </div>
 
                     {/* DETAIL CONTENT */}
                     {modalType === "DETAIL" && (
-                      <div className="space-y-4">
-                        <div className="bg-gray-50 dark:bg-gray-800/30 rounded-2xl p-4 border border-gray-100 dark:border-gray-800/50">
-                          <div className="grid grid-cols-2 gap-y-4 text-sm">
-                            <div>
-                              <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Email Address</p>
-                              <p className="font-medium text-gray-900 dark:text-white truncate" title={selectedVendor.email}>{selectedVendor.email || "N/A"}</p>
-                            </div>
-                            <div>
-                              <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Phone Number</p>
-                              <p className="font-medium text-gray-900 dark:text-white">{selectedVendor.phone || "N/A"}</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-800/30 rounded-2xl p-4 border border-gray-100 dark:border-gray-800/50">
-                          <span className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</span>
-                          {getStatusBadge(selectedVendor.status || "PENDING")}
-                        </div>
-                      </div>
-                    )}
+  <div className="bg-gray-50 dark:bg-gray-800/30 rounded-2xl p-5 border border-gray-100 dark:border-gray-800/50">
+
+  <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
+
+    <div>
+      <p className="text-[11px] text-gray-500 font-semibold uppercase">
+        Email
+      </p>
+      <p className="font-medium truncate">
+        {selectedVendor.email || "N/A"}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-[11px] text-gray-500 font-semibold uppercase">
+        Phone
+      </p>
+      <p className="font-medium">
+        {selectedVendor.phone || "N/A"}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-[11px] text-gray-500 font-semibold uppercase">
+        Service
+      </p>
+      <p className="font-medium">
+        {selectedVendor.serviceName || "N/A"}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-[11px] text-gray-500 font-semibold uppercase">
+        Rating
+      </p>
+
+      <div className="flex items-center gap-1">
+        <Star size={15} className="fill-amber-500 text-amber-500" />
+        <span className="font-medium">
+          {selectedVendor.averageRating
+            ? Number(selectedVendor.averageRating).toFixed(1)
+            : "0.0"}
+        </span>
+      </div>
+    </div>
+   <div>
+  <p className="text-[11px] font-semibold uppercase text-gray-500">
+    Total Bookings
+  </p>
+
+  <p className="font-medium">
+    {selectedVendor.totalBookings ?? 0}
+  </p>
+</div>
+
+<div>
+  <p className="text-[11px] text-gray-500 font-semibold uppercase">
+    Status
+  </p>
+
+  {getStatusBadge(selectedVendor.status || "PENDING")}
+</div>
+
+<div className="col-span-2">
+  <p className="text-[11px] text-gray-500 font-semibold uppercase">
+    Address
+  </p>
+
+  <p className="font-medium break-words">
+  {selectedVendor.address || "N/A"}
+</p>
+</div>
+
+  </div>
+
+</div>
+)}
 
                     {/* RATINGS CONTENT */}
                     {modalType === "RATINGS" && (
