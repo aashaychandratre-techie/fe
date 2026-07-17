@@ -23,11 +23,15 @@ export default function ProfilePage() {
 
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const getImageUrl = (img?: string) => {
-    if (!img) return null;
-    if (img.startsWith("http")) return img;
-    return `http://localhost:8080/uploads/${img}`;
-  };
+ const getImageUrl = (img?: string) => {
+  if (!img) return null;
+
+  if (img.startsWith("http")) return img;
+
+  const fileName = img.replace("profile/", "");
+
+  return `http://localhost:8080/uploads/profile/${fileName}`;
+};
 
   const fetchVendor = async (id: string) => {
     const res = await axios.get(
@@ -96,7 +100,9 @@ export default function ProfilePage() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-400/5 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
-        <VendorNavbar setOpen={setOpen} />
+       <div className="md:hidden">
+               <VendorNavbar setOpen={setOpen} />
+               </div>
 
         <main className="flex-1 overflow-y-auto p-5 lg:p-8 relative z-10">
           <div className="max-w-4xl mx-auto space-y-6">

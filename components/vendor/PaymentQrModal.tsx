@@ -50,7 +50,7 @@ export default function PaymentQrModal({
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-sm rounded-3xl bg-white shadow-2xl overflow-hidden">
 
         {/* Close */}
         <button
@@ -61,8 +61,8 @@ export default function PaymentQrModal({
         </button>
 
         {/* Header */}
-        <div className="bg-emerald-600 text-white p-6 text-center">
-          <h2 className="text-2xl font-bold">
+        <div className="bg-emerald-600 text-white py-4 px-5 text-center">
+          <h2 className="text-xl font-bold">
             Payment QR
           </h2>
 
@@ -71,10 +71,10 @@ export default function PaymentQrModal({
           </p>
         </div>
 
-        <div className="p-6">
+        <div className="p-5">
 
           {/* Booking Details */}
-          <div className="space-y-3 border rounded-2xl p-4">
+          <div className="space-y-2 border rounded-2xl p-3">
 
             <div className="flex justify-between">
               <span className="text-gray-500">
@@ -103,7 +103,7 @@ export default function PaymentQrModal({
                 Amount
               </span>
 
-              <span className="flex items-center gap-1 text-emerald-600 font-bold text-xl">
+              <span className="flex items-center gap-1 text-emerald-600 font-bold text-lg">
                 <IndianRupee size={18} />
                 {booking.amount}
               </span>
@@ -135,7 +135,7 @@ export default function PaymentQrModal({
   ) : (
     <div className="w-64 h-64 rounded-2xl border-2 border-red-300 bg-red-50 flex flex-col items-center justify-center p-4">
 
-      <h2 className="text-red-600 font-bold text-xl">
+      <h2 className="text-red-600 font-bold text-lg">
         QR Expired
       </h2>
 

@@ -334,6 +334,7 @@ useEffect(() => {
                     >
                       <X size={16} />
                     </button>
+                    
                   </div>
 
                   {/* Avatar Overflow */}

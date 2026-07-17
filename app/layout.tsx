@@ -4,7 +4,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "ServiceSphere",
-  description: "Book trusted local services and manage customer, vendor, and admin workflows.",
+  description:
+    "Book trusted local services and manage customer, vendor, and admin workflows.",
 };
 
 export default function RootLayout({
@@ -13,9 +14,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="h-full antialiased">
-      <body className="min-h-full flex flex-col">
-        <ThemeProviderWrapper>{children}</ThemeProviderWrapper>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className="h-full antialiased"
+    >
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col"
+      >
+        <ThemeProviderWrapper>
+          {children}
+        </ThemeProviderWrapper>
       </body>
     </html>
   );
