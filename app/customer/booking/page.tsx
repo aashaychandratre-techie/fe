@@ -135,6 +135,7 @@ function BookingContent() {
       setLoading(true);
 
       const user = JSON.parse(localStorage.getItem("user") || "{}");
+    
 
       const payload = {
         customerId: String(user.id),
