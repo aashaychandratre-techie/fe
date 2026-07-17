@@ -1,480 +1,325 @@
 "use client";
 
-import {useState,useEffect} from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-
 import {
-Camera,
-Mail,
-Phone,
-MapPin,
-Edit3,
-Save,
-ArrowLeft,
-UserRound,
-X,
-VenusAndMars,
-Trash2,
-ChevronDown,
-Image as ImageIcon
+  Camera,
+  Mail,
+  Phone,
+  MapPin,
+  Edit3,
+  Save,
+  UserRound,
+  X,
+  VenusAndMars,
+  Trash2,
+  ChevronDown,
+  Image as ImageIcon,
+  CheckCircle2
 } from "lucide-react";
-
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import CustomerSidebar from "@/components/CustomerSidebar";
 import CustomerNavbar from "@/components/CustomerNavbar";
 
+export default function CustomerProfilePage() {
+  const router = useRouter();
 
-export default function CustomerProfilePage(){
-
-const router=useRouter();
-const [mounted,setMounted]=useState(false);
-const [darkMode, setDarkMode] = useState(false);
-const [sidebarOpen, setSidebarOpen] = useState(false);
-const [isEditing,setIsEditing]=useState(false);
-const [showPhotoMenu,setShowPhotoMenu]=useState(false);
-const [showGenderDropdown, setShowGenderDropdown] = useState(false);
-const [selectedFile,setSelectedFile]=useState<File|null>(null);
-const [profileImage,setProfileImage]=useState("");
-const [profile,setProfile]=useState({
-
-id:"",
-fullName:"",
-email:"",
-mobileNumber:"",
-address:"",
-gender:"",
-profileImage:""
-
-});
-
-const [temp,setTemp]=useState(profile);
-const getImageUrl=(img?:string)=>{
-
-if(!img)
-return "";
-
-if(img.startsWith("http"))
-return img;
-
-return `http://localhost:8080${img}`;
-
+  const toTitleCase = (value: string) => {
+  return value
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 };
+  const [mounted, setMounted] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showPhotoMenu, setShowPhotoMenu] = useState(false);
+  const [showGenderDropdown, setShowGenderDropdown] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [profileImage, setProfileImage] = useState("");
+  const [profile, setProfile] = useState({
+    id: "",
+    fullName: "",
+    email: "",
+    mobileNumber: "",
+    address: "",
+    gender: "",
+    profileImage: ""
+  });
 
-useEffect(()=>{
-setMounted(true);
-const loadUser=async()=>{
-try{
-const savedUser=
-JSON.parse(
-localStorage.getItem("user")||"{}"
-);
+  const [temp, setTemp] = useState(profile);
 
-if(savedUser?.id){
-const res=
-await axios.get(
-`http://localhost:8080/api/auth/user/${savedUser.id}`
-);
+  const getImageUrl = (img?: string) => {
+    if (!img) return "";
+    if (img.startsWith("http")) return img;
+    return `http://localhost:8080${img}`;
+  };
 
-const user=res.data;
-setProfile(user);
-setTemp(user);
-setProfileImage(
-getImageUrl(user.profileImage)
-);
+  useEffect(() => {
+    setMounted(true);
+    const loadUser = async () => {
+      try {
+        const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        if (savedUser?.id) {
+          const res = await axios.get(`http://localhost:8080/api/auth/user/${savedUser.id}`);
+          const user = res.data;
+          setProfile(user);
+          setTemp(user);
+          setProfileImage(getImageUrl(user.profileImage));
+          localStorage.setItem("user", JSON.stringify(user));
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    loadUser();
+  }, []);
 
-localStorage.setItem(
-"user",
-JSON.stringify(user)
-);
-}
-}
-catch(err){
-console.log(err);
-}
-};
-loadUser();
-},[]);
-if(!mounted)
-return null;
-const selectImage=(e:any)=>{
-const file=e.target.files?.[0];
-if(file){
-setSelectedFile(file);
-setProfileImage(
-URL.createObjectURL(file)
-);
-}
-};
+  if (!mounted) return null;
 
-const deleteImage=async()=>{
-try{
-const res=
-await axios.delete(
-`http://localhost:8080/api/auth/delete-profile/${profile.id}`
-);
+  const selectImage = (e: any) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setProfileImage(URL.createObjectURL(file));
+    }
+    setShowPhotoMenu(false);
+  };
 
-setProfile(res.data);
-setTemp(res.data);
-setProfileImage("");
+  const deleteImage = async () => {
+    try {
+      const res = await axios.delete(`http://localhost:8080/api/auth/delete-profile/${profile.id}`);
+      setProfile(res.data);
+      setTemp(res.data);
+      setProfileImage("");
+      localStorage.setItem("user", JSON.stringify(res.data));
+      setShowPhotoMenu(false);
+      alert("Profile Photo Deleted");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-localStorage.setItem(
-"user",
-JSON.stringify(res.data)
-);
+  const saveProfile = async () => {
+    try {
+      const updateData = { ...temp, profileImage: null };
+      let res = await axios.put(`http://localhost:8080/api/auth/update/${profile.id}`, updateData);
+      let user = res.data;
 
-alert(
-"Profile Photo Deleted"
-);
-}
-catch(err){
+      if (selectedFile) {
+        const form = new FormData();
+        form.append("file", selectedFile);
+        const upload = await axios.post(`http://localhost:8080/api/auth/upload-profile/${profile.id}`, form, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+        user = upload.data;
+      }
 
-console.log(err);
-}
+      setProfile(user);
+      setTemp(user);
+      localStorage.setItem("user", JSON.stringify(user));
+      setProfileImage(getImageUrl(user.profileImage));
+      setSelectedFile(null);
+      setIsEditing(false);
+      alert("Profile Updated Successfully");
+    } catch (err) {
+      console.log(err);
+      alert("Update Failed");
+    }
+  };
 
-};
-
-const saveProfile=async()=>{
-try{
-const updateData={
-
-...temp,
-profileImage:null
-};
-
-let res=
-await axios.put(
-`http://localhost:8080/api/auth/update/${profile.id}`,
-updateData
-);
-
-let user=res.data;
-if(selectedFile){
-const form=new FormData();
-form.append(
-"file",
-selectedFile
-);
-const upload=
-await axios.post(
-`http://localhost:8080/api/auth/upload-profile/${profile.id}`,
-form,
-
-{
-headers:{
-"Content-Type":"multipart/form-data"
-}
-}
-
-);
-
-user=upload.data;
-}
-setProfile(user);
-setTemp(user);
-localStorage.setItem(
-"user",
-JSON.stringify(user)
-);
-
-setProfileImage(
-getImageUrl(user.profileImage)
-);
-setSelectedFile(null);
-setIsEditing(false);
-
-alert(
-"Profile Updated Successfully"
-);
-}
-catch(err){
-console.log(err);
-
-alert(
-"Update Failed"
-);
-}
-
-};
   const userName = profile?.fullName || "Customer";
   const firstLetter = userName.charAt(0).toUpperCase();
+
+  const profileFields = [
+    { icon: UserRound, label: "Full Name", field: "fullName", type: "text" },
+    { icon: Mail, label: "Email Address", field: "email", type: "text" },
+    { icon: Phone, label: "Mobile Number", field: "mobileNumber", type: "text" },
+    { icon: VenusAndMars, label: "Gender", field: "gender", type: "dropdown", options: ["Male", "Female", "Other"] },
+    { icon: MapPin, label: "Complete Address", field: "address", type: "text" },
+  ];
+
   return (
-    <div
-      className={`h-screen flex font-sans overflow-hidden ${
-        darkMode ? "bg-[#071A12] text-white" : "bg-[#F3FBF6] text-gray-900"
-      }`}
-    >
-      <CustomerSidebar
-        darkMode={darkMode}
-        open={sidebarOpen}
-        setOpen={setSidebarOpen}
-      />
+    <div className={`h-screen flex font-sans overflow-hidden ${darkMode ? "bg-[#0B1121] text-white" : "bg-[#F8F9FA] text-gray-900"}`}>
+      <CustomerSidebar darkMode={darkMode} open={sidebarOpen} setOpen={setSidebarOpen} />
+      
       <div className="flex-1 flex flex-col min-h-0 min-w-0 relative">
-
-         <div className="md:hidden">
-          <CustomerNavbar
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
-            setSidebarOpen={setSidebarOpen}
-            userName={userName}
-            firstLetter={firstLetter}
-          />
+        <div className="md:hidden shrink-0">
+          <CustomerNavbar darkMode={darkMode} setDarkMode={setDarkMode} setSidebarOpen={setSidebarOpen} userName={userName} firstLetter={firstLetter} />
         </div>
-        {/* Premium Blur Blobs */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-400/5 rounded-full blur-3xl pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
-       
-
-        <main className="flex-1 overflow-y-auto p-5 lg:p-8 relative z-10">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
+        {/* Changed paddings here to fit content in a single screen */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 flex flex-col justify-start xl:justify-center">
+          <div className="max-w-5xl w-full mx-auto space-y-4 md:space-y-5">
+            
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-emerald-900 tracking-tight">
-                  My Profile
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  Manage your personal information
-                </p>
+                <h1 className="text-2xl font-bold tracking-tight">My Profile</h1>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Manage your personal information</p>
+              </div>
+              
+              <div className="flex shrink-0">
+                {!isEditing ? (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl font-medium shadow-sm w-full sm:w-auto text-sm"
+                  >
+                    <Edit3 size={16} /> Edit Profile
+                  </button>
+                ) : (
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <button
+                      onClick={() => {
+                        setTemp(profile);
+                        setSelectedFile(null);
+                        setProfileImage(getImageUrl(profile.profileImage));
+                        setIsEditing(false);
+                      }}
+                      className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium ${darkMode ? 'bg-gray-800 hover:bg-gray-700 text-white' : 'bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 shadow-sm'}`}
+                    >
+                      <X size={16} /> Cancel
+                    </button>
+                    <button
+                      onClick={saveProfile}
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-medium shadow-sm shadow-emerald-600/20"
+                    >
+                      <Save size={16} /> Save
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-<div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-<div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border-0 p-6">
-<div className="text-center">
-<div className="relative inline-block">
-{
-profileImage ?
-<img
-src={profileImage}
-className="w-28 h-28 rounded-full object-cover shadow"
-/>
-:
-<div
-className="w-28 h-28 rounded-full bg-emerald-600 flex items-center justify-center text-white text-5xl font-bold"
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 md:gap-6 items-start">
+              
+              {/* Profile Photo Card */}
+              <div className={`lg:col-span-4 rounded-3xl p-6 flex flex-col items-center text-center shadow-[0_2px_20px_rgb(0,0,0,0.03)] border ${darkMode ? 'bg-[#111827] border-gray-800' : 'bg-white border-gray-100'}`}>
+                <div className="relative inline-block mb-4">
+                  <div className="w-36 h-36 rounded-full p-1 border-2 border-emerald-100 bg-white">
+                    {profileImage ? (
+                      <img src={profileImage} className="w-full h-full rounded-full object-cover" alt="Profile" />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white text-5xl font-bold">
+                        {firstLetter}
+                      </div>
+                    )}
+                  </div>
+                  <button
+  onClick={() => setShowPhotoMenu(!showPhotoMenu)}
+  className="absolute bottom-1 right-2 bg-white p-2.5 rounded-full shadow-lg border border-gray-100 focus:outline-none active:scale-100"
 >
-
-{
-profile.fullName?.charAt(0).toUpperCase()
-}
-
-</div>
-}
-<button
-onClick={()=>setShowPhotoMenu(!showPhotoMenu)}
-className="absolute bottom-1 right-1 bg-white p-2 rounded-full shadow border"
->
-
-<Camera
-size={16}
-className="text-emerald-600"
-/>
-
+  <Camera size={18} className="text-emerald-600" />
 </button>
+                  <button
+                    onClick={() => setShowPhotoMenu(!showPhotoMenu)}
+                    className="absolute bottom-1 right-2 bg-white p-2.5 rounded-full shadow-lg border border-gray-100 hover:bg-gray-50"
+                  >
+                    <Camera size={18} className="text-emerald-600" />
+                  </button>
 
-{
-showPhotoMenu &&
-<div className="absolute right-0 mt-2 bg-white shadow-xl rounded-xl p-2 w-44 z-20">
-<label
-className="flex gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer"
->
-<Camera size={16}/>
+                  {showPhotoMenu && (
+                    <div className={`absolute left-1/2 -translate-x-1/2 top-full mt-2 shadow-xl rounded-2xl p-2 w-37 z-20 border ${darkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-100 text-gray-800'}`}>
+                      <label className={`flex items-center gap-3 p-2 rounded-xl cursor-pointer ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'}`}>
+                        <Camera size={16} className="text-gray-500" />
+                        <span className="text-sm font-medium">Camera</span>
+                        <input type="file" accept="image/*" capture="user" className="hidden" onChange={selectImage} />
+                      </label>
+                      <label className={`flex items-center gap-3 p-2 rounded-xl cursor-pointer ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'}`}>
+                        <ImageIcon size={16} className="text-gray-500" />
+                        <span className="text-sm font-medium">Gallery</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={selectImage} />
+                      </label>
+                      {profileImage && (
+                        <button onClick={deleteImage} className={`w-full flex items-center gap-3 p-2 rounded-xl ${darkMode ? 'hover:bg-red-900/30 text-red-400' : 'hover:bg-red-50 text-red-600'}`}>
+                          <Trash2 size={16} />
+                          <span className="text-sm font-medium">Remove</span>
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+                
+                <h2 className="text-xl font-bold mb-1">{profile.fullName || "Customer"}</h2>
+                <p className={`text-[13px] mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{profile.email}</p>
+                
+                <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-[13px] font-medium">
+                  <CheckCircle2 size={14} /> Verified Account
+                </div>
+              </div>
 
-Camera
-<input
-type="file"
-accept="image/*"
-capture="user"
-className="hidden"
-onChange={selectImage}
-/>
-</label>
-<label
-className="flex gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer"
->
-<ImageIcon size={16}/>
-Gallery
-<input
-type="file"
-accept="image/*"
-className="hidden"
-onChange={selectImage}
-/>
-</label>
-<button
-onClick={deleteImage}
-className="flex gap-2 p-2 text-red-600 hover:bg-red-50 rounded"
->
-<Trash2 size={16}/>
-Delete
-</button>
-</div>
+              {/* Personal Details Card */}
+              <div className={`lg:col-span-8 rounded-3xl shadow-[0_2px_20px_rgb(0,0,0,0.03)] border overflow-hidden ${darkMode ? 'bg-[#111827] border-gray-800' : 'bg-white border-gray-100'}`}>
+                <div className={`px-5 py-4 border-b ${darkMode ? 'border-gray-800' : 'border-gray-50'}`}>
+                  <h3 className="text-[16px] font-bold">Personal Information</h3>
+                </div>
+                
+                <div className="flex flex-col">
+                  {profileFields.map((item, index) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={item.field} className={`px-5 py-3 flex flex-col md:flex-row md:items-center gap-2 md:gap-4 ${darkMode ? 'border-gray-800' : 'border-gray-50'} ${index !== profileFields.length - 1 ? 'border-b' : ''}`}>
+                        <div className="flex items-center gap-3 md:w-1/3 shrink-0">
+                          <div className={`p-2 rounded-lg ${darkMode ? 'bg-gray-800 text-emerald-500' : 'bg-emerald-50 text-emerald-600'}`}>
+                            <Icon size={16} />
+                          </div>
+                          <span className={`text-[14px] font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.label}</span>
+                        </div>
+                        
+                        <div className="flex-1 w-full relative">
+                          {!isEditing ? (
+                            <p className={`text-[14px] font-medium ${!(temp as any)[item.field] ? 'text-gray-400 italic' : (darkMode ? 'text-gray-200' : 'text-gray-800')}`}>
+                              {(temp as any)[item.field] || `No ${item.label.toLowerCase()} added`}
+                            </p>
+                          ) : item.type === "dropdown" ? (
+                            <div className="relative w-full">
+                              <div 
+                                onClick={() => setShowGenderDropdown(!showGenderDropdown)}
+                                className={`w-full flex justify-between items-center px-3 py-2 rounded-lg border cursor-pointer ${darkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 hover:border-emerald-300'}`}
+                              >
+                                <span className={`text-[14px] ${!(temp as any)[item.field] && 'text-gray-400'}`}>{(temp as any)[item.field] || "Select"}</span>
+                                <ChevronDown size={16} className={`${showGenderDropdown ? 'text-emerald-500' : 'text-gray-400'}`} />
+                              </div>
+                              {showGenderDropdown && (
+                                <>
+                                  <div className="fixed inset-0 z-10" onClick={() => setShowGenderDropdown(false)}></div>
+                                  <div className={`absolute top-full left-0 right-0 mt-1 border rounded-lg overflow-hidden z-20 shadow-xl ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
+                                    {item.options?.map((option: string) => (
+                                      <div
+                                        key={option}
+                                        onClick={() => { setTemp({ ...temp, [item.field]: option }); setShowGenderDropdown(false); }}
+                                        className={`px-3 py-2.5 text-[14px] cursor-pointer ${temp.gender === option ? 'text-emerald-600 bg-emerald-50 font-medium' : (darkMode ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50')}`}
+                                      >
+                                        {option}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          ) : (
+                            <input
+                              type="text"
+                              value={(temp as any)[item.field] || ""}
+                                    onChange={(e) =>
+  setTemp({
+    ...temp,
+    [item.field]:
+      item.field === "email"
+        ? e.target.value.toLowerCase()
+        : toTitleCase(e.target.value),
+  })
 }
-</div>
-<h2 className="mt-4 text-xl font-bold text-gray-800">
-{
-profile.fullName || "Customer"
-}
-</h2>
-<p className="text-sm text-gray-500">
-Customer Account
-</p>
-<div className="mt-5 space-y-3">
-<div className="bg-emerald-50 p-3 rounded-xl flex gap-2 text-emerald-700">
-<UserRound size={18}/>
-Verified Customer
-</div>
+                              className={`w-full px-3 py-2 rounded-lg border text-[14px] focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:outline-none ${darkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200'}`}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
 
-</div>
-</div>
-</div>
-<div className="lg:col-span-2 bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border-0 p-6">
-<div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-<h2 className="text-xl font-bold text-gray-800">
-Personal Information
-</h2>
-{
-!isEditing ?
-<button
-onClick={()=>setIsEditing(true)}
-className="flex gap-2 items-center bg-emerald-600 text-white px-5 py-2.5 rounded-xl cursor-pointer"
->
-<Edit3 size={16}/>
-Edit
-</button>
-:
-<div className="flex gap-2">
-<button
-onClick={saveProfile}
-className="flex gap-2 items-center bg-emerald-600 text-white px-5 py-2.5 rounded-xl"
->
-<Save size={16}/>
-Save
-</button>
-<button
-onClick={()=>{
-setTemp(profile);
-setSelectedFile(null);
-setProfileImage(
-getImageUrl(profile.profileImage)
-);
-setIsEditing(false);
-}}
-className="flex gap-2 items-center bg-gray-200 px-5 py-2.5 rounded-xl"
->
-<X size={16}/>
-Cancel
-</button>
-</div>
-}
-</div>
-<div className="grid md:grid-cols-2 gap-5">
-<div>
-<label htmlFor="fullName" className="text-sm font-medium text-gray-600 block mb-2 cursor-pointer">
-Full Name
-</label>
-<label htmlFor="fullName" className={`flex items-center gap-3 border rounded-2xl px-4 py-3 transition-all duration-200 ${isEditing ? 'bg-white border-gray-200 focus-within:ring-2 focus-within:ring-emerald-100 focus-within:border-emerald-300 cursor-text' : 'bg-gray-50/70 border-gray-100 opacity-80 cursor-default'}`}>
-<UserRound size={18} className="text-emerald-500 shrink-0" />
-<input
-id="fullName"
-disabled={!isEditing}
-value={temp.fullName || ""}
-onChange={e=>setTemp({...temp, fullName:e.target.value})}
-style={{boxShadow: 'none', border: 'none', outline: 'none'}}
-className="w-full border-0 focus:ring-0 focus:outline-none p-0 bg-transparent text-sm text-gray-800 disabled:text-gray-500"
-/>
-</label>
-</div>
-<div>
-<label htmlFor="email" className="text-sm font-medium text-gray-600 block mb-2 cursor-pointer">
-Email
-</label>
-<label htmlFor="email" className={`flex items-center gap-3 border rounded-2xl px-4 py-3 transition-all duration-200 ${isEditing ? 'bg-white border-gray-200 focus-within:ring-2 focus-within:ring-emerald-100 focus-within:border-emerald-300 cursor-text' : 'bg-gray-50/70 border-gray-100 opacity-80 cursor-default'}`}>
-<Mail size={18} className="text-emerald-500 shrink-0" />
-<input
-id="email"
-disabled={!isEditing}
-value={temp.email || ""}
-onChange={e=>setTemp({...temp, email:e.target.value})}
-style={{boxShadow: 'none', border: 'none', outline: 'none'}}
-className="w-full border-0 focus:ring-0 focus:outline-none p-0 bg-transparent text-sm text-gray-800 disabled:text-gray-500"
-/>
-</label>
-</div>
-
-<div>
-<label htmlFor="mobileNumber" className="text-sm font-medium text-gray-600 block mb-2 cursor-pointer">
-Mobile Number
-</label>
-<label htmlFor="mobileNumber" className={`flex items-center gap-3 border rounded-2xl px-4 py-3 transition-all duration-200 ${isEditing ? 'bg-white border-gray-200 focus-within:ring-2 focus-within:ring-emerald-100 focus-within:border-emerald-300 cursor-text' : 'bg-gray-50/70 border-gray-100 opacity-80 cursor-default'}`}>
-<Phone size={18} className="text-emerald-500 shrink-0" />
-<input
-id="mobileNumber"
-disabled={!isEditing}
-value={temp.mobileNumber || ""}
-onChange={e=>setTemp({...temp, mobileNumber:e.target.value})}
-style={{boxShadow: 'none', border: 'none', outline: 'none'}}
-className="w-full border-0 focus:ring-0 focus:outline-none p-0 bg-transparent text-sm text-gray-800 disabled:text-gray-500"
-/>
-</label>
-</div>
-
-<div>
-<label htmlFor="gender" className="text-sm font-medium text-gray-600 block mb-2 cursor-pointer">
-Gender
-</label>
-<div className="relative">
-<div 
-  onClick={() => isEditing && setShowGenderDropdown(!showGenderDropdown)}
-  className={`flex items-center gap-3 border rounded-2xl px-4 py-3 transition-all duration-200 ${isEditing ? 'bg-white border-gray-200 hover:border-emerald-300 cursor-pointer' : 'bg-gray-50/70 border-gray-100 opacity-80 cursor-default'}`}
->
-  <VenusAndMars size={18} className="text-emerald-500 shrink-0" />
-  <span className={`flex-1 text-sm ${temp.gender ? 'text-gray-800' : 'text-gray-500'}`}>
-    {temp.gender || "Select Gender"}
-  </span>
-  <ChevronDown size={18} className={`shrink-0 pointer-events-none transition-transform duration-200 ${showGenderDropdown ? 'rotate-180 text-emerald-500' : isEditing ? 'text-gray-400' : 'text-gray-300 opacity-60'}`} />
-</div>
-
-{showGenderDropdown && isEditing && (
-  <>
-    <div className="fixed inset-0 z-10" onClick={() => setShowGenderDropdown(false)}></div>
-    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 shadow-xl shadow-emerald-900/5 rounded-2xl overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-200">
-      {["Male", "Female", "Other"].map((option) => (
-        <div
-          key={option}
-          onClick={() => {
-            setTemp({...temp, gender: option});
-            setShowGenderDropdown(false);
-          }}
-          className={`px-4 py-3 text-sm cursor-pointer transition-colors hover:bg-emerald-50 ${temp.gender === option ? 'text-emerald-700 bg-emerald-50/50 font-medium' : 'text-gray-700'}`}
-        >
-          {option}
-        </div>
-      ))}
-    </div>
-  </>
-)}
-</div>
-</div>
-
-<div className="md:col-span-2">
-<label htmlFor="address" className="text-sm font-medium text-gray-600 block mb-2 cursor-pointer">
-Address
-</label>
-<label htmlFor="address" className={`flex items-center gap-3 border rounded-2xl px-4 py-3 transition-all duration-200 ${isEditing ? 'bg-white border-gray-200 focus-within:ring-2 focus-within:ring-emerald-100 focus-within:border-emerald-300 cursor-text' : 'bg-gray-50/70 border-gray-100 opacity-80 cursor-default'}`}>
-<MapPin size={18} className="text-emerald-500 shrink-0" />
-<input
-id="address"
-disabled={!isEditing}
-value={temp.address || ""}
-onChange={e=>setTemp({...temp, address:e.target.value})}
-style={{boxShadow: 'none', border: 'none', outline: 'none'}}
-className="w-full border-0 focus:ring-0 focus:outline-none p-0 bg-transparent text-sm text-gray-800 disabled:text-gray-500"
-/>
-</label>
-</div>
-
-</div>
-</div>
-</div>
+            </div>
           </div>
         </main>
       </div>
