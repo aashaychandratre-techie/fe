@@ -46,10 +46,16 @@ export default function AdminBookingsPage() {
 
   const fetchVendors = async (bookingId: string, serviceName: string) => {
     try {
-      // API Call: फक्त त्या सर्व्हिसचे वेंडर्स (Vendors for specific service)
-      const res = await axios.get(
-        `http://localhost:8080/auth/vendor/service/${serviceName}`
+      let res = await axios.get(
+        `http://localhost:8080/auth/vendor/service/${encodeURIComponent(serviceName || "")}`
       );
+
+      // Fallback: If no vendors are found for this specific service name, 
+      // fetch all vendors so the admin can still assign someone.
+      if (!res.data || res.data.length === 0) {
+        const allRes = await axios.get(`http://localhost:8080/api/admin/vendors`);
+        res.data = allRes.data.filter((v: any) => v.status === "APPROVED");
+      }
 
       setVendors((prev) => ({
         ...prev,
