@@ -25,12 +25,8 @@ export default function ProfilePage() {
 
  const getImageUrl = (img?: string) => {
   if (!img) return null;
-
   if (img.startsWith("http")) return img;
-
-  const fileName = img.replace("profile/", "");
-
-  return `http://localhost:8080/uploads/profile/${fileName}`;
+  return `http://localhost:8080${img}`;
 };
 
   const fetchVendor = async (id: string) => {

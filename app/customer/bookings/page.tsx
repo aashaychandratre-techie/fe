@@ -241,7 +241,9 @@ export default function CustomerBookingsPage() {
                             </span>
                           </td>
                           <td className="p-4">
-                            {booking.otp ? (
+                            {booking.status === "COMPLETED" ? (
+                              <span className="text-gray-500 font-bold">-</span>
+                            ) : booking.otp ? (
                               <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-4 py-2">
                                 <ShieldCheck size={16} className="text-emerald-600" />
                                 <span className="font-bold text-emerald-700 tracking-[0.2em]">
@@ -359,7 +361,7 @@ export default function CustomerBookingsPage() {
                       <div className="flex flex-col">
                         <span className="text-gray-500 text-[14px] font-medium mb-1">OTP</span>
                         <span className="font-semibold text-gray-900 text-[14px]">
-                          {selectedBooking.otp || "Pending"}
+                          {selectedBooking.status === "COMPLETED" ? "-" : (selectedBooking.otp || "Pending")}
                         </span>
                       </div>
 
