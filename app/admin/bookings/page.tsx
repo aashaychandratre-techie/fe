@@ -48,7 +48,7 @@ export default function AdminBookingsPage() {
     try {
       // API Call: फक्त त्या सर्व्हिसचे वेंडर्स (Vendors for specific service)
       const res = await axios.get(
-        `http://localhost:8080/api/admin/vendors/service/${serviceName}`
+        `http://localhost:8080/auth/vendor/service/${serviceName}`
       );
 
       setVendors((prev) => ({
@@ -72,6 +72,15 @@ export default function AdminBookingsPage() {
       await axios.put(
         `http://localhost:8080/api/admin/assign-vendor/${bookingId}/${vendorId}`
       );
+      
+      const assignedVendor = vendors[bookingId]?.find((v: any) => v.id === vendorId);
+      
+      setSelectedBooking((prev: any) => ({
+        ...prev,
+        status: "ASSIGNED",
+        providerName: assignedVendor ? assignedVendor.name : prev.providerName
+      }));
+      
       fetchBookings();
     } catch (error) {
       console.error(error);
