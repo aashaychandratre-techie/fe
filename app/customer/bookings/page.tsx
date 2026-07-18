@@ -307,10 +307,10 @@ export default function CustomerBookingsPage() {
             </div>
           )}
 
-          {/* ===== HIGHLY UNIFORM & WIDE POP-UP ===== */}
+          {/* ===== HIGHLY UNIFORM, SMOOTH & WIDE POP-UP ===== */}
           {showDetailsModal && selectedBooking && (
-            <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 transition-all">
-              <div className="bg-white rounded-3xl shadow-2xl w-full max-w-[600px] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-500">
+            <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 transition-all duration-300 ease-in-out animate-in fade-in">
+              <div className="bg-white rounded-3xl shadow-2xl w-full max-w-[600px] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-300 ease-out">
                 
                 {/* Modal Header */}
                 <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
@@ -379,21 +379,22 @@ export default function CustomerBookingsPage() {
                     </div>
                 </div>
 
-               <div className="px-6 py-4 flex justify-end gap-3 bg-white border-t border-gray-100">
-  <button
-    onClick={() => router.push(`/customer/complaints?bookingId=${selectedBooking.id}`)}
-    className="px-5 py-2 text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
-  >
-    Raise Complaint
-  </button>
+                {/* Modal Footer */}
+                <div className="px-6 py-4 flex justify-end gap-3 bg-white border-t border-gray-100">
+                  <button
+                    onClick={() => router.push(`/customer/complaints?bookingId=${selectedBooking.id}`)}
+                    className="px-5 py-2 text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
+                  >
+                    Raise Complaint
+                  </button>
 
-  <button
-    onClick={() => setShowDetailsModal(false)}
-    className="px-6 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition-colors cursor-pointer"
-  >
-    Close
-  </button>
-</div>
+                  <button
+                    onClick={() => setShowDetailsModal(false)}
+                    className="px-6 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition-colors cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           )}
