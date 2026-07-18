@@ -30,8 +30,15 @@ export default function SchedulePage() {
       const vendorId = localStorage.getItem("vendorId");
       if (!vendorId) return;
 
+      // Fetch vendor status
+      const vendorRes = await axios.get(`http://localhost:8080/auth/vendor/${vendorId}`);
+      if (vendorRes.data) {
+        setAvailable(vendorRes.data.status === "APPROVED");
+      }
+
+      // Fetch schedules
       const res = await axios.get(
-        `http://localhost:8080/vendor/requests/${vendorId}`
+        `http://localhost:8080/auth/vendor/requests/${vendorId}`
       );
 
       const filtered = res.data.filter(
@@ -42,6 +49,23 @@ export default function SchedulePage() {
       setSchedules(filtered);
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const toggleAvailability = async () => {
+    try {
+      const vendorId = localStorage.getItem("vendorId");
+      if (!vendorId) return;
+
+      const newStatus = available ? "OFFLINE" : "APPROVED";
+      await axios.put(`http://localhost:8080/auth/vendor/${vendorId}/status`, null, {
+        params: { status: newStatus }
+      });
+      
+      setAvailable(!available);
+    } catch (err) {
+      console.log("Error updating status:", err);
+      alert("Failed to update status");
     }
   };
 
@@ -81,7 +105,7 @@ export default function SchedulePage() {
 
               {/* Availability Toggle */}
               <button
-                onClick={() => setAvailable(!available)}
+                onClick={toggleAvailability}
                 className={`relative w-44 h-12 rounded-full transition-all duration-300 font-bold shadow-sm border
                 ${available ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-200" : "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200"}`}
               >

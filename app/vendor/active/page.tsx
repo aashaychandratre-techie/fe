@@ -78,11 +78,11 @@ export default function ActivePage() {
 
   const handleCancelService = async (service: Service) => {
     try {
-      await axios.put(
-        `http://localhost:8080/api/services/${service.id}`,
+      await axios.post(
+        `http://localhost:8080/api/services/unassign`,
+        null,
         {
-          ...service,
-          vendorId: null,
+          params: { serviceId: service.id }
         }
       );
 

@@ -341,8 +341,17 @@ setTodaySchedule(filtered);
                       <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium text-sm">You're all caught up! No new requests.</p>
                     </div>
                   ) : (
-                    newRequests.map((req: any) => (
-                      <div key={req.id} className="p-5 rounded-3xl bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 hover:border-emerald-200 hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    newRequests.map((req: any, index: number) => (
+                      <div 
+                        key={req.id} 
+                        onClick={() => {
+                          // Generate mock coordinates based on index for demonstration
+                          const offsetLat = (index % 5) * -0.01;
+                          const offsetLng = (index % 5) * 0.01;
+                          setFocusLocation([75.3433 + offsetLng, 19.8762 + offsetLat]);
+                        }}
+                        className="p-5 rounded-3xl bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 hover:border-emerald-200 hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer"
+                      >
                         <div>
                           <div className="flex items-center gap-3 mb-1">
                             <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 uppercase tracking-wider border border-amber-100/50">
@@ -370,13 +379,19 @@ setTodaySchedule(filtered);
 
                         <div className="flex sm:flex-col gap-2 w-full sm:w-auto mt-2 sm:mt-0">
                           <button
-                            onClick={() => acceptRequest(req.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              acceptRequest(req.id);
+                            }}
                             className="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-2.5 text-sm rounded-2xl shadow-sm hover:shadow-md transition-all"
                           >
                             Accept Job
                           </button>
                           <button
-                            onClick={() => rejectRequest(req.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              rejectRequest(req.id);
+                            }}
                             className="flex-1 sm:flex-none bg-red-50 dark:bg-red-900/20 hover:bg-red-100 text-red-600 dark:text-red-400 font-bold px-6 py-2.5 text-sm rounded-2xl transition-all"
                           >
                             Decline

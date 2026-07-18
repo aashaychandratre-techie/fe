@@ -335,8 +335,16 @@ const resumeVendor = async (vendorId: string) => {
                             onClick={() => openVendorDetails(v)}
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold group-hover:scale-110 transition-transform">
-                                {(v.name || "V")[0].toUpperCase()}
+                              <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border overflow-hidden bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/50 group-hover:scale-110 transition-transform">
+                                {v.profileImage ? (
+                                  <img
+                                    src={`http://localhost:8080${v.profileImage.startsWith('/') ? '' : '/uploads/profile/'}${v.profileImage}`}
+                                    alt="Vendor"
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  (v.name || "V")[0].toUpperCase()
+                                )}
                               </div>
                               <div>
                                 <p className="font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
@@ -537,7 +545,7 @@ const resumeVendor = async (vendorId: string) => {
   {modalType === "DETAIL" ? (
     selectedVendor.profileImage ? (
       <img
-        src={`http://localhost:8080/uploads/profile/${selectedVendor.profileImage}`}
+        src={`http://localhost:8080${selectedVendor.profileImage.startsWith('/') ? '' : '/uploads/profile/'}${selectedVendor.profileImage}`}
         alt="Vendor"
         className="w-full h-full object-cover rounded-xl"
       />

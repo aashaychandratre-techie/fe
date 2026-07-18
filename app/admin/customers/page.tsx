@@ -230,9 +230,17 @@ useEffect(() => {
                         >
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold group-hover:scale-110 transition-transform">
-                                {(c.name || c.fullName || c.customerName || "U")[0].toUpperCase()}
-                              </div>
+                              <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border overflow-hidden bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/50">
+                                {c.profileImage ? (
+                                  <img
+                                    src={`http://localhost:8080${c.profileImage}`}
+                                    alt="Customer Profile"
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  (c.name || c.fullName || c.customerName || "U")[0].toUpperCase()
+                                )}
+                            </div>
                               <div>
                                 <p className="font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                                   {c.name || c.fullName || c.customerName || "Unknown User"}
@@ -340,9 +348,17 @@ useEffect(() => {
                   {/* Avatar Overflow */}
                   <div className="px-6 pb-6 relative">
                     <div className="w-20 h-20 rounded-2xl bg-white dark:bg-[#111827] p-1.5 absolute -top-10 shadow-sm border border-gray-100 dark:border-gray-800">
-                      <div className="w-full h-full rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-3xl text-emerald-600 dark:text-emerald-400 font-bold">
-                        {(selectedCustomer.name || selectedCustomer.fullName || selectedCustomer.customerName || "U")[0].toUpperCase()}
-                      </div>
+                      {selectedCustomer.profileImage ? (
+                        <img
+                          src={`http://localhost:8080${selectedCustomer.profileImage}`}
+                          alt="Customer Profile"
+                          className="w-full h-full rounded-xl object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-3xl text-emerald-600 dark:text-emerald-400 font-bold">
+                          {(selectedCustomer.name || selectedCustomer.fullName || selectedCustomer.customerName || "U")[0].toUpperCase()}
+                        </div>
+                      )}
                     </div>
 
                     <div className="pt-12 mb-6">

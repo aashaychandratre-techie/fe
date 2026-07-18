@@ -516,7 +516,7 @@ useEffect(() => {
                <div className="w-11 h-11 rounded-full overflow-hidden bg-emerald-100 flex items-center justify-center">
                {selectedComplaint?.complainant?.profileImage ? (
                <img
-                src={`http://localhost:8080${selectedComplaint.complainant.profileImage}`}
+                src={`http://localhost:8080${selectedComplaint.complainant.profileImage.startsWith('/') ? '' : '/uploads/profile/'}${selectedComplaint.complainant.profileImage}`}
                 alt="Complainant"
                 className="w-full h-full object-cover"
               />
@@ -566,7 +566,7 @@ useEffect(() => {
                 <div className="w-11 h-11 rounded-full overflow-hidden bg-red-100 flex items-center justify-center">
              {selectedComplaint?.against?.profileImage ? (
               <img
-              src={`http://localhost:8080${selectedComplaint.against.profileImage}`}
+              src={`http://localhost:8080${selectedComplaint.against.profileImage.startsWith('/') ? '' : '/uploads/profile/'}${selectedComplaint.against.profileImage}`}
              alt="Against"
              className="w-full h-full object-cover"
              />
