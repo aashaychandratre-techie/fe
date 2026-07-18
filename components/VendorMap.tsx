@@ -8,8 +8,13 @@ import { getCabMapStyle } from "@/lib/getCabMapStyle";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 
-export default function VendorMap() {
+interface VendorMapProps {
+  focusLocation?: [number, number] | null;
+}
+
+export default function VendorMap({ focusLocation }: VendorMapProps) {
   const mapContainer = useRef<HTMLDivElement | null>(null);
+  const mapInstance = useRef<maplibregl.Map | null>(null);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -41,11 +46,25 @@ export default function VendorMap() {
     map.on("error", (e) => {
       console.error("Map Error:", e.error);
     });
+    
+    mapInstance.current = map;
 
     return () => {
       map.remove();
+      mapInstance.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (mapInstance.current && focusLocation) {
+      mapInstance.current.flyTo({
+        center: focusLocation,
+        zoom: 14,
+        essential: true,
+        duration: 2000 // 2 seconds animation
+      });
+    }
+  }, [focusLocation]);
 
   return (
     <div

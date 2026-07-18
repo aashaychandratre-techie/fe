@@ -25,6 +25,7 @@ export default function Dashboard() {
 
   const [newRequests, setNewRequests] = useState<any[]>([]);
   const [todaySchedule, setTodaySchedule] = useState<any[]>([]);
+  const [focusLocation, setFocusLocation] = useState<[number, number] | null>(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -275,7 +276,15 @@ setTodaySchedule(filtered);
                           </div>
                         </div>
 
-                        <div className="bg-gray-50/80 dark:bg-gray-800/50 hover:bg-emerald-50/30 border border-gray-100 dark:border-gray-800 hover:border-emerald-100 dark:border-emerald-900/30 transition-all rounded-2xl p-4 w-full shadow-sm">
+                        <div 
+                          onClick={() => {
+                            // Generate mock coordinates based on index for demonstration
+                            const offsetLat = (index % 5) * 0.01;
+                            const offsetLng = (index % 5) * -0.01;
+                            setFocusLocation([75.3433 + offsetLng, 19.8762 + offsetLat]);
+                          }}
+                          className="bg-gray-50/80 dark:bg-gray-800/50 hover:bg-emerald-50/30 border border-gray-100 dark:border-gray-800 hover:border-emerald-100 dark:border-emerald-900/30 transition-all rounded-2xl p-4 w-full shadow-sm cursor-pointer"
+                        >
                           <p className="font-bold text-gray-900 dark:text-white text-base">{item.serviceName}</p>
                           <div className="mt-3 space-y-1.5">
                             <p className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 flex items-center gap-2">
@@ -312,7 +321,7 @@ setTodaySchedule(filtered);
   </div>
 
   <div className="h-[420px] overflow-hidden rounded-2xl border border-gray-200">
-    <VendorMap />
+    <VendorMap focusLocation={focusLocation} />
   </div>
 </div>
 
