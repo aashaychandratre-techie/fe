@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { AlertCircle, FileText, ImagePlus, X } from "lucide-react";
 import CustomerSidebar from "@/components/CustomerSidebar";
+import { useDarkMode } from "@/hooks/useDarkMode";
 import { useSearchParams, useRouter } from "next/navigation";
 import API from "@/services/api";
 import axios from "axios";
@@ -11,7 +12,7 @@ export default function CustomerComplaintsPage() {
   const router = useRouter(); // Added router for back navigation
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useDarkMode();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState<any>({});
   const [image, setImage] = useState<File | null>(null);

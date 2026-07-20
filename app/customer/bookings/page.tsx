@@ -17,6 +17,7 @@ import {
 import API from "@/services/api";
 import CustomerSidebar from "@/components/CustomerSidebar";
 import CustomerNavbar from "@/components/CustomerNavbar";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 type Booking = {
   id: number;
@@ -37,7 +38,7 @@ type Booking = {
 export default function CustomerBookingsPage() {
   const router = useRouter();
 
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useDarkMode();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState<any>({});
 

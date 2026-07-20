@@ -26,7 +26,8 @@ export default function ProfilePage() {
  const getImageUrl = (img?: string) => {
   if (!img) return null;
   if (img.startsWith("http")) return img;
-  return `http://localhost:8080${img}`;
+  if (img.startsWith("/uploads/")) return `http://localhost:8080${img}`;
+  return `http://localhost:8080/uploads/profile/${img}`;
 };
 
   const fetchVendor = async (id: string) => {
@@ -35,6 +36,10 @@ export default function ProfilePage() {
     );
 
     const v = res.data;
+
+    // Update local storage so navbar can sync immediately
+    localStorage.setItem("vendor", JSON.stringify(v));
+    window.dispatchEvent(new Event("storage"));
 
     setName(v.name || "");
     setEmail(v.email || "");
@@ -74,17 +79,38 @@ export default function ProfilePage() {
     const file = e.target.files?.[0];
     if (!file || !vendorId) return;
 
+    // Show temporary preview
     setImage(URL.createObjectURL(file));
 
     const formData = new FormData();
     formData.append("file", file);
 
-    await axios.post(
-      `http://localhost:8080/auth/vendor/upload-image/${vendorId}`,
-      formData
-    );
-
-    fetchVendor(vendorId);
+    try {
+      const res = await axios.post(
+        `http://localhost:8080/auth/vendor/upload-image/${vendorId}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" }
+        }
+      );
+      
+      // Update with the actual saved image URL from backend response
+      if (res.data && res.data.profileImage) {
+        setImage(getImageUrl(res.data.profileImage));
+        
+        // Update local storage so navbar syncs
+        const currentVendorStr = localStorage.getItem("vendor");
+        if (currentVendorStr) {
+           const currentVendor = JSON.parse(currentVendorStr);
+           currentVendor.profileImage = res.data.profileImage;
+           localStorage.setItem("vendor", JSON.stringify(currentVendor));
+           window.dispatchEvent(new Event("storage"));
+        }
+      }
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      alert("Failed to upload image. Please check backend connection.");
+    }
   };
 
   return (

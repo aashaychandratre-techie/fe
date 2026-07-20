@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useDarkMode } from "@/hooks/useDarkMode";
 import API from "@/services/api";
 
 import {
@@ -60,6 +61,22 @@ function BookingContent() {
   alternateStartTime: "",
   alternateEndTime: "",
 });
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        setForm((prev) => ({
+          ...prev,
+          name: user.fullName || "",
+          mobileNumber: user.mobileNumber || "",
+        }));
+      } catch (e) {
+        console.error("Failed to parse user data", e);
+      }
+    }
+  }, []);
  
   const getCurrentLocation = () => {
   if (!navigator.geolocation) {
@@ -135,27 +152,29 @@ function BookingContent() {
       setLoading(true);
 
       const user = JSON.parse(localStorage.getItem("user") || "{}");
+      
+      if (!user || (!user.id && !user._id)) {
+        alert("Please login to book a service");
+        router.push("/signin");
+        return;
+      }
     
 
       const payload = {
-        customerId: String(user.id),
         serviceId: String(serviceId),
         vendorId: null,
         additionalServiceIds: selectedAdditionalServices.join(","),
         bookingDate: form.date,
-        
-       timeSlot: `${form.preferredStartTime} - ${form.preferredEndTime}`,
-
-alternateBookingTime: `${form.alternateStartTime} - ${form.alternateEndTime}`,
-
-address: `${form.houseNo},
+        timeSlot: `${form.preferredStartTime} - ${form.preferredEndTime}`,
+        address: `${form.houseNo},
 ${form.area},
 ${form.landmark},
 ${form.city},
 ${form.state} - ${form.pincode}`,
+        city: form.city,
         amount: amount ? parseFloat(amount) : 0,
         status: "PENDING",
-        user: user,
+        user: { id: user.id || user._id },
       };
 
       await API.post("/bookings", payload);
@@ -552,7 +571,7 @@ ${form.state} - ${form.pincode}`,
   </div>
 );
 }export default function BookingPage() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useDarkMode();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState<any>({});
 

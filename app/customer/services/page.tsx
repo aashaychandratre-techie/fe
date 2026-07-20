@@ -6,6 +6,7 @@ import { Search, Star, ShieldCheck, Clock, Filter, ChevronDown } from "lucide-re
 import API from "@/services/api";
 import CustomerSidebar from "@/components/CustomerSidebar";
 import CustomerNavbar from "@/components/CustomerNavbar";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 
 
@@ -34,7 +35,7 @@ export default function ServicesPage(){
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
  
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useDarkMode();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState<any>({});
 

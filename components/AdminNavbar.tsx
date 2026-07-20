@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Menu, Search, Bell, Sun, Moon, ChevronDown, User, LogOut } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useDarkMode } from "@/hooks/useDarkMode";
 import { useRouter } from "next/navigation";
 
 type AdminNavbarProps = {
@@ -14,13 +14,15 @@ type AdminNavbarProps = {
 export default function AdminNavbar({ setSidebarOpen = () => {} }: AdminNavbarProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-  const { theme, setTheme } = useTheme();
+  const [darkMode, setDarkMode] = useDarkMode();
   const router = useRouter();
 
   useEffect(() => {
+    setMounted(true);
     function handleClickOutside(e: MouseEvent) {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setNotificationOpen(false);
@@ -64,11 +66,11 @@ export default function AdminNavbar({ setSidebarOpen = () => {} }: AdminNavbarPr
 
         <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={() => setDarkMode(!darkMode)}
             className="shrink-0 h-9 w-9 sm:h-11 sm:w-11 rounded-full flex items-center justify-center border transition-all duration-300 bg-white dark:bg-[#111827] border-emerald-50 dark:border-gray-800 shadow-sm hover:shadow hover:border-emerald-100 dark:border-emerald-900/30 text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-emerald-600 dark:text-emerald-400"
             aria-label="Toggle theme"
           >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            {mounted ? (darkMode ? <Sun size={18} /> : <Moon size={18} />) : <div style={{ width: 18, height: 18 }} />}
           </button>
 
           <div ref={notifRef} className="relative">

@@ -338,7 +338,7 @@ const [requests, setRequests] = useState<BookingRequest[]>([]);
   )}
 
   {/* Buttons */}
-
+  {req.status === "ASSIGNED" && (
   <div className="flex justify-end gap-3 mt-5">
 
     <button
@@ -356,6 +356,7 @@ const [requests, setRequests] = useState<BookingRequest[]>([]);
     </button>
 
   </div>
+  )}
 </div>
                   ))
                 )}

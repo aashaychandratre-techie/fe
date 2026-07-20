@@ -34,7 +34,7 @@ export default function AdminBookingsPage() {
       res.data.forEach((booking: any) => {
         // इथे आपण booking.serviceName पाठवत आहोत जेणेकरून त्याच सर्व्हिसचे वेंडर्स येतील
         if (booking.status === "PENDING") {
-          fetchVendors(booking.id, booking.serviceName);
+          fetchVendors(booking.id, booking.serviceName, booking.city, booking.address);
         }
       });
     } catch (error) {
@@ -44,22 +44,44 @@ export default function AdminBookingsPage() {
     }
   };
 
-  const fetchVendors = async (bookingId: string, serviceName: string) => {
+  const fetchVendors = async (bookingId: string, serviceName: string, bookingCity?: string, bookingAddress?: string) => {
     try {
-      let res = await axios.get(
-        `http://localhost:8080/auth/vendor/service/${encodeURIComponent(serviceName || "")}`
-      );
+      // Fetch all vendors to ensure we don't miss any due to strict DB service name queries
+      const allRes = await axios.get(`http://localhost:8080/api/admin/vendors`);
+      let vendorsToFilter = allRes.data.filter((v: any) => v.status !== "REJECTED");
 
-      // Fallback: If no vendors are found for this specific service name, 
-      // fetch all vendors so the admin can still assign someone.
-      if (!res.data || res.data.length === 0) {
-        const allRes = await axios.get(`http://localhost:8080/api/admin/vendors`);
-        res.data = allRes.data.filter((v: any) => v.status === "APPROVED");
+      // Filter vendors by booking city
+      let filteredVendors = vendorsToFilter.filter((v: any) => {
+        const bCity = bookingCity ? bookingCity.trim().toLowerCase() : "";
+        const vCity = v.city ? v.city.trim().toLowerCase() : "";
+
+        if (bCity && vCity) {
+            return bCity === vCity || bCity.includes(vCity) || vCity.includes(bCity);
+        }
+
+        const bAddress = bookingAddress ? bookingAddress.toLowerCase() : "";
+        const vAddress = v.address ? v.address.toLowerCase() : "";
+
+        if (bCity) return vAddress.includes(bCity);
+        if (vCity) return bAddress.includes(vCity);
+        return true; 
+      });
+
+      // If STILL empty after city filter, fallback to showing all valid vendors
+      if (filteredVendors.length === 0) {
+          filteredVendors = vendorsToFilter;
       }
+
+      // Sort so vendors matching the service name appear at the top
+      filteredVendors.sort((a: any, b: any) => {
+          const aMatch = a.serviceName && serviceName && a.serviceName.toLowerCase() === serviceName.toLowerCase() ? -1 : 1;
+          const bMatch = b.serviceName && serviceName && b.serviceName.toLowerCase() === serviceName.toLowerCase() ? -1 : 1;
+          return aMatch - bMatch;
+      });
 
       setVendors((prev) => ({
         ...prev,
-        [bookingId]: res.data,
+        [bookingId]: filteredVendors,
       }));
     } catch (error) {
       console.error(error);
@@ -608,12 +630,12 @@ export default function AdminBookingsPage() {
                                    className="w-14 h-14 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50"
                                  />
                                  <div>
-                                    <h4 className="font-bold text-gray-900 dark:text-white text-lg">{selectedBooking.providerName}</h4>
-                                    <p className="text-emerald-600 text-sm font-medium flex items-center gap-1 mt-0.5">
-                                       <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                       Active & Confirmed
-                                    </p>
-                                 </div>
+                                      <h4 className="font-bold text-gray-900 dark:text-white text-lg">{selectedBooking.providerName}</h4>
+                                     <div className="text-emerald-600 text-sm font-medium flex items-center gap-1 mt-0.5">
+                                         <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                         Active & Confirmed
+                                      </div>
+                                   </div>
                               </div>
                            </div>
                          </>

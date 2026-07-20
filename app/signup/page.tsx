@@ -13,7 +13,12 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
-  const [address, setAddress] = useState("");
+
+  const [street, setStreet] = useState("");
+  const [landmark, setLandmark] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [country, setCountry] = useState("");
   const [loading, setLoading] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
 
@@ -36,7 +41,14 @@ export default function SignUpPage() {
 
         const data = await response.json();
 
-        setAddress(data.display_name || "");
+
+        if (data.address) {
+          setStreet(data.address.road || data.address.pedestrian || data.address.suburb || "");
+          setLandmark(data.address.neighbourhood || data.address.suburb || data.address.village || "");
+          setCity(data.address.city || data.address.town || data.address.county || "");
+          setState(data.address.state || "");
+          setCountry(data.address.country || "");
+        }
       } catch (error) {
         alert("Unable to fetch address.");
       } finally {
@@ -76,7 +88,10 @@ export default function SignUpPage() {
       setLoading(true);
       const isCustomer = selectedRole === "customer";
       const endpoint = isCustomer ? "http://localhost:8080/api/auth/signup" : "http://localhost:8080/auth/vendor/register";
-      const payload = isCustomer ? { fullName, email, password, mobileNumber, address } : { name: fullName, email, password, phone: mobileNumber, address };
+      const fullAddress = [street, landmark, city, state, country].filter(Boolean).join(", ");
+      const payload = isCustomer 
+        ? { fullName, email, password, mobileNumber, address: fullAddress, street, landmark, city, state, country } 
+        : { name: fullName, email, password, phone: mobileNumber, address: fullAddress, street, landmark, city, state, country };
       const res = await axios.post(endpoint, payload);
 
       if (isCustomer) {
@@ -142,31 +157,32 @@ export default function SignUpPage() {
             </label>
           ))}
 
-          <label className="block">
-  <div className="flex items-center justify-between">
-    <span className="text-sm font-medium text-gray-700">Address</span>
+          <div className="mt-2">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-semibold text-gray-800">Location Details</span>
+              <button
+                type="button"
+                onClick={getCurrentLocation}
+                disabled={locationLoading}
+                className="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 disabled:opacity-50"
+              >
+                <MapPin size={14} />
+                {locationLoading ? "Locating..." : "Auto-fill"}
+              </button>
+            </div>
 
-    <button
-      type="button"
-      onClick={getCurrentLocation}
-      className="text-xs bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1 rounded-lg"
-    >
-      {locationLoading ? "Loading..." : "Use Current Location"}
-    </button>
-  </div>
-
-  <div className="mt-2 flex items-start gap-3 rounded-2xl bg-white border border-gray-200 px-4 py-3 focus-within:ring-2 focus-within:ring-emerald-100">
-    <MapPin size={18} className="text-emerald-600 mt-1" />
-
-    <textarea
-      placeholder="Service address"
-      value={address}
-      onChange={(e) => setAddress(e.target.value)}
-      rows={3}
-      className="w-full bg-transparent outline-none resize-none text-sm"
-    />
-  </div>
-</label>
+            <div className="space-y-3 bg-white/40 p-4 rounded-2xl border border-gray-100 shadow-inner">
+              <input type="text" placeholder="Street Address / Building" value={street} onChange={(e) => setStreet(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-emerald-300 focus:ring-2 focus:ring-emerald-100 outline-none transition-all" />
+              <input type="text" placeholder="Landmark / Area" value={landmark} onChange={(e) => setLandmark(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-emerald-300 focus:ring-2 focus:ring-emerald-100 outline-none transition-all" />
+              
+              <div className="grid grid-cols-2 gap-3">
+                <input type="text" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-emerald-300 focus:ring-2 focus:ring-emerald-100 outline-none transition-all" />
+                <input type="text" placeholder="State" value={state} onChange={(e) => setState(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-emerald-300 focus:ring-2 focus:ring-emerald-100 outline-none transition-all" />
+              </div>
+              
+              <input type="text" placeholder="Country" value={country} onChange={(e) => setCountry(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-emerald-300 focus:ring-2 focus:ring-emerald-100 outline-none transition-all" />
+            </div>
+          </div>
 
           <button type="submit" disabled={loading} className="w-full bg-emerald-500 hover:bg-emerald-600 py-3 rounded-2xl text-white font-semibold shadow-lg shadow-emerald-100 disabled:opacity-60">
             {loading ? "Creating..." : "Create Account"}

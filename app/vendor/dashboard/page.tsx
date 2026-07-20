@@ -102,41 +102,29 @@ export default function Dashboard() {
 
       const today = new Date().toISOString().split("T")[0];
 
-      //new
-      
-
-const filtered = (res.data || []).filter(
-  (i: any) =>
-    (i.status === "ACCEPTED" || i.status === "COMPLETED") &&
-    i.bookingDate === today
-);
-
-console.log("Today's Date:", today);
-console.log("Today's Schedule:", filtered);
-
-setTodaySchedule(filtered);
-
-      setTodaySchedule(
-        (res.data || []).filter(
-          (i: any) =>
-            (i.status === "ACCEPTED" || i.status === "COMPLETED") &&
-            i.bookingDate === today
-        )
+      const filtered = (res.data || []).filter(
+        (i: any) =>
+          i.status === "ACCEPTED" && i.bookingDate === today
       );
+
+      console.log("Today's Date:", today);
+      console.log("Today's Schedule:", filtered);
+
+      setTodaySchedule(filtered);
     } catch (err) {
       console.log(err);
     }
   };
 
 
-  const acceptRequest = async (id: number) => {
+  const acceptRequest = async (id: string) => {
     await axios.put(`http://localhost:8080/vendor/accept/${id}`);
     fetchNewRequests();
     fetchDashboardData();
     fetchTodaySchedule();
   };
 
-  const rejectRequest = async (id: number) => {
+  const rejectRequest = async (id: string) => {
     await axios.put(`http://localhost:8080/vendor/reject/${id}`);
     fetchNewRequests();
     fetchDashboardData();
@@ -277,12 +265,6 @@ setTodaySchedule(filtered);
                         </div>
 
                         <div 
-                          onClick={() => {
-                            // Generate mock coordinates based on index for demonstration
-                            const offsetLat = (index % 5) * 0.01;
-                            const offsetLng = (index % 5) * -0.01;
-                            setFocusLocation([75.3433 + offsetLng, 19.8762 + offsetLat]);
-                          }}
                           className="bg-gray-50/80 dark:bg-gray-800/50 hover:bg-emerald-50/30 border border-gray-100 dark:border-gray-800 hover:border-emerald-100 dark:border-emerald-900/30 transition-all rounded-2xl p-4 w-full shadow-sm cursor-pointer"
                         >
                           <p className="font-bold text-gray-900 dark:text-white text-base">{item.serviceName}</p>
@@ -321,7 +303,7 @@ setTodaySchedule(filtered);
   </div>
 
   <div className="h-[420px] overflow-hidden rounded-2xl border border-gray-200">
-    <VendorMap focusLocation={focusLocation} />
+    <VendorMap focusLocation={focusLocation} scheduleItems={todaySchedule} />
   </div>
 </div>
 

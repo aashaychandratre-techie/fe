@@ -13,11 +13,12 @@ import {
 import API from "@/services/api";
 import CustomerSidebar from "@/components/CustomerSidebar";
 import CustomerNavbar from "@/components/CustomerNavbar";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 export default function CustomerDashboard() {
   const router = useRouter();
 
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useDarkMode();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [bookings, setBookings] = useState<any[]>([]);

@@ -11,8 +11,30 @@ type Props = {
   firstLetter: string;
 };
 
+import { useState, useEffect } from "react";
+
 export default function CustomerNavbar({ darkMode, setDarkMode, setSidebarOpen, userName, firstLetter }: Props) {
   const router = useRouter();
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const syncImage = () => {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      if (user.profileImage) {
+        if (user.profileImage.startsWith("http")) {
+          setProfileImage(user.profileImage);
+        } else {
+          setProfileImage(`http://localhost:8080${user.profileImage.startsWith('/') ? '' : '/'}${user.profileImage}`);
+        }
+      } else {
+        setProfileImage(null);
+      }
+    };
+    
+    syncImage();
+    window.addEventListener("storage", syncImage);
+    return () => window.removeEventListener("storage", syncImage);
+  }, []);
 
   return (
     <header
@@ -58,8 +80,12 @@ export default function CustomerNavbar({ darkMode, setDarkMode, setSidebarOpen, 
             onClick={() => router.push("/customer/profile")}
             className={`shrink-0 flex items-center gap-3 rounded-full sm:pl-1.5 sm:pr-4 sm:py-1.5 border transition-all duration-300 group ${darkMode ? "bg-slate-800/50 sm:border-slate-700/50 hover:bg-slate-700 border-transparent" : "bg-transparent sm:bg-white sm:border-emerald-50 sm:shadow-sm hover:shadow hover:border-emerald-100 border-transparent"}`}
           >
-            <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition-colors ${darkMode ? "bg-slate-700 text-emerald-400 group-hover:bg-slate-600" : "bg-emerald-50 text-emerald-700 group-hover:bg-emerald-100"}`}>
-              {firstLetter}
+            <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition-colors overflow-hidden ${darkMode ? "bg-slate-700 text-emerald-400 group-hover:bg-slate-600" : "bg-emerald-50 text-emerald-700 group-hover:bg-emerald-100"}`}>
+              {profileImage ? (
+                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                firstLetter
+              )}
             </div>
             <div className="hidden md:block text-left min-w-0">
               <p className={`text-sm font-semibold truncate max-w-32 leading-tight ${darkMode ? "text-white" : "text-gray-800"}`}>{userName}</p>

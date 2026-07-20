@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from 'react';
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 import {
   ArrowLeft,
@@ -19,7 +20,7 @@ export default function VendorListPage() {
 
   const router = useRouter();
 
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useDarkMode();
 
   const vendors = [
     {

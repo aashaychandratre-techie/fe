@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Menu, Bell, ChevronDown, User, LogOut, Sun, Moon, Search } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 interface NavbarProps {
   setOpen: (value: boolean) => void;
@@ -15,10 +15,11 @@ export default function VendorNavbar({ setOpen }: NavbarProps) {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [vendorInitial, setVendorInitial] = useState("V");
   const [vendorName, setVendorName] = useState("Vendor");
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-  const { theme, setTheme } = useTheme();
+  const [darkMode, setDarkMode] = useDarkMode();
   const router = useRouter();
 
   useEffect(() => {
@@ -27,6 +28,16 @@ export default function VendorNavbar({ setOpen }: NavbarProps) {
       const name = localStorage.getItem("vendorName") || vendor.name || vendor.fullName || vendor.email || "Vendor";
       setVendorName(name.split(' ')[0]);
       setVendorInitial(name.trim().charAt(0).toUpperCase() || "V");
+      
+      if (vendor.profileImage) {
+        if (vendor.profileImage.startsWith("http")) {
+          setProfileImage(vendor.profileImage);
+        } else {
+          setProfileImage(`http://localhost:8080${vendor.profileImage.startsWith('/') ? '' : '/'}${vendor.profileImage}`);
+        }
+      } else {
+        setProfileImage(null);
+      }
     };
 
     syncInitial();
@@ -82,11 +93,11 @@ export default function VendorNavbar({ setOpen }: NavbarProps) {
 
         <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={() => setDarkMode(!darkMode)}
             className="shrink-0 h-9 w-9 sm:h-11 sm:w-11 rounded-full flex items-center justify-center border transition-all duration-300 bg-white dark:bg-[#111827] border-emerald-50 dark:border-gray-800 shadow-sm hover:shadow hover:border-emerald-100 dark:border-emerald-900/30 text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-emerald-600 dark:text-emerald-400"
             aria-label="Toggle theme"
           >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
           <div ref={notifRef} className="relative">
@@ -121,8 +132,12 @@ export default function VendorNavbar({ setOpen }: NavbarProps) {
               onClick={() => setProfileOpen(!profileOpen)}
               className="shrink-0 flex items-center gap-3 rounded-full sm:pl-1.5 sm:pr-4 sm:py-1.5 border transition-all duration-300 group bg-transparent sm:bg-white dark:bg-transparent sm:dark:bg-[#111827] border-transparent sm:border-emerald-50 sm:dark:border-gray-800 sm:shadow-sm hover:shadow hover:border-emerald-100 dark:border-emerald-900/30"
             >
-              <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition-colors bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 group-hover:bg-emerald-100">
-                {vendorInitial}
+              <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm transition-colors bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 group-hover:bg-emerald-100 overflow-hidden">
+                {profileImage ? (
+                  <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  vendorInitial
+                )}
               </div>
               <div className="hidden md:block text-left min-w-0">
                 <p className="text-sm font-semibold truncate max-w-32 leading-tight text-gray-800 dark:text-gray-100">{vendorName}</p>

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import ThemeProviderWrapper from "@/components/ThemeProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -23,9 +22,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className="min-h-full flex flex-col"
       >
-        <ThemeProviderWrapper>
           {children}
-        </ThemeProviderWrapper>
       </body>
     </html>
   );

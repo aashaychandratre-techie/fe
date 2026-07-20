@@ -20,6 +20,7 @@ import {
 import { useRouter } from "next/navigation";
 import CustomerSidebar from "@/components/CustomerSidebar";
 import CustomerNavbar from "@/components/CustomerNavbar";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 export default function CustomerProfilePage() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function CustomerProfilePage() {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 };
   const [mounted, setMounted] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useDarkMode();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showPhotoMenu, setShowPhotoMenu] = useState(false);
@@ -67,6 +68,7 @@ export default function CustomerProfilePage() {
           setTemp(user);
           setProfileImage(getImageUrl(user.profileImage));
           localStorage.setItem("user", JSON.stringify(user));
+          window.dispatchEvent(new Event("storage"));
         }
       } catch (err) {
         console.log(err);
@@ -93,6 +95,7 @@ export default function CustomerProfilePage() {
       setTemp(res.data);
       setProfileImage("");
       localStorage.setItem("user", JSON.stringify(res.data));
+      window.dispatchEvent(new Event("storage"));
       setShowPhotoMenu(false);
       alert("Profile Photo Deleted");
     } catch (err) {
@@ -118,6 +121,7 @@ export default function CustomerProfilePage() {
       setProfile(user);
       setTemp(user);
       localStorage.setItem("user", JSON.stringify(user));
+      window.dispatchEvent(new Event("storage"));
       setProfileImage(getImageUrl(user.profileImage));
       setSelectedFile(null);
       setIsEditing(false);
